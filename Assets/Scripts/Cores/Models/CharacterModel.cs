@@ -1,8 +1,8 @@
-using System.Threading.Tasks;
 using Cores.Models.Interfaces;
 using UniRx;
 using UnityEngine;
 using Zenject;
+using Utilities;
 
 namespace Cores.Models
 {
@@ -11,35 +11,6 @@ namespace Cores.Models
     /// </summary>
     public class CharacterModel : ICharacterModel
     {
-        // 初期化パラメータ
-        public class CharacterModelParam
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public GameObject Model { get; set; }
-            public float Health { get; set; }
-            public float Attack { get; set; }
-            public float Speed { get; set; }
-
-            public CharacterModelParam
-            (
-                int id,
-                string name,
-                GameObject model,
-                float health,
-                float attack,
-                float speed
-            )
-            {
-                Id = id;
-                Name = name;
-                Model = model;
-                Health = health;
-                Attack = attack;
-                Speed = speed;
-            }
-        }
-
         public class Factory : PlaceholderFactory<CharacterModelParam, CharacterModel> { }
 
         public CharacterModel
@@ -47,28 +18,13 @@ namespace Cores.Models
             CharacterModelParam characterModelParam
         )
         {
-            _id = characterModelParam.Id;
-            _name = characterModelParam.Name;
-            _model = characterModelParam.Model;
-            _health = characterModelParam.Health;
-            _attack = characterModelParam.Attack;
-            _speed = characterModelParam.Speed;
+            _characterModelParam = characterModelParam;
         }
 
         // 初期値
-        public int Id { get { return _id; } set { _id = value; } }
-        public string Name { get { return _name; } set { _name = value; } }
-        public GameObject Model { get { return _model; } set { _model = value; } }
-        public float Health { get { return _health; } set { _health = value; } }
-        public float Attack { get { return _attack; } set { _attack = value; } }
-        public float Speed { get { return _speed; } set { _speed = value; } }
+        public CharacterModelParam CharacterModelParam { get { return _characterModelParam; } set { _characterModelParam = value; } }
 
-        private int _id;
-        private string _name;
-        private GameObject _model;
-        private float _health;
-        private float _attack;
-        private float _speed;
+        private CharacterModelParam _characterModelParam;
 
         // その他
         public GameObject CharacterInstance { get { return _characterInstance; } set { _characterInstance = value; } }
@@ -87,9 +43,9 @@ namespace Cores.Models
         public GameObject Spawn(Vector3 position, Quaternion rotation, Vector3 scale)
         {
 #if UNITY_EDITOR
-            Debug.Log($"{_name}を{position}に{rotation}を向いて{scale}のサイズで生成します");
+            Debug.Log($"{_characterModelParam.Name}を{position}に{rotation}を向いて{scale}のサイズで生成します");
 #endif
-            _characterInstance = GameObject.Instantiate(_model, position, rotation);
+            _characterInstance = CharacterUtility.SpawnCharacter(_characterModelParam.ControllerType, _characterModelParam.Model, position, rotation);
             // _characterInstance = await Spawn(id, position, rotation, scale);
             // _characterInstance.AddComponent<AudioSource>();
             OnSpawnSubject.OnNext(_characterInstance);
@@ -99,7 +55,7 @@ namespace Cores.Models
         public void Despawn()
         {
 #if UNITY_EDITOR
-            Debug.Log($"{_name}を削除します");
+            Debug.Log($"{_characterModelParam.Name}を削除します");
 #endif
             if (_characterInstance != null)
             {
