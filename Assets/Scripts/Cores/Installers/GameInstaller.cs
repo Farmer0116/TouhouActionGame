@@ -21,6 +21,9 @@ namespace Cores.Installers
 
             // Model
             Container.Bind<IInputSystemModel>().To<InputSystemModel>().AsCached().IfNotBound();
+
+            // Factory
+            Container.BindFactory<CharacterModel.CharacterModelParam, CharacterModel, CharacterModel.Factory>();
         }
     }
 }
