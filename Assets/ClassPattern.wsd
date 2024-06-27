@@ -1,0 +1,256 @@
+@startuml
+
+class ClassA {
+ -fieldA : int
+ #fieldB : String
+ ~methodA() : void
+ +methodB() : String
+}
+
+package Character {
+    package Data
+    {
+        class CharactersDataAsset
+        {
+            ScriptableObject
+            ---
+            Characters: List<CharacterDataAsset>
+        }
+
+        class CharacterDataAsset
+        {
+            ScriptableObject
+            ---
+            #CharacterNameType : CharacterNameType
+            #Name : string
+            #Skin : GameObject
+            #Helth : string
+            #Attack : float
+            #Speed : float
+            #JumpSpeed : float
+        }
+    }
+
+    interface ICharacterModel {
+    }
+
+    class CharacterModelParam {
+        #CharacterNameType : CharacterNameType
+        #Name : string
+        #Helth : string
+        #Attack : float
+        #Speed : float
+        #JumpSpeed : float
+    }
+
+    enum ControlerType {
+        Player
+        Enemy
+        Neutral
+        Non
+    }
+
+    ' AIなど向けに分岐
+    enum CharacterNameType {
+        Reimu
+        Marisa
+        BasicCharacter
+    }
+
+    abstract CharacterModel {
+        #CharacterInstance : GameObject
+        #CharacterParam : CharacterModelParam
+        #ControlerType : ControlerType
+        ---
+        +virtual Spawn(position: Vector3, rotation: Vector3) : GameObject 
+        +virtual LightPhysicsAttack()
+        +virtual LightSpecialAttack()
+        +virtual HeavyPhysicsAttack()
+        +virtual HeavySpecialAttack()
+        +virtual SpellAttack()
+        +virtual HorizontalMove(xy:Vector2) {CharacterMovementController.Method}
+        +virtual VerticalMove(y:float) {CharacterMovementController.Method}
+        +virtual Jump(isJump:bool) {CharacterMovementController.Method}
+        +virtual Flight(isFlight:bool) {CharacterMovementController.Method}
+        +virtual Damage(value:float)
+        +virtual Die()
+        ---
+        +OnSpawn()
+        +OnDespawn()
+        +OnMove()
+        +OnDamage()
+        +OnDie()
+    }
+
+    class ReimuModel {
+        class Factory : PlaceholderFactory<CharacterModelParam, ReimuModel>
+    }
+    class MarisaModel {
+        class Factory : PlaceholderFactory<CharacterModelParam, MarisaModel>
+    }
+    class BasicCharacterModel {
+        class Factory : PlaceholderFactory<CharacterModelParam, BasicCharacterModel>
+    }
+
+    CharactersDataAsset -> CharacterDataAsset
+
+    ICharacterModel +- CharacterModelParam
+
+    ICharacterModel <|-- CharacterModel
+
+    ControlerType <- CharacterModel
+    CharacterModel -> CharacterNameType
+
+    CharacterModel <|-- ReimuModel
+    CharacterModel <|-- MarisaModel
+    CharacterModel <|-- BasicCharacterModel
+}
+
+'------------------------------
+
+package KinematicCharacterController {
+    class CharacterMovementController {
+        *MonoBehaviour
+        ---
+        #MaxStableMoveSpeed: float
+        #StableMovementSharpness: float
+        #OrientationSharpness: float
+        移動などのパラメータ等...
+    }
+    class KinematicCharacterMotor {
+        MonoBehaviour
+        ---
+    }
+
+    'した二つはいらないかも
+    class PlayerCharacterInputs
+    class AICharacterInputs
+
+    CharacterMovementController --> KinematicCharacterMotor
+    CharacterMovementController +-- PlayerCharacterInputs
+    CharacterMovementController +-- AICharacterInputs
+}
+
+'------------------------------
+
+' package Enemy {
+'     package A*AlgorithmPackage {
+
+'     }
+'     interface ISpawningEnemyCharacterModel {
+        
+'     }
+'     class SpawningEnemyCharacterModel {
+        
+'     }
+
+'     ISpawningEnemyCharacterModel <|-- SpawningEnemyCharacterModel
+' }
+
+'------------------------------
+
+package Player {
+    interface IInputSystemModel {
+        
+    }
+    class InputSystemModel {
+        
+    }
+    interface ISpawningPlayerCharacterModel {
+        
+    }
+    class SpawningPlayerCharacterModel {
+        
+    }
+
+    interface IPlayerCharacterControlUseCase {
+        
+    }
+    class PlayerCharacterControlUseCase {
+        
+    }
+
+    IInputSystemModel <|-- InputSystemModel
+    ISpawningPlayerCharacterModel <|-- SpawningPlayerCharacterModel
+    IPlayerCharacterControlUseCase <|-- PlayerCharacterControlUseCase
+
+    IInputSystemModel <-- PlayerCharacterControlUseCase
+    ISpawningPlayerCharacterModel <-- PlayerCharacterControlUseCase
+}
+'------------------------------
+
+package Combat {
+    package Data
+    {
+        class AtttackList
+        {
+            ScriptableObject
+            ---
+            #Attack : ComboAttackInfo
+        }
+        class ComboAttackInfo {
+            AttackType: AttackType
+            ComboAttacks: List<AttackInfo>
+        }
+        ' prefabはObjectPoolで管理？
+        ' 「攻撃」をゲームオブジェクトで生成削除する
+        ' ownerは何とも？
+        class AttackInfo {
+            Owner: int
+            Damage: float
+            Prefab: GameObject
+            LifeTime: float
+            StartDelay: float
+            EndDelay: float
+        }
+        enum AttackType {
+            LightPhysics
+            LightSpecial
+            HeavyPhysics
+            HeavySpecial
+            Spell
+        }
+    }
+
+    class AttackManager {
+
+    }
+
+    ComboAttackInfo -> AttackInfo
+    AttackInfo -> AttackType
+}
+
+'------------------------------
+
+package Spawner
+{
+    class PlayerCharacterSpawner {
+        MonoBehaviour
+        ---
+    }
+
+    class EnemyCharacterSpawner {
+        MonoBehaviour
+        ---
+    }    
+}
+
+'------------------------------
+CharacterModel --> CharacterMovementController
+
+SpawningPlayerCharacterModel ---> ICharacterModel
+' SpawningEnemyCharacterModel ---> ICharacterModel
+
+ISpawningPlayerCharacterModel <- PlayerCharacterSpawner
+' ISpawningEnemyCharacterModel <- EnemyCharacterSpawner
+
+CharactersDataAsset <-- PlayerCharacterSpawner
+CharactersDataAsset <-- EnemyCharacterSpawner
+
+ICharacterModel <- EnemyCharacterSpawner
+ICharacterModel <- PlayerCharacterSpawner
+
+CharacterNameType <- CharactersDataAsset
+'------------------------------
+
+@enduml
