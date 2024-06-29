@@ -29,7 +29,7 @@ namespace Cores.Installers
             Container.Bind<ISpawningPlayerCharacterModel>().To<SpawningPlayerCharacterModel>().AsCached().IfNotBound();
 
             // Factory
-            Container.BindFactory<CharacterModelParam, CharacterModel, CharacterModel.Factory>();
+            Container.BindFactory<CharacterModelParam, ReimuModel, ReimuModel.Factory>();
         }
     }
 }
