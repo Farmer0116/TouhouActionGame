@@ -46,13 +46,13 @@ namespace Components.Character
 
         [Header("地上での移動")]
         public float MaxStableMoveSpeed = 10f;
-        public float StableMovementSharpness = 15f;
+        public float StableMovementSharpness = 10f;
         public float OrientationSharpness = 10f;
         public OrientationMethod OrientationMethod = OrientationMethod.TowardsCamera;
 
         [Header("空中での移動")]
-        public float MaxAirMoveSpeed = 15f;
-        public float AirAccelerationSpeed = 15f;
+        public float MaxAirMoveSpeed = 10f;
+        public float AirAccelerationSpeed = 50f;
         public float Drag = 0.1f;
 
         [Header("ジャンプ")]

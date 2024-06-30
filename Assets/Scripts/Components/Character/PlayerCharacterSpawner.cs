@@ -99,7 +99,6 @@ namespace Components.Character
                 characterParam.Model,
                 characterParam.Health,
                 characterParam.Attack,
-                characterParam.Speed,
                 ControllerType.Player
             ));
         }
