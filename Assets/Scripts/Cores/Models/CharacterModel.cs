@@ -41,10 +41,10 @@ namespace Cores.Models
         public CompositeDisposable DespawnDisposables { get { return _despawnDisposables; } }
         private CompositeDisposable _despawnDisposables = new CompositeDisposable();
 
-        public GameObject Spawn(Vector3 position, Quaternion rotation, Vector3 scale)
+        public GameObject Spawn(Vector3 position, Quaternion rotation)
         {
 #if UNITY_EDITOR
-            Debug.Log($"{_characterModelParam.Name}を{position}に{rotation}を向いて{scale}のサイズで生成します");
+            Debug.Log($"{_characterModelParam.Name}を{position}に{rotation}を向いて生成します");
 #endif
             _characterInstance = CharacterUtility.SpawnCharacter(_characterModelParam.ControllerType, _characterModelParam.Model, position, rotation);
             // _characterInstance = await Spawn(id, position, rotation, scale);

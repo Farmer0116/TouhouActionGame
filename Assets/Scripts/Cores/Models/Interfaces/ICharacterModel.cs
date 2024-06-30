@@ -17,7 +17,7 @@ namespace Cores.Models.Interfaces
         Subject<GameObject> OnSpawnSubject { get; }
         Subject<GameObject> OnDespawnSubject { get; }
 
-        GameObject Spawn(Vector3 position, Quaternion rotation, Vector3 scale);
+        GameObject Spawn(Vector3 position, Quaternion rotation);
         void Despawn();
     }
 

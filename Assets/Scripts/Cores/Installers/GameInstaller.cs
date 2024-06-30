@@ -27,6 +27,7 @@ namespace Cores.Installers
             // Model
             Container.Bind<IInputSystemModel>().To<InputSystemModel>().AsCached().IfNotBound();
             Container.Bind<ISpawningPlayerCharacterModel>().To<SpawningPlayerCharacterModel>().AsCached().IfNotBound();
+            Container.Bind<ISpawningCameraModel>().To<SpawningCameraModel>().AsCached().IfNotBound();
 
             // Factory
             Container.BindFactory<CharacterModelParam, ReimuModel, ReimuModel.Factory>();

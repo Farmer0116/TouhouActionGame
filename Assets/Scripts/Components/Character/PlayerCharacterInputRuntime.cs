@@ -9,8 +9,13 @@ namespace Components.Character
 {
     public class PlayerCharacterInputRuntime : MonoBehaviour
     {
-        public CharacterMovementController CharacterMovementController { get; private set; }
-        public Transform RotateTarget { get; private set; }
+        public CharacterMovementController CharacterMovementController { get { return _characterMovementController; } private set { _characterMovementController = value; } }
+        [SerializeField] private CharacterMovementController _characterMovementController;
+        public Transform RotateTarget { get { return _rotateTarget; } private set { _rotateTarget = value; } }
+        [SerializeField] private Transform _rotateTarget;
+        public Transform LookTarget { get { return _lookTarget; } }
+        [SerializeField] private Transform _lookTarget;
+
         // public ExampleCharacterCamera CharacterCamera;
 
         private IInputSystemModel _inputSystemModel;
@@ -33,7 +38,8 @@ namespace Components.Character
         {
             CharacterMovementController = characterMovementController;
             RotateTarget = new GameObject(_rotateTargetName).transform;
-            CharacterMovementController.CameraFollowPoint = RotateTarget;
+            if (characterMovementController.CameraTarget != null) _lookTarget = characterMovementController.CameraTarget;
+            else Debug.LogError("キャラクターのカメラのフォロー対象が設定されていません");
         }
 
         void Awake()
@@ -111,7 +117,7 @@ namespace Components.Character
         {
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
-            RotateTarget.localPosition = transform.position + CharacterMovementController.CameraFollowPointOffset;
+            RotateTarget.localPosition = transform.position;
 
             _lookCharacterVector.y += _inputSystemModel.Look.Value.x;
             _lookCharacterVector.x += _inputSystemModel.Look.Value.y;
