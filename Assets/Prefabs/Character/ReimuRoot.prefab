@@ -31,37 +31,6 @@ Transform:
   m_Father: {fileID: 7322933704203835038}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5502588941957684869
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7670561692006986582}
-  m_Layer: 0
-  m_Name: CameraTarget
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7670561692006986582
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5502588941957684869}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.018270044, y: -0.085158885, z: 0.090115115}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7322933704203835038}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7322933703741411685
 GameObject:
   m_ObjectHideFlags: 0
@@ -88,7 +57,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7322933703741411685}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -172,13 +141,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7322933704203835039}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7322933703741411684}
   - {fileID: 7717156629798457293}
-  - {fileID: 7670561692006986582}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -195,7 +163,7 @@ CapsuleCollider:
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!114 &7087727160688228555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,7 +180,7 @@ MonoBehaviour:
   MaxStableMoveSpeed: 15
   StableMovementSharpness: 10
   OrientationSharpness: 10
-  OrientationMethod: 1
+  OrientationMethod: 0
   MaxAirMoveSpeed: 15
   AirAccelerationSpeed: 100
   Drag: 0.1
@@ -226,8 +194,9 @@ MonoBehaviour:
   BonusOrientationMethod: 1
   BonusOrientationSharpness: 20
   Gravity: {x: 0, y: -30, z: 0}
+  EyeLevel: 1
   MeshRoot: {fileID: 7322933703741411684}
-  CameraFollowPoint: {fileID: 7670561692006986582}
+  CameraFollowPoint: {fileID: 0}
   CrouchedCapsuleHeight: 1
 --- !u!114 &6881790898558161858
 MonoBehaviour:
@@ -244,7 +213,7 @@ MonoBehaviour:
   Capsule: {fileID: 310253737578176370}
   CapsuleRadius: 0.5
   CapsuleHeight: 2
-  CapsuleYOffset: 0
+  CapsuleYOffset: 1
   CapsulePhysicsMaterial: {fileID: 0}
   GroundDetectionExtraDistance: 0
   MaxStableSlopeAngle: 60

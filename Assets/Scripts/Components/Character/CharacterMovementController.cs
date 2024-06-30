@@ -21,7 +21,7 @@ namespace Components.Character
     {
         public float MoveAxisForward;
         public float MoveAxisRight;
-        public Quaternion CameraRotation;
+        public Quaternion Rotation;
         public bool JumpDown;
         public bool CrouchDown;
         public bool CrouchUp;
@@ -44,18 +44,18 @@ namespace Components.Character
     {
         public KinematicCharacterMotor Motor;
 
-        [Header("Stable Movement")]
+        [Header("地上での移動")]
         public float MaxStableMoveSpeed = 10f;
         public float StableMovementSharpness = 15f;
         public float OrientationSharpness = 10f;
         public OrientationMethod OrientationMethod = OrientationMethod.TowardsCamera;
 
-        [Header("Air Movement")]
+        [Header("空中での移動")]
         public float MaxAirMoveSpeed = 15f;
         public float AirAccelerationSpeed = 15f;
         public float Drag = 0.1f;
 
-        [Header("Jumping")]
+        [Header("ジャンプ")]
         public bool AllowJumpingWhenSliding = false;
         public bool AllowDoubleJump = true;
         public float JumpUpSpeed = 10f;
@@ -63,13 +63,14 @@ namespace Components.Character
         public float JumpPreGroundingGraceTime = 0f;
         public float JumpPostGroundingGraceTime = 0f;
 
-        [Header("Misc")]
+        [Header("その他")]
         public List<Collider> IgnoredColliders = new List<Collider>();
         public BonusOrientationMethod BonusOrientationMethod = BonusOrientationMethod.None;
         public float BonusOrientationSharpness = 10f;
         public Vector3 Gravity = new Vector3(0, -30f, 0);
         public Transform MeshRoot;
         public Transform CameraFollowPoint;
+        public Vector3 CameraFollowPointOffset = Vector3.up;
         public float CrouchedCapsuleHeight = 1f;
 
         public CharacterState CurrentCharacterState { get; private set; }
@@ -87,21 +88,21 @@ namespace Components.Character
         private Vector3 _internalVelocityAdd = Vector3.zero;
         private bool _shouldBeCrouching = false;
         private bool _isCrouching = false;
-
+        private int _keepJumpingCount = 0;
         private Vector3 lastInnerNormal = Vector3.zero;
         private Vector3 lastOuterNormal = Vector3.zero;
 
         private void Awake()
         {
-            // Handle initial state
+            // 初期状態を処理する
             TransitionToState(CharacterState.Default);
 
-            // Assign the characterController to the motor
+            // motorにcharacterControllerを割り当てる
             Motor.CharacterController = this;
         }
 
         /// <summary>
-        /// Handles movement state transitions and enter/exit callbacks
+        /// PlayerInputControllerによって毎フレーム呼び出され、キャラクターに入力内容を伝える
         /// </summary>
         public void TransitionToState(CharacterState newState)
         {
@@ -112,7 +113,7 @@ namespace Components.Character
         }
 
         /// <summary>
-        /// Event when entering a state
+        /// 状態に入ったときのイベント
         /// </summary>
         public void OnStateEnter(CharacterState state, CharacterState fromState)
         {
@@ -126,7 +127,7 @@ namespace Components.Character
         }
 
         /// <summary>
-        /// Event when exiting a state
+        /// 状態から抜けるときのイベント
         /// </summary>
         public void OnStateExit(CharacterState state, CharacterState toState)
         {
@@ -140,18 +141,18 @@ namespace Components.Character
         }
 
         /// <summary>
-        /// This is called every frame by ExamplePlayer in order to tell the character what its inputs are
+        /// PlayerInputControllerによって毎フレーム呼び出され、キャラクターに入力内容を伝える
         /// </summary>
         public void SetInputs(ref PlayerCharacterInputs inputs)
         {
             // Clamp input
             Vector3 moveInputVector = Vector3.ClampMagnitude(new Vector3(inputs.MoveAxisRight, 0f, inputs.MoveAxisForward), 1f);
 
-            // Calculate camera direction and rotation on the character plane
-            Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.CameraRotation * Vector3.forward, Motor.CharacterUp).normalized;
+            // 平面に沿ったベクトルを計算
+            Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.Rotation * Vector3.forward, Motor.CharacterUp).normalized;
             if (cameraPlanarDirection.sqrMagnitude == 0f)
             {
-                cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.CameraRotation * Vector3.up, Motor.CharacterUp).normalized;
+                cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.Rotation * Vector3.up, Motor.CharacterUp).normalized;
             }
             Quaternion cameraPlanarRotation = Quaternion.LookRotation(cameraPlanarDirection, Motor.CharacterUp);
 
@@ -202,7 +203,7 @@ namespace Components.Character
         }
 
         /// <summary>
-        /// This is called every frame by the AI script in order to tell the character what its inputs are
+        /// PlayerInputControllerによって毎フレーム呼び出され、キャラクターに入力内容を伝える
         /// </summary>
         public void SetInputs(ref AICharacterInputs inputs)
         {
@@ -213,37 +214,46 @@ namespace Components.Character
         private Quaternion _tmpTransientRot;
 
         /// <summary>
-        /// (Called by KinematicCharacterMotor during its update cycle)
-        /// This is called before the character begins its movement update
+        /// (KinematicCharacterMotorの更新サイクル中に呼び出される)
+        /// キャラクタが移動の更新を開始する前に呼び出される
         /// </summary>
         public void BeforeCharacterUpdate(float deltaTime)
         {
         }
 
         /// <summary>
-        /// (Called by KinematicCharacterMotor during its update cycle)
-        /// This is where you tell your character what its rotation should be right now. 
-        /// This is the ONLY place where you should set the character's rotation
+        /// （KinematicCharacterMotorの更新サイクル中に呼び出される）
+        /// キャラクターの回転を設定
+        /// キャラクタの回転を設定するのはここのみ
         /// </summary>
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
         {
+            if (_lookInputVector.sqrMagnitude > 0f && OrientationSharpness > 0f)
+            {
+                // 現在のルック方向からターゲット・ルック方向へのスムーズな補間
+                Vector3 smoothedLookInputDirection = Vector3.Slerp(Motor.CharacterForward, _lookInputVector, 1 - Mathf.Exp(-OrientationSharpness * deltaTime)).normalized;
+
+                // 現在の回転を設定 (KinematicCharacterMotorで使用される)
+                currentRotation = Quaternion.LookRotation(smoothedLookInputDirection, Motor.CharacterUp);
+            }
+
             switch (CurrentCharacterState)
             {
                 case CharacterState.Default:
                     {
                         if (_lookInputVector.sqrMagnitude > 0f && OrientationSharpness > 0f)
                         {
-                            // Smoothly interpolate from current to target look direction
+                            // 現在のルック方向からターゲット・ルック方向へのスムーズな補間
                             Vector3 smoothedLookInputDirection = Vector3.Slerp(Motor.CharacterForward, _lookInputVector, 1 - Mathf.Exp(-OrientationSharpness * deltaTime)).normalized;
 
-                            // Set the current rotation (which will be used by the KinematicCharacterMotor)
+                            // 現在の回転を設定 (KinematicCharacterMotorで使用される)
                             currentRotation = Quaternion.LookRotation(smoothedLookInputDirection, Motor.CharacterUp);
                         }
 
                         Vector3 currentUp = (currentRotation * Vector3.up);
                         if (BonusOrientationMethod == BonusOrientationMethod.TowardsGravity)
                         {
-                            // Rotate from current up to invert gravity
+                            // 重力を反転させるため、現在より回転を上げる
                             Vector3 smoothedGravityDir = Vector3.Slerp(currentUp, -Gravity.normalized, 1 - Mathf.Exp(-BonusOrientationSharpness * deltaTime));
                             currentRotation = Quaternion.FromToRotation(currentUp, smoothedGravityDir) * currentRotation;
                         }
@@ -256,7 +266,7 @@ namespace Components.Character
                                 Vector3 smoothedGroundNormal = Vector3.Slerp(Motor.CharacterUp, Motor.GroundingStatus.GroundNormal, 1 - Mathf.Exp(-BonusOrientationSharpness * deltaTime));
                                 currentRotation = Quaternion.FromToRotation(currentUp, smoothedGroundNormal) * currentRotation;
 
-                                // Move the position to create a rotation around the bottom hemi center instead of around the pivot
+                                // ピボットを中心とした回転ではなく、ボトムのヘミセンターを中心とした回転を作るためにポジションを移動させる
                                 Motor.SetTransientPosition(initialCharacterBottomHemiCenter + (currentRotation * Vector3.down * Motor.Capsule.radius));
                             }
                             else
@@ -276,9 +286,9 @@ namespace Components.Character
         }
 
         /// <summary>
-        /// (Called by KinematicCharacterMotor during its update cycle)
-        /// This is where you tell your character what its velocity should be right now. 
-        /// This is the ONLY place where you can set the character's velocity
+        /// （KinematicCharacterMotorの更新サイクル中に呼び出される）
+        /// キャラクターの速度を指示
+        /// キャラクタの速度を設定できるのはここのみ
         /// </summary>
         public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
@@ -286,51 +296,51 @@ namespace Components.Character
             {
                 case CharacterState.Default:
                     {
-                        // Ground movement
+                        // 安定した地面
                         if (Motor.GroundingStatus.IsStableOnGround)
                         {
                             float currentVelocityMagnitude = currentVelocity.magnitude;
 
                             Vector3 effectiveGroundNormal = Motor.GroundingStatus.GroundNormal;
 
-                            // Reorient velocity on slope
+                            // 斜面での速度の再調整
                             currentVelocity = Motor.GetDirectionTangentToSurface(currentVelocity, effectiveGroundNormal) * currentVelocityMagnitude;
 
-                            // Calculate target velocity
+                            // 対象のVelocity計算
                             Vector3 inputRight = Vector3.Cross(_moveInputVector, Motor.CharacterUp);
                             Vector3 reorientedInput = Vector3.Cross(effectiveGroundNormal, inputRight).normalized * _moveInputVector.magnitude;
                             Vector3 targetMovementVelocity = reorientedInput * MaxStableMoveSpeed;
 
-                            // Smooth movement Velocity
+                            // Velocityでの移動
                             currentVelocity = Vector3.Lerp(currentVelocity, targetMovementVelocity, 1f - Mathf.Exp(-StableMovementSharpness * deltaTime));
                         }
-                        // Air movement
+                        // 空中移動
                         else
                         {
-                            // Add move input
+                            // 移動入力
                             if (_moveInputVector.sqrMagnitude > 0f)
                             {
                                 Vector3 addedVelocity = _moveInputVector * AirAccelerationSpeed * deltaTime;
 
                                 Vector3 currentVelocityOnInputsPlane = Vector3.ProjectOnPlane(currentVelocity, Motor.CharacterUp);
 
-                                // Limit air velocity from inputs
+                                // 入力に基づく空中での速度を制限する
                                 if (currentVelocityOnInputsPlane.magnitude < MaxAirMoveSpeed)
                                 {
-                                    // clamp addedVel to make total vel not exceed max vel on inputs plane
+                                    // 入力面上の最大速度を超えないようにaddedVelをクランプする
                                     Vector3 newTotal = Vector3.ClampMagnitude(currentVelocityOnInputsPlane + addedVelocity, MaxAirMoveSpeed);
                                     addedVelocity = newTotal - currentVelocityOnInputsPlane;
                                 }
                                 else
                                 {
-                                    // Make sure added vel doesn't go in the direction of the already-exceeding velocity
+                                    // 既に超過している速度の方向にaddedVelが向かわないようにする
                                     if (Vector3.Dot(currentVelocityOnInputsPlane, addedVelocity) > 0f)
                                     {
                                         addedVelocity = Vector3.ProjectOnPlane(addedVelocity, currentVelocityOnInputsPlane.normalized);
                                     }
                                 }
 
-                                // Prevent air-climbing sloped walls
+                                // 斜面の壁を空中で登るのを防ぐ
                                 if (Motor.GroundingStatus.FoundAnyGround)
                                 {
                                     if (Vector3.Dot(currentVelocity + addedVelocity, addedVelocity) > 0f)
@@ -340,30 +350,37 @@ namespace Components.Character
                                     }
                                 }
 
-                                // Apply added velocity
+                                // 加速度を適用する
                                 currentVelocity += addedVelocity;
                             }
 
-                            // Gravity
+                            // 重力
                             currentVelocity += Gravity * deltaTime;
 
-                            // Drag
+                            // ドラッグ
                             currentVelocity *= (1f / (1f + (Drag * deltaTime)));
                         }
 
-                        // Handle jumping
+                        // ジャンプ制御
                         _jumpedThisFrame = false;
                         _timeSinceJumpRequested += deltaTime;
+
+                        if (!_jumpRequested)
+                        {
+                            _keepJumpingCount = 0;
+                        }
+
                         if (_jumpRequested)
                         {
-                            // Handle double jump
-                            if (AllowDoubleJump)
+                            // ダブルジャンプ制御
+                            if (AllowDoubleJump && _keepJumpingCount == 0)
                             {
+                                _keepJumpingCount += 1;
                                 if (_jumpConsumed && !_doubleJumpConsumed && (AllowJumpingWhenSliding ? !Motor.GroundingStatus.FoundAnyGround : !Motor.GroundingStatus.IsStableOnGround))
                                 {
                                     Motor.ForceUnground(0.1f);
 
-                                    // Add to the return velocity and reset jump state
+                                    // 戻り速度に加え、ジャンプ状態をリセットする
                                     currentVelocity += (Motor.CharacterUp * JumpUpSpeed) - Vector3.Project(currentVelocity, Motor.CharacterUp);
                                     _jumpRequested = false;
                                     _doubleJumpConsumed = true;
@@ -371,21 +388,21 @@ namespace Components.Character
                                 }
                             }
 
-                            // See if we actually are allowed to jump
+                            // 実際にジャンプが許可されているか確認する
                             if (!_jumpConsumed && ((AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround) || _timeSinceLastAbleToJump <= JumpPostGroundingGraceTime))
                             {
-                                // Calculate jump direction before ungrounding
+                                // 地面を離れる前にジャンプの方向を計算する
                                 Vector3 jumpDirection = Motor.CharacterUp;
                                 if (Motor.GroundingStatus.FoundAnyGround && !Motor.GroundingStatus.IsStableOnGround)
                                 {
                                     jumpDirection = Motor.GroundingStatus.GroundNormal;
                                 }
 
-                                // Makes the character skip ground probing/snapping on its next update. 
-                                // If this line weren't here, the character would remain snapped to the ground when trying to jump. Try commenting this line out and see.
+                                // 次の更新時にキャラクターが地面の検出/スナップをスキップするようにする。
+                                // この行がなければ、キャラクターはジャンプしようとする際に地面にスナップされたままになる。試しにこの行をコメントアウトしてみてください。
                                 Motor.ForceUnground();
 
-                                // Add to the return velocity and reset jump state
+                                // 返される速度に加算し、ジャンプの状態をリセットする
                                 currentVelocity += (jumpDirection * JumpUpSpeed) - Vector3.Project(currentVelocity, Motor.CharacterUp);
                                 currentVelocity += (_moveInputVector * JumpScalableForwardSpeed);
                                 _jumpRequested = false;
@@ -394,7 +411,7 @@ namespace Components.Character
                             }
                         }
 
-                        // Take into account additive velocity
+                        // 加算される速度を考慮する
                         if (_internalVelocityAdd.sqrMagnitude > 0f)
                         {
                             currentVelocity += _internalVelocityAdd;
@@ -406,8 +423,8 @@ namespace Components.Character
         }
 
         /// <summary>
-        /// (Called by KinematicCharacterMotor during its update cycle)
-        /// This is called after the character has finished its movement update
+        /// (KinematicCharacterMotorの更新サイクル中に呼び出される)
+        /// キャラクターの移動更新が完了した後に呼び出される
         /// </summary>
         public void AfterCharacterUpdate(float deltaTime)
         {
@@ -415,9 +432,9 @@ namespace Components.Character
             {
                 case CharacterState.Default:
                     {
-                        // Handle jump-related values
+                        // ジャンプ関連の値を処理する
                         {
-                            // Handle jumping pre-ground grace period
+                            // 地面に近い状態でのジャンプ猶予期間を処理する
                             if (_jumpRequested && _timeSinceJumpRequested > JumpPreGroundingGraceTime)
                             {
                                 _jumpRequested = false;
@@ -425,24 +442,25 @@ namespace Components.Character
 
                             if (AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround)
                             {
-                                // If we're on a ground surface, reset jumping values
+                                // 地面の上にいる場合、ジャンプ関連の値をリセットする
                                 if (!_jumpedThisFrame)
                                 {
+                                    _doubleJumpConsumed = false;
                                     _jumpConsumed = false;
                                 }
                                 _timeSinceLastAbleToJump = 0f;
                             }
                             else
                             {
-                                // Keep track of time since we were last able to jump (for grace period)
+                                // ジャンプ可能だった最後の時間を追跡する（猶予期間のため）
                                 _timeSinceLastAbleToJump += deltaTime;
                             }
                         }
 
-                        // Handle uncrouching
+                        // しゃがみ解除の処理
                         if (_isCrouching && !_shouldBeCrouching)
                         {
-                            // Do an overlap test with the character's standing height to see if there are any obstructions
+                            // キャラクターの立った状態の高さでオーバーラップテストを行い、障害物があるか確認する
                             Motor.SetCapsuleDimensions(0.5f, 2f, 1f);
                             if (Motor.CharacterOverlap(
                                 Motor.TransientPosition,
@@ -451,12 +469,12 @@ namespace Components.Character
                                 Motor.CollidableLayers,
                                 QueryTriggerInteraction.Ignore) > 0)
                             {
-                                // If obstructions, just stick to crouching dimensions
+                                // 障害物がある場合は、しゃがんだ状態の寸法に戻す
                                 Motor.SetCapsuleDimensions(0.5f, CrouchedCapsuleHeight, CrouchedCapsuleHeight * 0.5f);
                             }
                             else
                             {
-                                // If no obstructions, uncrouch
+                                // 障害物がない場合は、しゃがみを解除する
                                 MeshRoot.localScale = new Vector3(1f, 1f, 1f);
                                 _isCrouching = false;
                             }

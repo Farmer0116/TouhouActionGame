@@ -8,13 +8,12 @@ namespace Utilities
     {
         public static GameObject SpawnCharacter(ControllerType controllerType, GameObject character, Vector3 position, Quaternion rotation)
         {
-            var instance = GameObject.Instantiate(character, position, rotation);
-            var characterMovementController = instance.GetComponent<CharacterMovementController>();
+            var root = GameObject.Instantiate(character, position, rotation);
+            var characterMovementController = root.GetComponent<CharacterMovementController>();
             switch (controllerType)
             {
                 case ControllerType.Player:
-                    var input = instance.AddComponent<PlayerCharacterInputRuntime>();
-                    input.SetCharacterMovementController(characterMovementController);
+                    SetupPlayerCharacter(root, characterMovementController);
                     break;
                 case ControllerType.Enemy:
                     break;
@@ -23,7 +22,16 @@ namespace Utilities
                 case ControllerType.Non:
                     break;
             }
-            return instance;
+            return root;
+        }
+
+        /// <summary>
+        /// プレーヤー向けのキャラクターセットアップ
+        /// </summary>
+        private static void SetupPlayerCharacter(GameObject character, CharacterMovementController characterMovementController)
+        {
+            var input = character.AddComponent<PlayerCharacterInputRuntime>();
+            input.Initialize(characterMovementController);
         }
     }
 }
