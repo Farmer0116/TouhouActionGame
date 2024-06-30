@@ -261,17 +261,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Motor: {fileID: 6881790898558161858}
-  MaxStableMoveSpeed: 15
+  MaxStableMoveSpeed: 10
   StableMovementSharpness: 10
   OrientationSharpness: 10
   OrientationMethod: 0
-  MaxAirMoveSpeed: 15
-  AirAccelerationSpeed: 100
+  MaxAirMoveSpeed: 10
+  AirAccelerationSpeed: 50
   Drag: 0.1
   AllowJumpingWhenSliding: 0
   AllowDoubleJump: 1
-  JumpUpSpeed: 12.5
-  JumpScalableForwardSpeed: 1.5
+  JumpUpSpeed: 10
+  JumpScalableForwardSpeed: 1
   JumpPreGroundingGraceTime: 0
   JumpPostGroundingGraceTime: 0
   IgnoredColliders: []
