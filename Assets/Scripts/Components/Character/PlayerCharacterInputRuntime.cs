@@ -117,19 +117,19 @@ namespace Components.Character
         {
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
+            // 回転
             RotateTarget.localPosition = transform.position;
-
             _lookCharacterVector.y += _inputSystemModel.Look.Value.x;
             _lookCharacterVector.x += _inputSystemModel.Look.Value.y;
             _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, minViewField, maxViewField);
-
             RotateTarget.localRotation = Quaternion.Euler(new Vector3(_lookCharacterVector.x, _lookCharacterVector.y, 0));
             characterInputs.Rotation = RotateTarget.rotation;
 
-            // Build the CharacterInputs struct
+            // characterInputsへの代入
             characterInputs.MoveAxisForward = _inputSystemModel.Move.Value.y;
             characterInputs.MoveAxisRight = _inputSystemModel.Move.Value.x;
             characterInputs.JumpDown = _inputSystemModel.Jump.Value;
+            characterInputs.IsRun = _inputSystemModel.Run.Value;
             // characterInputs.CrouchDown = Input.GetKeyDown(KeyCode.C);
             // characterInputs.CrouchUp = Input.GetKeyUp(KeyCode.C);
 

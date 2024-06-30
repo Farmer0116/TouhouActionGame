@@ -25,12 +25,14 @@ namespace Components.Character
         public bool JumpDown;
         public bool CrouchDown;
         public bool CrouchUp;
+        public bool IsRun;
     }
 
     public struct AICharacterInputs
     {
         public Vector3 MoveVector;
         public Vector3 LookVector;
+        public bool IsRun;
     }
 
     public enum BonusOrientationMethod
@@ -46,12 +48,14 @@ namespace Components.Character
 
         [Header("地上での移動")]
         public float MaxStableMoveSpeed = 10f;
+        public float MaxStableRunMoveSpeed = 15f;
         public float StableMovementSharpness = 10f;
         public float OrientationSharpness = 10f;
         public OrientationMethod OrientationMethod = OrientationMethod.TowardsCamera;
 
         [Header("空中での移動")]
         public float MaxAirMoveSpeed = 10f;
+        public float MaxAirRunMoveSpeed = 15f;
         public float AirAccelerationSpeed = 50f;
         public float Drag = 0.1f;
 
@@ -88,6 +92,7 @@ namespace Components.Character
         private bool _shouldBeCrouching = false;
         private bool _isCrouching = false;
         private int _keepJumpingCount = 0;
+        private bool _isRun = false;
         private Vector3 lastInnerNormal = Vector3.zero;
         private Vector3 lastOuterNormal = Vector3.zero;
 
@@ -144,7 +149,7 @@ namespace Components.Character
         /// </summary>
         public void SetInputs(ref PlayerCharacterInputs inputs)
         {
-            // Clamp input
+            // Clamp入力
             Vector3 moveInputVector = Vector3.ClampMagnitude(new Vector3(inputs.MoveAxisRight, 0f, inputs.MoveAxisForward), 1f);
 
             // 平面に沿ったベクトルを計算
@@ -154,6 +159,8 @@ namespace Components.Character
                 cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.Rotation * Vector3.up, Motor.CharacterUp).normalized;
             }
             Quaternion cameraPlanarRotation = Quaternion.LookRotation(cameraPlanarDirection, Motor.CharacterUp);
+
+            _isRun = inputs.IsRun;
 
             switch (CurrentCharacterState)
             {
@@ -208,6 +215,7 @@ namespace Components.Character
         {
             _moveInputVector = inputs.MoveVector;
             _lookInputVector = inputs.LookVector;
+            _isRun = inputs.IsRun;
         }
 
         private Quaternion _tmpTransientRot;
@@ -308,7 +316,9 @@ namespace Components.Character
                             // 対象のVelocity計算
                             Vector3 inputRight = Vector3.Cross(_moveInputVector, Motor.CharacterUp);
                             Vector3 reorientedInput = Vector3.Cross(effectiveGroundNormal, inputRight).normalized * _moveInputVector.magnitude;
-                            Vector3 targetMovementVelocity = reorientedInput * MaxStableMoveSpeed;
+                            Vector3 targetMovementVelocity;
+                            if (_isRun) targetMovementVelocity = reorientedInput * MaxStableRunMoveSpeed;
+                            else targetMovementVelocity = reorientedInput * MaxStableMoveSpeed;
 
                             // Velocityでの移動
                             currentVelocity = Vector3.Lerp(currentVelocity, targetMovementVelocity, 1f - Mathf.Exp(-StableMovementSharpness * deltaTime));
@@ -324,18 +334,38 @@ namespace Components.Character
                                 Vector3 currentVelocityOnInputsPlane = Vector3.ProjectOnPlane(currentVelocity, Motor.CharacterUp);
 
                                 // 入力に基づく空中での速度を制限する
-                                if (currentVelocityOnInputsPlane.magnitude < MaxAirMoveSpeed)
+                                if (_isRun)
                                 {
-                                    // 入力面上の最大速度を超えないようにaddedVelをクランプする
-                                    Vector3 newTotal = Vector3.ClampMagnitude(currentVelocityOnInputsPlane + addedVelocity, MaxAirMoveSpeed);
-                                    addedVelocity = newTotal - currentVelocityOnInputsPlane;
+                                    if (currentVelocityOnInputsPlane.magnitude < MaxAirRunMoveSpeed)
+                                    {
+                                        // 入力面上の最大速度を超えないようにaddedVelをクランプする
+                                        Vector3 newTotal = Vector3.ClampMagnitude(currentVelocityOnInputsPlane + addedVelocity, MaxAirRunMoveSpeed);
+                                        addedVelocity = newTotal - currentVelocityOnInputsPlane;
+                                    }
+                                    else
+                                    {
+                                        // 既に超過している速度の方向にaddedVelが向かわないようにする
+                                        if (Vector3.Dot(currentVelocityOnInputsPlane, addedVelocity) > 0f)
+                                        {
+                                            addedVelocity = Vector3.ProjectOnPlane(addedVelocity, currentVelocityOnInputsPlane.normalized);
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    // 既に超過している速度の方向にaddedVelが向かわないようにする
-                                    if (Vector3.Dot(currentVelocityOnInputsPlane, addedVelocity) > 0f)
+                                    if (currentVelocityOnInputsPlane.magnitude < MaxAirMoveSpeed)
                                     {
-                                        addedVelocity = Vector3.ProjectOnPlane(addedVelocity, currentVelocityOnInputsPlane.normalized);
+                                        // 入力面上の最大速度を超えないようにaddedVelをクランプする
+                                        Vector3 newTotal = Vector3.ClampMagnitude(currentVelocityOnInputsPlane + addedVelocity, MaxAirMoveSpeed);
+                                        addedVelocity = newTotal - currentVelocityOnInputsPlane;
+                                    }
+                                    else
+                                    {
+                                        // 既に超過している速度の方向にaddedVelが向かわないようにする
+                                        if (Vector3.Dot(currentVelocityOnInputsPlane, addedVelocity) > 0f)
+                                        {
+                                            addedVelocity = Vector3.ProjectOnPlane(addedVelocity, currentVelocityOnInputsPlane.normalized);
+                                        }
                                     }
                                 }
 
