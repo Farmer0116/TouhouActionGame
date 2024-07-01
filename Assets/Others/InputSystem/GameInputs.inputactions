@@ -33,15 +33,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "LightAttack",
-                    "type": "Button",
-                    "id": "3a38fd72-776f-41de-9ef2-d286c3536233",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Sneak",
                     "type": "Button",
                     "id": "cab546ff-da82-4e8e-bdb1-57b9182e4944",
@@ -154,7 +145,7 @@
                     "id": "24e2533a-7514-4723-bb78-af83e932d30a",
                     "path": "<Pointer>/delta",
                     "interactions": "",
-                    "processors": "InvertVector2(invertX=false),ScaleVector2",
+                    "processors": "InvertVector2(invertX=false),ScaleVector2(x=0.2,y=0.2)",
                     "groups": "",
                     "action": "Look",
                     "isComposite": false,
@@ -162,19 +153,8 @@
                 },
                 {
                     "name": "",
-                    "id": "84d7d4d7-6d11-42cb-b811-50f837ee2f0a",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "Press(behavior=2)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LightAttack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "775e1eb4-7422-42c1-83b9-c12ec9396649",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/ctrl",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",
@@ -185,7 +165,7 @@
                 {
                     "name": "",
                     "id": "d7b7c4e1-e657-47b0-ae1a-1387b3d985c1",
-                    "path": "<Keyboard>/ctrl",
+                    "path": "<Keyboard>/shift",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",

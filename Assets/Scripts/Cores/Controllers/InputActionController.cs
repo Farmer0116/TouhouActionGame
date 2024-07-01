@@ -15,35 +15,29 @@ namespace Cores.Controllers
             this.inputSystemModel = inputSystemModel;
         }
 
-        // Invoke Event
-        public void OnMove(InputAction.CallbackContext context)
+        public void OnMove(InputValue value)
         {
-            inputSystemModel.SetMoveRP(context.ReadValue<Vector2>());
+            inputSystemModel.SetMove(value.Get<Vector2>());
         }
 
-        public void OnJump(InputAction.CallbackContext context)
+        public void OnJump(InputValue value)
         {
-            inputSystemModel.SetJumpRP(context.ReadValueAsButton());
+            inputSystemModel.SetJump(value.isPressed);
         }
 
-        public void OnLook(InputAction.CallbackContext context)
+        public void OnLook(InputValue value)
         {
-            inputSystemModel.SetLookRP(context.ReadValue<Vector2>());
+            inputSystemModel.SetLook(value.Get<Vector2>());
         }
 
-        public void OnLightAttack(InputAction.CallbackContext context)
+        public void OnSneak(InputValue value)
         {
-            inputSystemModel.SetLightAttackRP(context.ReadValueAsButton());
+            inputSystemModel.SetSneak(value.isPressed);
         }
 
-        public void OnSneak(InputAction.CallbackContext context)
+        public void OnRun(InputValue value)
         {
-            inputSystemModel.SetSneakRP(context.ReadValueAsButton());
-        }
-
-        public void OnRun(InputAction.CallbackContext context)
-        {
-            inputSystemModel.SetRunRP(context.ReadValueAsButton());
+            inputSystemModel.SetRun(value.isPressed);
         }
     }
 }

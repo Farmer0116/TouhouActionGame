@@ -1,18 +1,17 @@
 using Cores.Models.Interfaces;
 using UniRx;
 using UnityEngine;
-using Zenject;
 using Utilities;
+using Types.Character;
+using Zenject;
 
 namespace Cores.Models
 {
     /// <summary>
-    /// キャラクタに関するモデル
+    /// キャラクタの抽象モデル
     /// </summary>
-    public class CharacterModel : ICharacterModel
+    public abstract class CharacterModel : ICharacterModel
     {
-        public class Factory : PlaceholderFactory<CharacterModelParam, CharacterModel> { }
-
         public CharacterModel
         (
             CharacterModelParam characterModelParam
@@ -23,15 +22,14 @@ namespace Cores.Models
 
         // 初期値
         public CharacterModelParam CharacterModelParam { get { return _characterModelParam; } set { _characterModelParam = value; } }
-
         private CharacterModelParam _characterModelParam;
 
         // その他
         public GameObject CharacterInstance { get { return _characterInstance; } set { _characterInstance = value; } }
-        public CompositeDisposable DespawnDisposables { get { return _despawnDisposables; } }
-
         private GameObject _characterInstance = null;
-        private CompositeDisposable _despawnDisposables = new CompositeDisposable();
+
+        public ControllerType ControllerType { get { return _controllerType; } set { _controllerType = value; } }
+        private ControllerType _controllerType = ControllerType.Non;
 
         // 機能
         public Subject<GameObject> OnSpawnSubject => _onSpawnSubject;
@@ -40,10 +38,13 @@ namespace Cores.Models
         private Subject<GameObject> _onSpawnSubject = new Subject<GameObject>();
         private Subject<GameObject> _onDespawnSubject = new Subject<GameObject>();
 
-        public GameObject Spawn(Vector3 position, Quaternion rotation, Vector3 scale)
+        public CompositeDisposable DespawnDisposables { get { return _despawnDisposables; } }
+        private CompositeDisposable _despawnDisposables = new CompositeDisposable();
+
+        public GameObject Spawn(Vector3 position, Quaternion rotation)
         {
 #if UNITY_EDITOR
-            Debug.Log($"{_characterModelParam.Name}を{position}に{rotation}を向いて{scale}のサイズで生成します");
+            Debug.Log($"{_characterModelParam.Name}を{position}に{rotation}を向いて生成します");
 #endif
             _characterInstance = CharacterUtility.SpawnCharacter(_characterModelParam.ControllerType, _characterModelParam.Model, position, rotation);
             // _characterInstance = await Spawn(id, position, rotation, scale);

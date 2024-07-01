@@ -1,4 +1,4 @@
-using Unity.Mathematics;
+using Types.Character;
 using UnityEngine;
 
 namespace ScriptableObjects.Character
@@ -10,7 +10,7 @@ namespace ScriptableObjects.Character
         public int Id;
 
         [SerializeField]
-        public string Name;
+        public CharacterNameType NameType;
 
         [SerializeField]
         public GameObject Model;
