@@ -20,8 +20,8 @@ namespace Components.Character
 
         private IInputSystemModel _inputSystemModel;
         private Vector3 _lookCharacterVector = Vector3.zero;
-        private const float maxViewField = 90f;
-        private const float minViewField = -90f;
+        private const float maxViewField = 89f;
+        private const float minViewField = -89f;
 
         private const string _rotateTargetName = "RotateTarget";
 
@@ -118,7 +118,7 @@ namespace Components.Character
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
             // 回転
-            RotateTarget.localPosition = transform.position;
+            RotateTarget.localPosition = LookTarget.position;
             _lookCharacterVector.y += _inputSystemModel.Look.Value.x;
             _lookCharacterVector.x += _inputSystemModel.Look.Value.y;
             _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, minViewField, maxViewField);

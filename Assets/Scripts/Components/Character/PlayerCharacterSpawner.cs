@@ -66,6 +66,7 @@ namespace Components.Character
             // スポーン時にSpawingModelに追加
             _character.OnSpawnSubject.Subscribe(root =>
             {
+                root.tag = "Player";
                 _spawningPlayerCharacterModel.Add(_character);
             }).AddTo(_disposables);
 
