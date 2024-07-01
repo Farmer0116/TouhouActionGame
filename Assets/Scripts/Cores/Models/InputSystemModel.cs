@@ -6,53 +6,53 @@ namespace Cores.Models
 {
     public class InputSystemModel : IInputSystemModel
     {
-        public IReadOnlyReactiveProperty<Vector2> MoveRP => moveRP;
-        public IReadOnlyReactiveProperty<bool> JumpRP => jumpRP;
-        public IReadOnlyReactiveProperty<Vector2> LookRP => lookRP;
-        public IReadOnlyReactiveProperty<bool> LightAttackRP => lightAttackRP;
-        public IReadOnlyReactiveProperty<bool> SneakRP => sneakRP;
-        public IReadOnlyReactiveProperty<bool> RunRP => runRP;
+        public IReadOnlyReactiveProperty<Vector2> Move => move;
+        public IReadOnlyReactiveProperty<bool> Jump => jump;
+        public IReadOnlyReactiveProperty<Vector2> Look => look;
+        public IReadOnlyReactiveProperty<bool> LightAttack => lightAttack;
+        public IReadOnlyReactiveProperty<bool> Sneak => sneak;
+        public IReadOnlyReactiveProperty<bool> Run => run;
 
-        private ReactiveProperty<Vector2> moveRP;
-        private ReactiveProperty<bool> jumpRP;
-        private ReactiveProperty<Vector2> lookRP;
-        private ReactiveProperty<bool> lightAttackRP;
-        private ReactiveProperty<bool> sneakRP;
-        private ReactiveProperty<bool> runRP;
+        private ReactiveProperty<Vector2> move;
+        private ReactiveProperty<bool> jump;
+        private ReactiveProperty<Vector2> look;
+        private ReactiveProperty<bool> lightAttack;
+        private ReactiveProperty<bool> sneak;
+        private ReactiveProperty<bool> run;
 
         public InputSystemModel()
         {
-            moveRP = new ReactiveProperty<Vector2>();
-            jumpRP = new ReactiveProperty<bool>();
-            lookRP = new ReactiveProperty<Vector2>();
-            lightAttackRP = new ReactiveProperty<bool>();
-            sneakRP = new ReactiveProperty<bool>();
-            runRP = new ReactiveProperty<bool>();
+            move = new ReactiveProperty<Vector2>();
+            jump = new ReactiveProperty<bool>();
+            look = new ReactiveProperty<Vector2>();
+            lightAttack = new ReactiveProperty<bool>();
+            sneak = new ReactiveProperty<bool>();
+            run = new ReactiveProperty<bool>();
         }
 
-        public void SetMoveRP(Vector2 value)
+        public void SetMove(Vector2 value)
         {
-            moveRP.Value = value;
+            move.Value = value;
         }
-        public void SetJumpRP(bool value)
+        public void SetJump(bool value)
         {
-            jumpRP.Value = value;
+            jump.Value = value;
         }
-        public void SetLookRP(Vector2 value)
+        public void SetLook(Vector2 value)
         {
-            lookRP.Value = value;
+            look.Value = value;
         }
-        public void SetLightAttackRP(bool value)
+        public void SetLightAttack(bool value)
         {
-            lightAttackRP.Value = value;
+            lightAttack.Value = value;
         }
-        public void SetSneakRP(bool value)
+        public void SetSneak(bool value)
         {
-            sneakRP.Value = value;
+            sneak.Value = value;
         }
-        public void SetRunRP(bool value)
+        public void SetRun(bool value)
         {
-            runRP.Value = value;
+            run.Value = value;
         }
     }
 }
