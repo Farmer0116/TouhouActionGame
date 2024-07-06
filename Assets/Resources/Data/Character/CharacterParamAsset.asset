@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CharacterParamList:
   - Id: 0
-    Name: Reimu
-    Model: {fileID: 7322933704203835039, guid: a7188956b6c15f844aaa096d173b6366, type: 3}
+    NameType: 0
+    Model: {fileID: 7322933704203835039, guid: 8affbf5372b1bbc458e4cfe1a8667798, type: 3}
     Health: 100
     Attack: 10
     Speed: 1
