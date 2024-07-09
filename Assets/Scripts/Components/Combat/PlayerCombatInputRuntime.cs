@@ -9,7 +9,7 @@ namespace Components.Combat
     {
         private CombatMotor _combatMotor;
         private IInputSystemModel _inputSystemModel;
-
+        private ZenAutoInjecter _zenAutoInjecter;
         private CompositeDisposable _disposables = new CompositeDisposable();
 
         [Inject]
@@ -23,13 +23,15 @@ namespace Components.Combat
 
         private void Awake()
         {
-            if (_inputSystemModel == null) gameObject.AddComponent<ZenAutoInjecter>();
+            if (_inputSystemModel == null) _zenAutoInjecter = gameObject.AddComponent<ZenAutoInjecter>();
             _combatMotor = gameObject.GetComponent<CombatMotor>();
             if (_combatMotor == null) Debug.LogError("CombatMotorが取得できませんでした");
         }
 
         private void Start()
         {
+            if (_zenAutoInjecter != null) Destroy(_zenAutoInjecter);
+
             // _inputSystemModel.NormalAttack.Where(flag => flag).Subscribe(flag =>
             // {
             //     _combatMotor.SetInput(new CombatInput(isNormalAttack: true));

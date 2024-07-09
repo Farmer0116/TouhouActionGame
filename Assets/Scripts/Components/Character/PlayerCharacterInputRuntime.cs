@@ -16,13 +16,12 @@ namespace Components.Character
         public Transform LookTarget { get { return _lookTarget; } }
         [SerializeField] private Transform _lookTarget;
 
-        // public ExampleCharacterCamera CharacterCamera;
-
         private IInputSystemModel _inputSystemModel;
         private Vector3 _lookCharacterVector = Vector3.zero;
+        private ZenAutoInjecter _zenAutoInjecter;
+
         private const float maxViewField = 89f;
         private const float minViewField = -89f;
-
         private const string _rotateTargetName = "RotateTarget";
 
         [Inject]
@@ -46,12 +45,13 @@ namespace Components.Character
         {
             if (_inputSystemModel == null)
             {
-                this.gameObject.AddComponent<ZenAutoInjecter>();
+                _zenAutoInjecter = gameObject.AddComponent<ZenAutoInjecter>();
             }
         }
 
         void Start()
         {
+            if (_zenAutoInjecter != null) Destroy(_zenAutoInjecter);
             // Cursor.lockState = CursorLockMode.Locked;
 
             // // Tell camera to follow transform
