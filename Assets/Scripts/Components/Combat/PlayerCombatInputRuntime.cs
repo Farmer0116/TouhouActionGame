@@ -32,10 +32,10 @@ namespace Components.Combat
         {
             if (_zenAutoInjecter != null) Destroy(_zenAutoInjecter);
 
-            // _inputSystemModel.NormalAttack.Where(flag => flag).Subscribe(flag =>
-            // {
-            //     _combatMotor.SetInput(new CombatInput(isNormalAttack: true));
-            // }).AddTo(_disposables);
+            _inputSystemModel.NormalAttack.Where(flag => flag).Subscribe(flag =>
+            {
+                _combatMotor.SetInput(new CombatInput(isNormalAttack: true));
+            }).AddTo(_disposables);
 
             _inputSystemModel.MagicAttack.Where(flag => flag).Subscribe(flag =>
             {

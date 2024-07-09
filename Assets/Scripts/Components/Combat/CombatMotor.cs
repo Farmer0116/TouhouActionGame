@@ -23,6 +23,7 @@ namespace Components.Combat
     {
         public AttackCombAsset NormalComb;
         public AttackCombAsset MagicComb;
+        public Transform NormalSpawnPoint;
         public Transform MagicSpawnPoint;
 
         public IReadOnlyReactiveProperty<bool> OnNormalAttack => _onNormalAttack;
@@ -31,6 +32,7 @@ namespace Components.Combat
         private ReactiveProperty<bool> _onMagicAttack = new ReactiveProperty<bool>();
 
         private Vector3 _targetPoint = Vector3.zero;
+        private int _normalCombCount = 0;
         private int _magicCombCount = 0;
 
         private CompositeDisposable _disposables = new CompositeDisposable();
@@ -44,6 +46,26 @@ namespace Components.Combat
 
         void Start()
         {
+            OnNormalAttack
+            .Where(flag => flag)
+            .Subscribe(flag =>
+            {
+                // 魔法攻撃
+                var normal = CombatUtility.SpawnAttack(
+                    NormalComb.AttackCombs[_normalCombCount].PlayableDirector,
+                    NormalSpawnPoint.position,
+                    NormalSpawnPoint.rotation,
+                    CombatUtility.PlayerToEnemyMask,
+                    true
+                );
+
+                _normalCombCount++;
+
+                if (_normalCombCount > NormalComb.AttackCombs.Count - 1) _normalCombCount = 0;
+
+                _onNormalAttack.Value = false;
+            }).AddTo(_disposables);
+
             OnMagicAttack
             .Where(flag => flag)
             .Subscribe(flag =>
