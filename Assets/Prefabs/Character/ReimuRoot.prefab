@@ -262,10 +262,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Motor: {fileID: 6881790898558161858}
   MaxStableMoveSpeed: 10
+  MaxStableRunMoveSpeed: 15
   StableMovementSharpness: 10
   OrientationSharpness: 10
   OrientationMethod: 0
   MaxAirMoveSpeed: 10
+  MaxAirRunMoveSpeed: 15
   AirAccelerationSpeed: 50
   Drag: 0.1
   AllowJumpingWhenSliding: 0
@@ -281,6 +283,7 @@ MonoBehaviour:
   MeshRoot: {fileID: 7322933703741411684}
   CameraTarget: {fileID: 7717156629798457293}
   CrouchedCapsuleHeight: 1
+  CurrentVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &6881790898558161858
 MonoBehaviour:
   m_ObjectHideFlags: 0

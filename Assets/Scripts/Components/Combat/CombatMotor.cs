@@ -1,0 +1,65 @@
+using ScriptableObjects.Character;
+using UniRx;
+using UnityEngine;
+
+namespace Components.Combat
+{
+    public class CombatInput
+    {
+        public CombatInput(bool isNormalAttack = false, bool isMagicAttack = false, Vector3 targetPoint = default)
+        {
+            IsNormalAttack = isNormalAttack;
+            IsMagicAttack = isMagicAttack;
+            TargetPoint = targetPoint;
+        }
+
+        public bool IsNormalAttack;
+        public bool IsMagicAttack;
+        public Vector3 TargetPoint;
+    }
+
+    public class CombatMotor : MonoBehaviour
+    {
+        public AttackCombAsset NormalComb;
+        public AttackCombAsset MagicComb;
+        public Transform MagicSpawnPoint;
+
+        public IReadOnlyReactiveProperty<bool> OnNormalAttack => _onNormalAttack;
+        public IReadOnlyReactiveProperty<bool> OnMagicAttack => _onMagicAttack;
+        private ReactiveProperty<bool> _onNormalAttack = new ReactiveProperty<bool>();
+        private ReactiveProperty<bool> _onMagicAttack = new ReactiveProperty<bool>();
+
+        private Vector3 _targetPoint = Vector3.zero;
+        private int _magicCombCount = 0;
+
+        private CompositeDisposable _disposables = new CompositeDisposable();
+
+        public void SetInput(CombatInput combatInput)
+        {
+            _targetPoint = combatInput.TargetPoint;
+            _onNormalAttack.Value = combatInput.IsNormalAttack;
+            _onMagicAttack.Value = combatInput.IsMagicAttack;
+        }
+
+        void Start()
+        {
+            OnMagicAttack
+            .Where(flag => flag)
+            .Subscribe(flag =>
+            {
+                var magic = Instantiate(MagicComb.AttackCombs[_magicCombCount].PlayableDirector, MagicSpawnPoint.position, MagicSpawnPoint.rotation);
+                magic.Play();
+                _magicCombCount++;
+
+                if (_magicCombCount > MagicComb.AttackCombs.Count - 1) _magicCombCount = 0;
+
+                _onMagicAttack.Value = false;
+            }).AddTo(_disposables);
+        }
+
+        void OnDestroy()
+        {
+            _disposables.Clear();
+        }
+    }
+}

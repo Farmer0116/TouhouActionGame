@@ -1,4 +1,5 @@
 using Components.Character;
+using Components.Combat;
 using Types.Character;
 using UnityEngine;
 
@@ -31,6 +32,7 @@ namespace Utilities
         private static void SetupPlayerCharacter(GameObject character, CharacterMovementController characterMovementController)
         {
             var input = character.AddComponent<PlayerCharacterInputRuntime>();
+            var combat = character.AddComponent<PlayerCombatInputRuntime>();
             input.Initialize(characterMovementController);
         }
     }

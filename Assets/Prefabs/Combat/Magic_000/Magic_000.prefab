@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 54327089736865922}
   - component: {fileID: 54327089736865923}
+  - component: {fileID: 5416797216291516904}
   m_Layer: 0
   m_Name: Magic_000
   m_TagString: Untagged
@@ -43,7 +44,7 @@ PlayableDirector:
   m_Enabled: 1
   serializedVersion: 3
   m_PlayableAsset: {fileID: 11400000, guid: 7083ad225f4034144990118d9b92ead5, type: 2}
-  m_InitialState: 1
+  m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
@@ -55,6 +56,19 @@ PlayableDirector:
     - dd991181ea15c8a46aa478e13585fa8d: {fileID: 0}
     - afbd29ddd99d7424c94cc06f1a929750: {fileID: 0}
     - 4484ceb11fbce434282e54d017ccf97c: {fileID: 43633071747255476}
+--- !u!114 &5416797216291516904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54327089736865920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72784123672da0041b9599fb25250b7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayableDirector: {fileID: 54327089736865923}
 --- !u!1 &935401925564182739
 GameObject:
   m_ObjectHideFlags: 0
@@ -99,7 +113,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0

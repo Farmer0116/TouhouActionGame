@@ -9,6 +9,12 @@ namespace Cores.Controllers
     {
         private IInputSystemModel inputSystemModel;
 
+        void Start()
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+
         [Inject]
         private void construct(IInputSystemModel inputSystemModel)
         {
@@ -38,6 +44,16 @@ namespace Cores.Controllers
         public void OnRun(InputValue value)
         {
             inputSystemModel.SetRun(value.isPressed);
+        }
+
+        public void OnNormalAttack(InputValue value)
+        {
+            inputSystemModel.SetNormalAttack(value.isPressed);
+        }
+
+        public void OnMagicAttack(InputValue value)
+        {
+            inputSystemModel.SetMagicAttack(value.isPressed);
         }
     }
 }
