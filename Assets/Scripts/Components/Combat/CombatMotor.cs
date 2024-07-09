@@ -1,6 +1,7 @@
 using ScriptableObjects.Character;
 using UniRx;
 using UnityEngine;
+using Utilities;
 
 namespace Components.Combat
 {
@@ -47,8 +48,15 @@ namespace Components.Combat
             .Where(flag => flag)
             .Subscribe(flag =>
             {
-                var magic = Instantiate(MagicComb.AttackCombs[_magicCombCount].PlayableDirector, MagicSpawnPoint.position, MagicSpawnPoint.rotation);
-                magic.Play();
+                // 魔法攻撃
+                var magic = CombatUtility.SpawnAttack(
+                    MagicComb.AttackCombs[_magicCombCount].PlayableDirector,
+                    MagicSpawnPoint.position,
+                    MagicSpawnPoint.rotation,
+                    CombatUtility.PlayerToEnemyMask,
+                    true
+                );
+
                 _magicCombCount++;
 
                 if (_magicCombCount > MagicComb.AttackCombs.Count - 1) _magicCombCount = 0;

@@ -7,6 +7,8 @@ namespace Utilities
 {
     public static class CharacterUtility
     {
+        public static LayerMask PlayerLayer { get { return LayerMask.NameToLayer("Player"); } }
+
         public static GameObject SpawnCharacter(ControllerType controllerType, GameObject character, Vector3 position, Quaternion rotation)
         {
             var root = GameObject.Instantiate(character, position, rotation);
@@ -31,6 +33,8 @@ namespace Utilities
         /// </summary>
         private static void SetupPlayerCharacter(GameObject character, CharacterMovementController characterMovementController)
         {
+            character.layer = PlayerLayer;
+
             var input = character.AddComponent<PlayerCharacterInputRuntime>();
             var combat = character.AddComponent<PlayerCombatInputRuntime>();
             input.Initialize(characterMovementController);

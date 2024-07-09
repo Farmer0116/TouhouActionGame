@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 54327089736865922}
   - component: {fileID: 54327089736865923}
   - component: {fileID: 7036621800536931730}
+  - component: {fileID: 6099484487272491009}
   m_Layer: 0
   m_Name: Magic_002
   m_TagString: Untagged
@@ -69,6 +70,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayableDirector: {fileID: 54327089736865923}
+--- !u!114 &6099484487272491009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54327089736865920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3b0f6d210080aa44903d1535f2c3cb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particleSystems:
+  - {fileID: 7724762887251651173}
 --- !u!1 &935401925564182739
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,5 +277,10 @@ Transform:
 --- !u!1 &7633643656223998283 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1094010528761658, guid: a4d82ca67a969e7418289e2360af4bca, type: 3}
+  m_PrefabInstance: {fileID: 7634661893727569521}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &7724762887251651173 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 198187391127038996, guid: a4d82ca67a969e7418289e2360af4bca, type: 3}
   m_PrefabInstance: {fileID: 7634661893727569521}
   m_PrefabAsset: {fileID: 0}
