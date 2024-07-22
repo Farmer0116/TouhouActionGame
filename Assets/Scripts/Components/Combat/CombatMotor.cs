@@ -1,6 +1,10 @@
+using System;
+using System.Collections.Generic;
+using Cores.Models.Interfaces;
 using ScriptableObjects.Character;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Playables;
 using Utilities;
 
 namespace Components.Combat
@@ -21,8 +25,9 @@ namespace Components.Combat
 
     public class CombatMotor : MonoBehaviour
     {
-        public AttackCombAsset NormalComb;
-        public AttackCombAsset MagicComb;
+
+        public AttackCombAsset NormalCombo;
+        public AttackCombAsset MagicCombo;
         public Transform NormalSpawnPoint;
         public Transform MagicSpawnPoint;
 
@@ -31,9 +36,13 @@ namespace Components.Combat
         private ReactiveProperty<bool> _onNormalAttack = new ReactiveProperty<bool>();
         private ReactiveProperty<bool> _onMagicAttack = new ReactiveProperty<bool>();
 
+        private List<PlayableDirector> _normalAttackInstance = new List<PlayableDirector>();
+        [SerializeField] private List<PlayableDirector> _magicAttackInstance = new List<PlayableDirector>();
+
         private Vector3 _targetPoint = Vector3.zero;
-        private int _normalCombCount = 0;
-        private int _magicCombCount = 0;
+        // _combFlag: コンボ無効＆コンボ未入力：0 / コンボ有効＆コンボ未入力：1 / コンボ有効＆コンボ入力済：2
+        private (int _comboFlag, int _comboCount) _combo = (0, 0);
+        private bool _isAttaking = false;
 
         private CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -46,50 +55,130 @@ namespace Components.Combat
 
         void Start()
         {
-            OnNormalAttack
-            .Where(flag => flag)
-            .Subscribe(flag =>
-            {
-                // 魔法攻撃
-                var normal = CombatUtility.SpawnAttack(
-                    NormalComb.AttackCombs[_normalCombCount].PlayableDirector,
-                    NormalSpawnPoint.position,
-                    NormalSpawnPoint.rotation,
-                    CombatUtility.PlayerToEnemyMask,
-                    true
-                );
+            // // 通常攻撃
+            // OnNormalAttack
+            // .Where(flag => flag)
+            // .Subscribe(flag =>
+            // {
+            //     var normal = CombatUtility.SpawnAttack(
+            //         NormalComb.AttackCombs[_normalCombCount].PlayableDirector,
+            //         NormalSpawnPoint.position,
+            //         NormalSpawnPoint.rotation,
+            //         CombatUtility.PlayerToEnemyMask,
+            //         true
+            //     );
 
-                _normalCombCount++;
+            //     _normalCombCount++;
+            //     if (_normalCombCount > NormalComb.AttackCombs.Count - 1) _normalCombCount = 0;
 
-                if (_normalCombCount > NormalComb.AttackCombs.Count - 1) _normalCombCount = 0;
+            //     _onNormalAttack.Value = false;
+            // }).AddTo(_disposables);
 
-                _onNormalAttack.Value = false;
-            }).AddTo(_disposables);
-
+            // 魔法攻撃
             OnMagicAttack
             .Where(flag => flag)
             .Subscribe(flag =>
             {
-                // 魔法攻撃
-                var magic = CombatUtility.SpawnAttack(
-                    MagicComb.AttackCombs[_magicCombCount].PlayableDirector,
-                    MagicSpawnPoint.position,
-                    MagicSpawnPoint.rotation,
-                    CombatUtility.PlayerToEnemyMask,
-                    true
-                );
-
-                _magicCombCount++;
-
-                if (_magicCombCount > MagicComb.AttackCombs.Count - 1) _magicCombCount = 0;
-
                 _onMagicAttack.Value = false;
+                // if ((!_isCombEnabled && _comb._combCount == 0) || (_isCombEnabled && _comb._combCount > 0))
+                if ((_combo._comboFlag == 0 && _combo._comboCount == 0) || (_combo._comboFlag == 1 && _combo._comboCount > 0))
+                {
+                    if (MagicCombo.AttackCombs.Count == _combo._comboCount) return;
+
+                    OnCombo();
+
+                    // 生成
+                    var magic = CombatUtility.SpawnAttack(
+                        MagicCombo.AttackCombs[_combo._comboCount].PlayableDirector,
+                        MagicSpawnPoint.position,
+                        MagicSpawnPoint.rotation,
+                        CombatUtility.PlayerToEnemyMask,
+                        true
+                    );
+                    _magicAttackInstance.Add(magic);
+
+                    // コンボ継続の場合は特定のイベント削除
+                    if (_combo._comboCount > 0)
+                    {
+                        var beforeAttack = _magicAttackInstance[_magicAttackInstance.IndexOf(magic) - 1].gameObject;
+                        if (beforeAttack != null)
+                        {
+                            CombatUtility.RemoveCheckComboEvent(beforeAttack, OnComboChecked);
+                            CombatUtility.RemoveFinishAttackEvent(beforeAttack, OnFinishAttack);
+                        }
+                    }
+
+                    // イベント登録
+                    Action removeEL = () => { _magicAttackInstance.Remove(magic); };
+                    CombatUtility.SetEnableComboEvent(magic.gameObject, OnComboEnabled);
+                    CombatUtility.SetCheckComboEvent(magic.gameObject, OnComboChecked);
+                    CombatUtility.SetFinishAttackEvent(magic.gameObject, OnFinishAttack);
+                    CombatUtility.SetFinishAttackEvent(magic.gameObject, removeEL);
+
+                    _combo._comboCount++;
+                }
             }).AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// コンボ入力
+        /// </summary>
+        private void OnCombo()
+        {
+            _isAttaking = true;
+            if (_combo._comboFlag == 1)
+            {
+                _combo._comboFlag = 2;
+            }
+        }
+
+        /// <summary>
+        /// コンボ有効化イベント
+        /// </summary>
+        private void OnComboEnabled()
+        {
+            if (_combo._comboCount == 1)
+            {
+                _combo._comboFlag = 1;
+            }
+
+            switch (_combo._comboFlag)
+            {
+                case 2:
+                    _combo._comboFlag = 1;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// コンボ入力確認イベント
+        /// </summary>
+        private void OnComboChecked()
+        {
+            switch (_combo._comboFlag)
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// コンボ終了イベント
+        /// </summary>
+        private void OnFinishAttack()
+        {
+            _isAttaking = false;
+            _combo._comboCount = 0;
+            _combo._comboFlag = 0;
         }
 
         void OnDestroy()
         {
-            _disposables.Clear();
+            _disposables.Dispose();
         }
     }
 }

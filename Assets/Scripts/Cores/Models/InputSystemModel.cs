@@ -12,6 +12,8 @@ namespace Cores.Models
         public IReadOnlyReactiveProperty<bool> LightAttack => lightAttack;
         public IReadOnlyReactiveProperty<bool> Sneak => sneak;
         public IReadOnlyReactiveProperty<bool> Run => run;
+        public IReadOnlyReactiveProperty<bool> NormalAttack => normalAttack;
+        public IReadOnlyReactiveProperty<bool> MagicAttack => magicAttack;
 
         private ReactiveProperty<Vector2> move;
         private ReactiveProperty<bool> jump;
@@ -19,6 +21,8 @@ namespace Cores.Models
         private ReactiveProperty<bool> lightAttack;
         private ReactiveProperty<bool> sneak;
         private ReactiveProperty<bool> run;
+        private ReactiveProperty<bool> normalAttack;
+        private ReactiveProperty<bool> magicAttack;
 
         public InputSystemModel()
         {
@@ -28,6 +32,8 @@ namespace Cores.Models
             lightAttack = new ReactiveProperty<bool>();
             sneak = new ReactiveProperty<bool>();
             run = new ReactiveProperty<bool>();
+            normalAttack = new ReactiveProperty<bool>();
+            magicAttack = new ReactiveProperty<bool>();
         }
 
         public void SetMove(Vector2 value)
@@ -53,6 +59,15 @@ namespace Cores.Models
         public void SetRun(bool value)
         {
             run.Value = value;
+        }
+        public void SetNormalAttack(bool value)
+        {
+            normalAttack.Value = value;
+        }
+        public void SetMagicAttack(bool value)
+        {
+            if (value) Debug.Log(true);
+            magicAttack.Value = value;
         }
     }
 }

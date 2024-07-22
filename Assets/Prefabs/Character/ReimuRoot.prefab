@@ -351,8 +351,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a1c0346baeb7a8408192049ab9712f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NormalComb: {fileID: 11400000, guid: a79f462a75dfcad48b7a3aa6aede53b2, type: 2}
-  MagicComb: {fileID: 11400000, guid: 68fad5b9e14bfe049aed41b0f5af0723, type: 2}
+  NormalCombo: {fileID: 11400000, guid: a79f462a75dfcad48b7a3aa6aede53b2, type: 2}
+  MagicCombo: {fileID: 11400000, guid: 68fad5b9e14bfe049aed41b0f5af0723, type: 2}
   NormalSpawnPoint: {fileID: 6390518192539471309}
   MagicSpawnPoint: {fileID: 7975531034725826610}
 --- !u!1 &8082070368705344367

@@ -5001,7 +5001,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 25
+      scalar: 55
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -5117,7 +5117,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.4
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -9669,7 +9669,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EffectsOnCollision:
-  - {fileID: 1296333435415890, guid: a1c8123c6777d6f45948a5e4b821a569, type: 3}
+  - {fileID: 1296333435415890, guid: 360d46ade9e4e2846b00e880fe6ff3ac, type: 3}
   DestroyTimeDelay: 1
   UseWorldSpacePosition: 1
   Offset: 0.1

@@ -30,7 +30,11 @@ namespace Components.Combat
 
         private void Start()
         {
-            if (_zenAutoInjecter != null) Destroy(_zenAutoInjecter);
+            if (_zenAutoInjecter != null)
+            {
+                Destroy(_zenAutoInjecter);
+                _zenAutoInjecter = null;
+            }
 
             _inputSystemModel.NormalAttack.Where(flag => flag).Subscribe(flag =>
             {
@@ -45,7 +49,7 @@ namespace Components.Combat
 
         void OnDestroy()
         {
-            _disposables.Clear();
+            _disposables.Dispose();
         }
     }
 }

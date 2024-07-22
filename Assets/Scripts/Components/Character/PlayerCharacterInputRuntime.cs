@@ -51,7 +51,11 @@ namespace Components.Character
 
         void Start()
         {
-            if (_zenAutoInjecter != null) Destroy(_zenAutoInjecter);
+            if (_zenAutoInjecter != null)
+            {
+                Destroy(_zenAutoInjecter);
+                _zenAutoInjecter = null;
+            }
             // Cursor.lockState = CursorLockMode.Locked;
 
             // // Tell camera to follow transform
