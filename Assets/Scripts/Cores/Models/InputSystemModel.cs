@@ -66,7 +66,6 @@ namespace Cores.Models
         }
         public void SetMagicAttack(bool value)
         {
-            if (value) Debug.Log(true);
             magicAttack.Value = value;
         }
     }

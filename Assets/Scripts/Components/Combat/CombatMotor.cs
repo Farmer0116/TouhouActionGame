@@ -36,13 +36,15 @@ namespace Components.Combat
         private ReactiveProperty<bool> _onNormalAttack = new ReactiveProperty<bool>();
         private ReactiveProperty<bool> _onMagicAttack = new ReactiveProperty<bool>();
 
-        private List<PlayableDirector> _normalAttackInstance = new List<PlayableDirector>();
+        [SerializeField] private List<PlayableDirector> _normalAttackInstance = new List<PlayableDirector>();
         [SerializeField] private List<PlayableDirector> _magicAttackInstance = new List<PlayableDirector>();
 
         private Vector3 _targetPoint = Vector3.zero;
         // _combFlag: コンボ無効＆コンボ未入力：0 / コンボ有効＆コンボ未入力：1 / コンボ有効＆コンボ入力済：2
         private (int _comboFlag, int _comboCount) _combo = (0, 0);
-        private bool _isAttaking = false;
+        // 
+        private enum CurrentAttackingType { non, normal, magic };
+        private CurrentAttackingType _currentAttackFlag = CurrentAttackingType.non;
 
         private CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -55,24 +57,48 @@ namespace Components.Combat
 
         void Start()
         {
-            // // 通常攻撃
-            // OnNormalAttack
-            // .Where(flag => flag)
-            // .Subscribe(flag =>
-            // {
-            //     var normal = CombatUtility.SpawnAttack(
-            //         NormalComb.AttackCombs[_normalCombCount].PlayableDirector,
-            //         NormalSpawnPoint.position,
-            //         NormalSpawnPoint.rotation,
-            //         CombatUtility.PlayerToEnemyMask,
-            //         true
-            //     );
+            // 通常攻撃
+            OnNormalAttack
+            .Where(flag => flag)
+            .Subscribe(flag =>
+            {
+                _onNormalAttack.Value = false;
+                // if ((!_isCombEnabled && _comb._combCount == 0) || (_isCombEnabled && _comb._combCount > 0))
+                if (CanContinueCombo(NormalCombo.AttackCombs.Count, CurrentAttackingType.normal))
+                {
+                    StartCombo(CurrentAttackingType.normal);
 
-            //     _normalCombCount++;
-            //     if (_normalCombCount > NormalComb.AttackCombs.Count - 1) _normalCombCount = 0;
+                    // 生成
+                    var normal = CombatUtility.SpawnAttack(
+                        NormalCombo.AttackCombs[_combo._comboCount].PlayableDirector,
+                        NormalSpawnPoint.position,
+                        NormalSpawnPoint.rotation,
+                        CombatUtility.PlayerToEnemyMask,
+                        true
+                    );
+                    _normalAttackInstance.Add(normal);
 
-            //     _onNormalAttack.Value = false;
-            // }).AddTo(_disposables);
+                    // コンボ継続の場合は特定のイベント削除
+                    if (_combo._comboCount > 0)
+                    {
+                        var beforeAttack = _normalAttackInstance[_normalAttackInstance.IndexOf(normal) - 1].gameObject;
+                        if (beforeAttack != null)
+                        {
+                            CombatUtility.RemoveCheckComboEvent(beforeAttack, OnComboChecked);
+                            CombatUtility.RemoveFinishAttackEvent(beforeAttack, OnFinishAttack);
+                        }
+                    }
+
+                    // イベント登録
+                    Action removeEL = () => { _normalAttackInstance.Remove(normal); };
+                    CombatUtility.SetEnableComboEvent(normal.gameObject, OnComboEnabled);
+                    CombatUtility.SetCheckComboEvent(normal.gameObject, OnComboChecked);
+                    CombatUtility.SetFinishAttackEvent(normal.gameObject, OnFinishAttack);
+                    CombatUtility.SetFinishAttackEvent(normal.gameObject, removeEL);
+
+                    _combo._comboCount++;
+                }
+            }).AddTo(_disposables);
 
             // 魔法攻撃
             OnMagicAttack
@@ -80,12 +106,10 @@ namespace Components.Combat
             .Subscribe(flag =>
             {
                 _onMagicAttack.Value = false;
-                // if ((!_isCombEnabled && _comb._combCount == 0) || (_isCombEnabled && _comb._combCount > 0))
-                if ((_combo._comboFlag == 0 && _combo._comboCount == 0) || (_combo._comboFlag == 1 && _combo._comboCount > 0))
+                // if ((_combo._comboFlag == 0 && _combo._comboCount == 0) || (_combo._comboFlag == 1 && _combo._comboCount > 0))
+                if (CanContinueCombo(MagicCombo.AttackCombs.Count, CurrentAttackingType.magic))
                 {
-                    if (MagicCombo.AttackCombs.Count == _combo._comboCount) return;
-
-                    OnCombo();
+                    StartCombo(CurrentAttackingType.magic);
 
                     // 生成
                     var magic = CombatUtility.SpawnAttack(
@@ -108,7 +132,7 @@ namespace Components.Combat
                         }
                     }
 
-                    // イベント登録
+                    // イベント
                     Action removeEL = () => { _magicAttackInstance.Remove(magic); };
                     CombatUtility.SetEnableComboEvent(magic.gameObject, OnComboEnabled);
                     CombatUtility.SetCheckComboEvent(magic.gameObject, OnComboChecked);
@@ -120,12 +144,30 @@ namespace Components.Combat
             }).AddTo(_disposables);
         }
 
-        /// <summary>
-        /// コンボ入力
-        /// </summary>
-        private void OnCombo()
+        private bool CanContinueCombo(int limitCombCount, CurrentAttackingType type)
         {
-            _isAttaking = true;
+            // コンボなし || コンボ中かつ未入力時
+            if ((_combo._comboFlag == 0 && _combo._comboCount == 0) || (_combo._comboFlag == 1 && _combo._comboCount > 0))
+            {
+                // 既定のコンボ内の時
+                if (limitCombCount > _combo._comboCount)
+                {
+                    // 攻撃していない || 他の種類の攻撃中でないとき
+                    if (_currentAttackFlag == type || _currentAttackFlag == CurrentAttackingType.non)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// コンボ入力の開始
+        /// </summary>
+        private void StartCombo(CurrentAttackingType type)
+        {
+            _currentAttackFlag = type;
             if (_combo._comboFlag == 1)
             {
                 _combo._comboFlag = 2;
@@ -171,7 +213,7 @@ namespace Components.Combat
         /// </summary>
         private void OnFinishAttack()
         {
-            _isAttaking = false;
+            _currentAttackFlag = CurrentAttackingType.non;
             _combo._comboCount = 0;
             _combo._comboFlag = 0;
         }

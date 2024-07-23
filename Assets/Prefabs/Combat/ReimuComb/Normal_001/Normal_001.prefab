@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 54327089736865922}
   - component: {fileID: 54327089736865923}
+  - component: {fileID: 399406714171217780}
   - component: {fileID: 5416797216291516904}
   - component: {fileID: 1324718195360579800}
   m_Layer: 0
@@ -54,6 +55,8 @@ PlayableDirector:
   m_SceneBindings:
   - key: {fileID: -4956869273799319874, guid: e27c15d28d71e534b97f2a4f8452ad04, type: 2}
     value: {fileID: 4835889403433295308}
+  - key: {fileID: -7965461672407105110, guid: e27c15d28d71e534b97f2a4f8452ad04, type: 2}
+    value: {fileID: 399406714171217780}
   m_ExposedReferences:
     m_References:
     - d7402066fbf5d2e49a553f7a289508a6: {fileID: 2429614585498079208}
@@ -63,6 +66,66 @@ PlayableDirector:
     - 12d0c6bf8f307974594f84522cfb970e: {fileID: 0}
     - 4484ceb11fbce434282e54d017ccf97c: {fileID: 0}
     - 2ddbc7f2e3a410d4abfd3230043229f0: {fileID: 0}
+--- !u!114 &399406714171217780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54327089736865920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Events:
+    m_Signals:
+    - {fileID: 11400000, guid: c11448dc47f83eb42954103bc670c6a7, type: 2}
+    - {fileID: 11400000, guid: 2abab151aafe03d418ab1c31bda1e5d3, type: 2}
+    - {fileID: 11400000, guid: 56be628327cb17f46ad6510b3f3caacc, type: 2}
+    m_Events:
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5416797216291516904}
+          m_TargetAssemblyTypeName: Components.Combat.AttackEventHandler, Assembly-CSharp
+          m_MethodName: EnableComb
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5416797216291516904}
+          m_TargetAssemblyTypeName: Components.Combat.AttackEventHandler, Assembly-CSharp
+          m_MethodName: CheckComb
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5416797216291516904}
+          m_TargetAssemblyTypeName: Components.Combat.AttackEventHandler, Assembly-CSharp
+          m_MethodName: FinishAttack
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &5416797216291516904
 MonoBehaviour:
   m_ObjectHideFlags: 0
