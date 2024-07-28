@@ -36,6 +36,11 @@ namespace Cores.Controllers
             inputSystemModel.SetLook(value.Get<Vector2>());
         }
 
+        public void OnLockOn(InputValue value)
+        {
+            inputSystemModel.SetLockOn(value.isPressed);
+        }
+
         public void OnSneak(InputValue value)
         {
             inputSystemModel.SetSneak(value.isPressed);

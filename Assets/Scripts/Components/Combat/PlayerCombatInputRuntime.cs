@@ -28,6 +28,11 @@ namespace Components.Combat
             if (_combatMotor == null) Debug.LogError("CombatMotorが取得できませんでした");
         }
 
+        private void Update()
+        {
+            _combatMotor.SetInput(new CombatInput(isMagicAttack: _inputSystemModel.MagicAttack.Value));
+        }
+
         private void Start()
         {
             if (_zenAutoInjecter != null)
@@ -41,10 +46,10 @@ namespace Components.Combat
                 _combatMotor.SetInput(new CombatInput(isNormalAttack: true));
             }).AddTo(_disposables);
 
-            _inputSystemModel.MagicAttack.Where(flag => flag).Subscribe(flag =>
-            {
-                _combatMotor.SetInput(new CombatInput(isMagicAttack: true));
-            }).AddTo(_disposables);
+            // _inputSystemModel.MagicAttack.Where(flag => flag).Subscribe(flag =>
+            // {
+            //     _combatMotor.SetInput(new CombatInput(isMagicAttack: true));
+            // }).AddTo(_disposables);
         }
 
         void OnDestroy()

@@ -16,9 +16,27 @@ MonoBehaviour:
   - PlayableDirector: {fileID: 54327089736865923, guid: 42364dc8c3d87dd4d98500ec8e795109, type: 3}
     AttackType: 1
     Damage: 10
+  - PlayableDirector: {fileID: 54327089736865923, guid: 42364dc8c3d87dd4d98500ec8e795109, type: 3}
+    AttackType: 1
+    Damage: 10
+  - PlayableDirector: {fileID: 54327089736865923, guid: 42364dc8c3d87dd4d98500ec8e795109, type: 3}
+    AttackType: 1
+    Damage: 10
+  - PlayableDirector: {fileID: 54327089736865923, guid: 42364dc8c3d87dd4d98500ec8e795109, type: 3}
+    AttackType: 1
+    Damage: 10
+  - PlayableDirector: {fileID: 54327089736865923, guid: d5b81a515b6931345b3d348964f2c8a9, type: 3}
+    AttackType: 1
+    Damage: 15
+  - PlayableDirector: {fileID: 54327089736865923, guid: d5b81a515b6931345b3d348964f2c8a9, type: 3}
+    AttackType: 1
+    Damage: 15
+  - PlayableDirector: {fileID: 54327089736865923, guid: d5b81a515b6931345b3d348964f2c8a9, type: 3}
+    AttackType: 1
+    Damage: 15
   - PlayableDirector: {fileID: 54327089736865923, guid: d5b81a515b6931345b3d348964f2c8a9, type: 3}
     AttackType: 1
     Damage: 15
   - PlayableDirector: {fileID: 54327089736865923, guid: fb6811c9e9803a846a265633250484bf, type: 3}
     AttackType: 1
-    Damage: 25
+    Damage: 30

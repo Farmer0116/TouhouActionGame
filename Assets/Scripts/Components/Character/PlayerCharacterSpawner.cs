@@ -88,7 +88,7 @@ namespace Components.Character
                 Debug.LogError("キャラクターにPlayerCharacterInputRuntimeがアタッチされていません");
                 return;
             }
-            _spawningCameraModel.SetCurrentCamera(SpawnCharacterCamera(_playerCharacterCameraAsset, playerCharacterInput.RotateTarget, playerCharacterInput.LookTarget));
+            _spawningCameraModel.SetCurrentCamera(SpawnCharacterCamera(_playerCharacterCameraAsset, playerCharacterInput.CameraRotationTarget, playerCharacterInput.LookTarget));
         }
 
         private ICharacterModel CreateReimuModel(CharacterParam characterParam)

@@ -33,7 +33,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Sneak",
+                    "name": "LockOn",
                     "type": "Button",
                     "id": "cab546ff-da82-4e8e-bdb1-57b9182e4944",
                     "expectedControlType": "Button",
@@ -171,28 +171,6 @@
                 },
                 {
                     "name": "",
-                    "id": "775e1eb4-7422-42c1-83b9-c12ec9396649",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "Press(behavior=2)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Sneak",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "d7b7c4e1-e657-47b0-ae1a-1387b3d985c1",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "Press(behavior=2)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Run",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "39646190-a44a-44ee-b1be-0e4849c99bc2",
                     "path": "<Mouse>/rightButton",
                     "interactions": "Press(behavior=2)",
@@ -210,6 +188,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "NormalAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d7b7c4e1-e657-47b0-ae1a-1387b3d985c1",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Run",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "775e1eb4-7422-42c1-83b9-c12ec9396649",
+                    "path": "<Keyboard>/f",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LockOn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -278,7 +278,7 @@ MonoBehaviour:
   MaxStableRunMoveSpeed: 14
   StableMovementSharpness: 10
   OrientationSharpness: 10
-  OrientationMethod: 1
+  OrientationMethod: 0
   MaxAirMoveSpeed: 7
   MaxAirRunMoveSpeed: 14
   AirAccelerationSpeed: 50
@@ -296,7 +296,6 @@ MonoBehaviour:
   MeshRoot: {fileID: 0}
   CameraTarget: {fileID: 7717156629798457293}
   CrouchedCapsuleHeight: 1
-  CurrentVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &6881790898558161858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -352,9 +351,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NormalCombo: {fileID: 11400000, guid: a79f462a75dfcad48b7a3aa6aede53b2, type: 2}
-  MagicCombo: {fileID: 11400000, guid: 68fad5b9e14bfe049aed41b0f5af0723, type: 2}
+  MagicCombo: {fileID: 11400000, guid: 3ca32a118c496a9418ea7d8680cc6445, type: 2}
   NormalSpawnPoint: {fileID: 6390518192539471309}
   MagicSpawnPoint: {fileID: 7975531034725826610}
+  _normalAttackInstance: []
+  _magicAttackInstance: []
 --- !u!1 &8082070368705344367
 GameObject:
   m_ObjectHideFlags: 0

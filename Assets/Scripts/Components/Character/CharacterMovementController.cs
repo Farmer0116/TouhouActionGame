@@ -26,6 +26,7 @@ namespace Components.Character
         public bool CrouchDown;
         public bool CrouchUp;
         public bool IsRun;
+        public bool IsLockOn;
     }
 
     public struct AICharacterInputs
@@ -78,6 +79,7 @@ namespace Components.Character
 
         public CharacterState CurrentCharacterState { get; private set; }
 
+        // ローカル
         private Collider[] _probedColliders = new Collider[8];
         private RaycastHit[] _probedHits = new RaycastHit[8];
         private Vector3 _moveInputVector;
@@ -93,6 +95,7 @@ namespace Components.Character
         private bool _isCrouching = false;
         private int _keepJumpingCount = 0;
         private bool _isRun = false;
+        private bool _isLockOn = false;
         private Vector3 lastInnerNormal = Vector3.zero;
         private Vector3 lastOuterNormal = Vector3.zero;
 
@@ -161,6 +164,7 @@ namespace Components.Character
             Quaternion cameraPlanarRotation = Quaternion.LookRotation(cameraPlanarDirection, Motor.CharacterUp);
 
             _isRun = inputs.IsRun;
+            _isLockOn = inputs.IsLockOn;
 
             switch (CurrentCharacterState)
             {
@@ -169,14 +173,19 @@ namespace Components.Character
                         // Move and look inputs
                         _moveInputVector = cameraPlanarRotation * moveInputVector;
 
-                        switch (OrientationMethod)
+                        // ロックオン時はTowardsCameraと同様の計算
+                        if (_isLockOn) _lookInputVector = cameraPlanarDirection;
+                        else
                         {
-                            case OrientationMethod.TowardsCamera:
-                                _lookInputVector = cameraPlanarDirection;
-                                break;
-                            case OrientationMethod.TowardsMovement:
-                                _lookInputVector = _moveInputVector.normalized;
-                                break;
+                            switch (OrientationMethod)
+                            {
+                                case OrientationMethod.TowardsCamera:
+                                    _lookInputVector = cameraPlanarDirection;
+                                    break;
+                                case OrientationMethod.TowardsMovement:
+                                    _lookInputVector = _moveInputVector.normalized;
+                                    break;
+                            }
                         }
 
                         // Jumping input

@@ -9,6 +9,7 @@ namespace Cores.Models
         public IReadOnlyReactiveProperty<Vector2> Move => move;
         public IReadOnlyReactiveProperty<bool> Jump => jump;
         public IReadOnlyReactiveProperty<Vector2> Look => look;
+        public IReadOnlyReactiveProperty<bool> LockOn => lockOn;
         public IReadOnlyReactiveProperty<bool> LightAttack => lightAttack;
         public IReadOnlyReactiveProperty<bool> Sneak => sneak;
         public IReadOnlyReactiveProperty<bool> Run => run;
@@ -18,6 +19,7 @@ namespace Cores.Models
         private ReactiveProperty<Vector2> move;
         private ReactiveProperty<bool> jump;
         private ReactiveProperty<Vector2> look;
+        private ReactiveProperty<bool> lockOn;
         private ReactiveProperty<bool> lightAttack;
         private ReactiveProperty<bool> sneak;
         private ReactiveProperty<bool> run;
@@ -29,6 +31,7 @@ namespace Cores.Models
             move = new ReactiveProperty<Vector2>();
             jump = new ReactiveProperty<bool>();
             look = new ReactiveProperty<Vector2>();
+            lockOn = new ReactiveProperty<bool>();
             lightAttack = new ReactiveProperty<bool>();
             sneak = new ReactiveProperty<bool>();
             run = new ReactiveProperty<bool>();
@@ -47,6 +50,10 @@ namespace Cores.Models
         public void SetLook(Vector2 value)
         {
             look.Value = value;
+        }
+        public void SetLockOn(bool value)
+        {
+            lockOn.Value = value;
         }
         public void SetLightAttack(bool value)
         {
