@@ -7,7 +7,11 @@ namespace Utilities
 {
     public static class CharacterUtility
     {
+        public static string PlayerTag = "Player";
+        public static string EnemyTag = "Enemy";
+
         public static LayerMask PlayerLayer { get { return LayerMask.NameToLayer("Player"); } }
+        public static LayerMask EnemyLayer { get { return LayerMask.NameToLayer("Enemy"); } }
 
         public static GameObject SpawnCharacter(ControllerType controllerType, GameObject character, Vector3 position, Quaternion rotation)
         {
@@ -19,6 +23,7 @@ namespace Utilities
                     SetupPlayerCharacter(root, characterMovementController);
                     break;
                 case ControllerType.Enemy:
+                    SetupEnemyCharacter(root, characterMovementController);
                     break;
                 case ControllerType.Neutral:
                     break;
@@ -33,11 +38,21 @@ namespace Utilities
         /// </summary>
         private static void SetupPlayerCharacter(GameObject character, CharacterMovementController characterMovementController)
         {
+            character.tag = PlayerTag;
             character.layer = PlayerLayer;
 
             var input = character.AddComponent<PlayerCharacterInputRuntime>();
             var combat = character.AddComponent<PlayerCombatInputRuntime>();
             input.Initialize(characterMovementController);
+        }
+
+        /// <summary>
+        /// 敵キャラクターセットアップ
+        /// </summary>
+        private static void SetupEnemyCharacter(GameObject character, CharacterMovementController characterMovementController)
+        {
+            character.tag = EnemyTag;
+            character.layer = EnemyLayer;
         }
     }
 }

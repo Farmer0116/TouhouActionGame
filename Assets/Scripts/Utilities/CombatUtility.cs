@@ -8,7 +8,7 @@ namespace Utilities
     public static class CombatUtility
     {
         public static LayerMask PlayerToEnemyMask { get { return LayerMask.GetMask(_playerToEnemyMask); } }
-        private static string[] _playerToEnemyMask = { "Default" };
+        private static string[] _playerToEnemyMask = { "Default", "Enemy" };
 
         public static PlayableDirector SpawnAttack(PlayableDirector root, Vector3 position, Quaternion rotation, LayerMask mask, bool autoPlay)
         {
