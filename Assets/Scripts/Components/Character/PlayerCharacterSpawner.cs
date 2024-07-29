@@ -1,9 +1,5 @@
-using System;
-using Cinemachine;
-using Components.Camera;
 using Cores.Models;
 using Cores.Models.Interfaces;
-using ScriptableObjects.Camera;
 using ScriptableObjects.Character;
 using Types.Character;
 using UniRx;
@@ -18,12 +14,10 @@ namespace Components.Character
 
         // データ
         private CharacterParamAsset _characterParamAsset;
-        private PlayerCharacterCameraAsset _playerCharacterCameraAsset;
         // ファクトリー
         private ReimuModel.Factory _reimuFactory;
         // モデル
         private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
-        private ISpawningCameraModel _spawningCameraModel;
 
         private ICharacterModel _character;
         private CompositeDisposable _disposables = new CompositeDisposable();
@@ -32,17 +26,15 @@ namespace Components.Character
         public void Construct
         (
             CharacterParamAsset characterParamAsset,
-            PlayerCharacterCameraAsset playerCharacterCameraAsset,
+
             ReimuModel.Factory factory,
-            ISpawningPlayerCharacterModel spawningPlayerCharacterModel,
-            ISpawningCameraModel spawningCameraModel
+            ISpawningPlayerCharacterModel spawningPlayerCharacterModel
         )
         {
             _characterParamAsset = characterParamAsset;
-            _playerCharacterCameraAsset = playerCharacterCameraAsset;
+
             _reimuFactory = factory;
             _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
-            _spawningCameraModel = spawningCameraModel;
         }
 
         void Start()
@@ -81,15 +73,6 @@ namespace Components.Character
                 transform.position,
                 transform.rotation
             );
-
-            // カメラの生成
-            var playerCharacterCameraInputRuntime = _character.CharacterInstance.GetComponent<PlayerCharacterCameraInputRuntime>();
-            if (playerCharacterCameraInputRuntime == null)
-            {
-                Debug.LogError("キャラクターにPlayerCharacterInputRuntimeがアタッチされていません");
-                return;
-            }
-            _spawningCameraModel.SetCurrentCamera(SpawnCharacterCamera(_playerCharacterCameraAsset, playerCharacterCameraInputRuntime.CameraRotationTarget, playerCharacterCameraInputRuntime.CameraRotationTarget));
         }
 
         private ICharacterModel CreateReimuModel(CharacterParam characterParam)
@@ -102,14 +85,6 @@ namespace Components.Character
                 characterParam.Attack,
                 ControllerType.Player
             ));
-        }
-
-        private CinemachineVirtualCamera SpawnCharacterCamera(PlayerCharacterCameraAsset playerCharacterCameraAsset, Transform rotateTarget, Transform lookTarget)
-        {
-            var camera = GameObject.Instantiate(playerCharacterCameraAsset.TPSCamera);
-            camera.Follow = rotateTarget;
-            camera.LookAt = lookTarget;
-            return camera;
         }
 
         void Destroy()
