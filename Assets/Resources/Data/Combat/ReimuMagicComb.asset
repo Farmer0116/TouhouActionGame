@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fc50332ae11f09458063d4efd5b3149, type: 3}
+  m_Name: ReimuMagicComb
+  m_EditorClassIdentifier: 
+  AttackCombs:
+  - PlayableDirector: {fileID: 54327089736865923, guid: 42364dc8c3d87dd4d98500ec8e795109, type: 3}
+    AttackType: 1
+    Damage: 10
+  - PlayableDirector: {fileID: 54327089736865923, guid: 42364dc8c3d87dd4d98500ec8e795109, type: 3}
+    AttackType: 1
+    Damage: 10
+  - PlayableDirector: {fileID: 54327089736865923, guid: 42364dc8c3d87dd4d98500ec8e795109, type: 3}
+    AttackType: 1
+    Damage: 10
+  - PlayableDirector: {fileID: 54327089736865923, guid: 42364dc8c3d87dd4d98500ec8e795109, type: 3}
+    AttackType: 1
+    Damage: 10
+  - PlayableDirector: {fileID: 54327089736865923, guid: d5b81a515b6931345b3d348964f2c8a9, type: 3}
+    AttackType: 1
+    Damage: 15
+  - PlayableDirector: {fileID: 54327089736865923, guid: d5b81a515b6931345b3d348964f2c8a9, type: 3}
+    AttackType: 1
+    Damage: 15
+  - PlayableDirector: {fileID: 54327089736865923, guid: d5b81a515b6931345b3d348964f2c8a9, type: 3}
+    AttackType: 1
+    Damage: 15
+  - PlayableDirector: {fileID: 54327089736865923, guid: d5b81a515b6931345b3d348964f2c8a9, type: 3}
+    AttackType: 1
+    Damage: 15
+  - PlayableDirector: {fileID: 54327089736865923, guid: fb6811c9e9803a846a265633250484bf, type: 3}
+    AttackType: 1
+    Damage: 30

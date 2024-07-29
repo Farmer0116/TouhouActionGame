@@ -56,17 +56,16 @@ namespace Components.Character
             switch (characterParam.NameType)
             {
                 case CharacterNameType.Reimu:
-                    _character = CreateReimuFactory(characterParam);
+                    _character = CreateReimuModel(characterParam);
                     break;
                 default:
-                    _character = CreateReimuFactory(characterParam);
+                    _character = CreateReimuModel(characterParam);
                     break;
             }
 
             // スポーン時にSpawingModelに追加
             _character.OnSpawnSubject.Subscribe(root =>
             {
-                root.tag = "Player";
                 _spawningPlayerCharacterModel.Add(_character);
             }).AddTo(_disposables);
 
@@ -89,10 +88,10 @@ namespace Components.Character
                 Debug.LogError("キャラクターにPlayerCharacterInputRuntimeがアタッチされていません");
                 return;
             }
-            _spawningCameraModel.SetCurrentCamera(SpawnCharacterCamera(_playerCharacterCameraAsset, playerCharacterInput.RotateTarget, playerCharacterInput.LookTarget));
+            _spawningCameraModel.SetCurrentCamera(SpawnCharacterCamera(_playerCharacterCameraAsset, playerCharacterInput.CameraRotationTarget, playerCharacterInput.LookTarget));
         }
 
-        private ICharacterModel CreateReimuFactory(CharacterParam characterParam)
+        private ICharacterModel CreateReimuModel(CharacterParam characterParam)
         {
             return _reimuFactory.Create(new CharacterModelParam(
                 characterParam.Id,

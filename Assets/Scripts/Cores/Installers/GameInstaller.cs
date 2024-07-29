@@ -2,8 +2,6 @@ using UnityEngine;
 using Zenject;
 using Cores.Models;
 using Cores.Models.Interfaces;
-using Cores.UseCases;
-using Cores.UseCases.Interfaces;
 
 namespace Cores.Installers
 {
@@ -20,9 +18,6 @@ namespace Cores.Installers
             // {
             //     main.SetActive(false);
             // }
-
-            // UseCase
-            Container.Bind<IPlayerCharacterControlUseCase>().To<PlayerCharacterControlUseCase>().AsCached().IfNotBound();
 
             // Model
             Container.Bind<IInputSystemModel>().To<InputSystemModel>().AsCached().IfNotBound();
