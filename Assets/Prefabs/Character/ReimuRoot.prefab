@@ -221,6 +221,7 @@ GameObject:
   - component: {fileID: 7087727160688228555}
   - component: {fileID: 6881790898558161858}
   - component: {fileID: 9121845746348103571}
+  - component: {fileID: 6462749039790132009}
   m_Layer: 0
   m_Name: ReimuRoot
   m_TagString: Untagged
@@ -356,6 +357,19 @@ MonoBehaviour:
   MagicSpawnPoint: {fileID: 7975531034725826610}
   _normalAttackInstance: []
   _magicAttackInstance: []
+--- !u!114 &6462749039790132009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7322933704203835039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 299d7eb055196184a85ea5c515ea1591, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CameraTarget: {fileID: 7717156629798457293}
 --- !u!1 &8082070368705344367
 GameObject:
   m_ObjectHideFlags: 0

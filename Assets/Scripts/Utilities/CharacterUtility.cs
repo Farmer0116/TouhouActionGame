@@ -1,3 +1,4 @@
+using Components.Camera;
 using Components.Character;
 using Components.Combat;
 using Types.Character;
@@ -16,14 +17,13 @@ namespace Utilities
         public static GameObject SpawnCharacter(ControllerType controllerType, GameObject character, Vector3 position, Quaternion rotation)
         {
             var root = GameObject.Instantiate(character, position, rotation);
-            var characterMovementController = root.GetComponent<CharacterMovementController>();
             switch (controllerType)
             {
                 case ControllerType.Player:
-                    SetupPlayerCharacter(root, characterMovementController);
+                    SetupPlayerCharacter(root);
                     break;
                 case ControllerType.Enemy:
-                    SetupEnemyCharacter(root, characterMovementController);
+                    SetupEnemyCharacter(root);
                     break;
                 case ControllerType.Neutral:
                     break;
@@ -36,20 +36,25 @@ namespace Utilities
         /// <summary>
         /// プレーヤー向けのキャラクターセットアップ
         /// </summary>
-        private static void SetupPlayerCharacter(GameObject character, CharacterMovementController characterMovementController)
+        private static void SetupPlayerCharacter(GameObject character)
         {
             character.tag = PlayerTag;
             character.layer = PlayerLayer;
 
+            var characterMovementController = character.GetComponent<CharacterMovementController>();
+            var characterCameraController = character.GetComponent<CharacterCameraController>();
+
             var input = character.AddComponent<PlayerCharacterInputRuntime>();
             var combat = character.AddComponent<PlayerCombatInputRuntime>();
+            var camera = character.AddComponent<PlayerCharacterCameraInputRuntime>();
             input.Initialize(characterMovementController);
+            camera.Initialize(characterCameraController);
         }
 
         /// <summary>
         /// 敵キャラクターセットアップ
         /// </summary>
-        private static void SetupEnemyCharacter(GameObject character, CharacterMovementController characterMovementController)
+        private static void SetupEnemyCharacter(GameObject character)
         {
             character.tag = EnemyTag;
             character.layer = EnemyLayer;

@@ -11,6 +11,7 @@ namespace Cores.Models
         public ReactiveProperty<bool> IsMagicAttack { get; private set; } = new ReactiveProperty<bool>(false);
         public ReactiveProperty<bool> IsLockOn { get; private set; } = new ReactiveProperty<bool>(false);
         public ReactiveProperty<Transform> LockOnTarget { get; private set; } = new ReactiveProperty<Transform>();
+        public OrientationMethod OrientationMethod { get; set; } = OrientationMethod.TowardsCamera;
 
         public void Add(ICharacterModel characterModel)
         {

@@ -13,8 +13,15 @@ namespace Cores.Models.Interfaces
         ReactiveProperty<bool> IsMagicAttack { get; }
         ReactiveProperty<bool> IsLockOn { get; }
         ReactiveProperty<Transform> LockOnTarget { get; }
+        OrientationMethod OrientationMethod { get; set; }
 
         void Add(ICharacterModel characterModel);
         void Remove();
+    }
+
+    public enum OrientationMethod
+    {
+        TowardsCamera,
+        TowardsMovement,
     }
 }

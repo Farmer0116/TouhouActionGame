@@ -1,5 +1,6 @@
 using System;
 using Cinemachine;
+using Components.Camera;
 using Cores.Models;
 using Cores.Models.Interfaces;
 using ScriptableObjects.Camera;
@@ -82,13 +83,13 @@ namespace Components.Character
             );
 
             // カメラの生成
-            var playerCharacterInput = _character.CharacterInstance.GetComponent<PlayerCharacterInputRuntime>();
-            if (playerCharacterInput == null)
+            var playerCharacterCameraInputRuntime = _character.CharacterInstance.GetComponent<PlayerCharacterCameraInputRuntime>();
+            if (playerCharacterCameraInputRuntime == null)
             {
                 Debug.LogError("キャラクターにPlayerCharacterInputRuntimeがアタッチされていません");
                 return;
             }
-            _spawningCameraModel.SetCurrentCamera(SpawnCharacterCamera(_playerCharacterCameraAsset, playerCharacterInput.CameraRotationTarget, playerCharacterInput.LookTarget));
+            _spawningCameraModel.SetCurrentCamera(SpawnCharacterCamera(_playerCharacterCameraAsset, playerCharacterCameraInputRuntime.CameraRotationTarget, playerCharacterCameraInputRuntime.CameraRotationTarget));
         }
 
         private ICharacterModel CreateReimuModel(CharacterParam characterParam)
