@@ -27,8 +27,8 @@ namespace Components.Character
         private bool _isLockOn = false;
         private Transform _lockOnTarget;
 
-        private const float maxViewField = 89f;
-        private const float minViewField = -89f;
+        private const float _maxViewField = 89f;
+        private const float _minViewField = -89f;
         private const string _cameraRotationTargetName = "CameraRotationTarget";
         private const string _characterRotationTargetName = "CharacterRotationTarget";
 
@@ -98,7 +98,7 @@ namespace Components.Character
                     CameraRotationTarget.localPosition = LookTarget.position;
                     _lookCharacterVector.y += _inputSystemModel.Look.Value.x;
                     _lookCharacterVector.x += _inputSystemModel.Look.Value.y;
-                    _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, minViewField, maxViewField);
+                    _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, _minViewField, _maxViewField);
                     CameraRotationTarget.localRotation = Quaternion.Euler(new Vector3(_lookCharacterVector.x, _lookCharacterVector.y, 0));
 
                     CharacterRotationTarget.localPosition = LookTarget.position;
@@ -114,7 +114,7 @@ namespace Components.Character
                 CameraRotationTarget.localPosition = LookTarget.position;
                 _lookCharacterVector.y += _inputSystemModel.Look.Value.x;
                 _lookCharacterVector.x += _inputSystemModel.Look.Value.y;
-                _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, minViewField, maxViewField);
+                _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, _minViewField, _maxViewField);
                 CameraRotationTarget.localRotation = Quaternion.Euler(new Vector3(_lookCharacterVector.x, _lookCharacterVector.y, 0));
                 characterInputs.Rotation = CameraRotationTarget.rotation;
 
