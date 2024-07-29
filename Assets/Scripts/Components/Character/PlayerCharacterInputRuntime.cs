@@ -22,10 +22,9 @@ namespace Components.Character
         [SerializeField] private Transform _lookTarget;
 
         private IInputSystemModel _inputSystemModel;
+        private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
         private Vector3 _lookCharacterVector = Vector3.zero;
         private ZenAutoInjecter _zenAutoInjecter;
-        private bool _isLockOn = false;
-        private Transform _lockOnTarget;
 
         private const float _maxViewField = 89f;
         private const float _minViewField = -89f;
@@ -34,10 +33,12 @@ namespace Components.Character
 
         [Inject]
         private void construct(
-            IInputSystemModel inputSystemModel
+            IInputSystemModel inputSystemModel,
+            ISpawningPlayerCharacterModel spawningPlayerCharacterModel
         )
         {
             _inputSystemModel = inputSystemModel;
+            _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
         }
 
         public void Initialize(CharacterMovementController characterMovementController)
@@ -64,14 +65,6 @@ namespace Components.Character
                 Destroy(_zenAutoInjecter);
                 _zenAutoInjecter = null;
             }
-
-            _inputSystemModel.LockOn.Where(value => value).Subscribe(value =>
-            {
-                _isLockOn = !_isLockOn;
-                // todo: 取得する敵を選別
-                var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-                if (enemies.Count() > 0) _lockOnTarget = enemies[0].transform;
-            });
         }
 
         void Update()
@@ -83,12 +76,12 @@ namespace Components.Character
         {
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
-            if (_isLockOn && _lockOnTarget)
+            if (_spawningPlayerCharacterModel.IsLockOn.Value && _spawningPlayerCharacterModel.LockOnTarget.Value != null)
             {
                 if (CharacterMovementController.OrientationMethod == OrientationMethod.TowardsCamera)
                 {
                     CameraRotationTarget.localPosition = LookTarget.position;
-                    CameraRotationTarget.LookAt(_lockOnTarget);
+                    CameraRotationTarget.LookAt(_spawningPlayerCharacterModel.LockOnTarget.Value);
                     characterInputs.Rotation = CameraRotationTarget.rotation;
 
                     characterInputs.IsLockOn = true;
@@ -102,7 +95,7 @@ namespace Components.Character
                     CameraRotationTarget.localRotation = Quaternion.Euler(new Vector3(_lookCharacterVector.x, _lookCharacterVector.y, 0));
 
                     CharacterRotationTarget.localPosition = LookTarget.position;
-                    CharacterRotationTarget.LookAt(_lockOnTarget);
+                    CharacterRotationTarget.LookAt(_spawningPlayerCharacterModel.LockOnTarget.Value);
                     characterInputs.Rotation = CharacterRotationTarget.rotation;
 
                     characterInputs.IsLockOn = true;

@@ -1,4 +1,5 @@
 using UniRx;
+using UnityEngine;
 
 namespace Cores.Models.Interfaces
 {
@@ -7,7 +8,11 @@ namespace Cores.Models.Interfaces
     /// </summary>
     public interface ISpawningPlayerCharacterModel
     {
-        ReactiveProperty<ICharacterModel> CharacterModel { get; set; }
+        ReactiveProperty<ICharacterModel> CharacterModel { get; }
+        ReactiveProperty<bool> IsNormalAttack { get; }
+        ReactiveProperty<bool> IsMagicAttack { get; }
+        ReactiveProperty<bool> IsLockOn { get; }
+        ReactiveProperty<Transform> LockOnTarget { get; }
 
         void Add(ICharacterModel characterModel);
         void Remove();

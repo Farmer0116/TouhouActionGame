@@ -1,3 +1,4 @@
+using System.Linq;
 using Cores.Models.Interfaces;
 using UniRx;
 using UnityEngine;
@@ -9,15 +10,18 @@ namespace Components.Combat
     {
         private CombatMotor _combatMotor;
         private IInputSystemModel _inputSystemModel;
+        private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
         private ZenAutoInjecter _zenAutoInjecter;
         private CompositeDisposable _disposables = new CompositeDisposable();
 
         [Inject]
         private void construct(
-            IInputSystemModel inputSystemModel
+            IInputSystemModel inputSystemModel,
+            ISpawningPlayerCharacterModel spawningPlayerCharacterModel
         )
         {
             _inputSystemModel = inputSystemModel;
+            _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
             var injecter = GetComponent<ZenAutoInjecter>();
         }
 
@@ -30,7 +34,9 @@ namespace Components.Combat
 
         private void Update()
         {
+            // 魔法攻撃
             _combatMotor.SetInput(new CombatInput(isMagicAttack: _inputSystemModel.MagicAttack.Value));
+            _spawningPlayerCharacterModel.IsMagicAttack.Value = _inputSystemModel.MagicAttack.Value;
         }
 
         private void Start()
@@ -41,15 +47,27 @@ namespace Components.Combat
                 _zenAutoInjecter = null;
             }
 
-            _inputSystemModel.NormalAttack.Where(flag => flag).Subscribe(flag =>
+            // 通常攻撃
+            _inputSystemModel.NormalAttack.Subscribe(flag =>
             {
-                _combatMotor.SetInput(new CombatInput(isNormalAttack: true));
+                if (flag) _combatMotor.SetInput(new CombatInput(isNormalAttack: true));
+                _spawningPlayerCharacterModel.IsNormalAttack.Value = flag;
             }).AddTo(_disposables);
 
             // _inputSystemModel.MagicAttack.Where(flag => flag).Subscribe(flag =>
             // {
             //     _combatMotor.SetInput(new CombatInput(isMagicAttack: true));
             // }).AddTo(_disposables);
+
+            // ロックオン
+            _inputSystemModel.LockOn.Where(flag => flag).Subscribe(flag =>
+            {
+                // todo: 取得する敵を選別
+                var enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                if (enemies.Count() > 0) _spawningPlayerCharacterModel.LockOnTarget.Value = enemies[0].transform;
+
+                _spawningPlayerCharacterModel.IsLockOn.Value = !_spawningPlayerCharacterModel.IsLockOn.Value;
+            }).AddTo(_disposables);
         }
 
         void OnDestroy()
