@@ -15,7 +15,7 @@ namespace Components.Camera
         private PlayerCameraAsset _playerCameraAsset;
 
         private IInputSystemModel _inputSystemModel;
-        private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
+        private IPlayerCharacterModel _playerCharacterModel;
         private IPlayerCameraModel _playerCameraModel;
         private Vector3 _lookCharacterVector = Vector3.zero;
         private ZenAutoInjecter _zenAutoInjecter;
@@ -27,13 +27,13 @@ namespace Components.Camera
         [Inject]
         private void construct(
             IInputSystemModel inputSystemModel,
-            ISpawningPlayerCharacterModel spawningPlayerCharacterModel,
+            IPlayerCharacterModel playerCharacterModel,
             IPlayerCameraModel playerCameraModel,
             PlayerCameraAsset playerCameraAsset
         )
         {
             _inputSystemModel = inputSystemModel;
-            _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
+            _playerCharacterModel = playerCharacterModel;
             _playerCameraAsset = playerCameraAsset;
             _playerCameraModel = playerCameraModel;
         }
@@ -74,10 +74,10 @@ namespace Components.Camera
         {
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
-            if (_spawningPlayerCharacterModel.IsLockOn.Value && _spawningPlayerCharacterModel.LockOnTarget.Value != null)
+            if (_playerCharacterModel.IsLockOn.Value && _playerCharacterModel.LockOnTarget.Value != null)
             {
                 CameraRotationTarget.localPosition = Target.position;
-                CameraRotationTarget.LookAt(_spawningPlayerCharacterModel.LockOnTarget.Value);
+                CameraRotationTarget.LookAt(_playerCharacterModel.LockOnTarget.Value);
                 characterInputs.Rotation = CameraRotationTarget.rotation;
             }
             else

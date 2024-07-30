@@ -12,7 +12,7 @@ namespace Components.Character
         [SerializeField] private Transform _characterRotationTarget;
 
         private IInputSystemModel _inputSystemModel;
-        private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
+        private IPlayerCharacterModel _playerCharacterModel;
         private Vector3 _lookCharacterVector = Vector3.zero;
         private ZenAutoInjecter _zenAutoInjecter;
 
@@ -23,11 +23,11 @@ namespace Components.Character
         [Inject]
         private void construct(
             IInputSystemModel inputSystemModel,
-            ISpawningPlayerCharacterModel spawningPlayerCharacterModel
+            IPlayerCharacterModel playerCharacterModel
         )
         {
             _inputSystemModel = inputSystemModel;
-            _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
+            _playerCharacterModel = playerCharacterModel;
         }
 
         public void Initialize(CharacterMovementController characterMovementController)
@@ -55,15 +55,15 @@ namespace Components.Character
 
         void Update()
         {
-            if (_spawningPlayerCharacterModel.OrientationMethod.ToString() != CharacterMovementController.OrientationMethod.ToString())
+            if (_playerCharacterModel.OrientationMethod.ToString() != CharacterMovementController.OrientationMethod.ToString())
             {
                 switch (CharacterMovementController.OrientationMethod)
                 {
                     case OrientationMethod.TowardsCamera:
-                        _spawningPlayerCharacterModel.OrientationMethod = Cores.Models.Interfaces.OrientationMethod.TowardsCamera;
+                        _playerCharacterModel.OrientationMethod = Cores.Models.Interfaces.OrientationMethod.TowardsCamera;
                         break;
                     case OrientationMethod.TowardsMovement:
-                        _spawningPlayerCharacterModel.OrientationMethod = Cores.Models.Interfaces.OrientationMethod.TowardsMovement;
+                        _playerCharacterModel.OrientationMethod = Cores.Models.Interfaces.OrientationMethod.TowardsMovement;
                         break;
                 }
             }
@@ -74,10 +74,10 @@ namespace Components.Character
         {
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
-            if (_spawningPlayerCharacterModel.IsLockOn.Value && _spawningPlayerCharacterModel.LockOnTarget.Value != null)
+            if (_playerCharacterModel.IsLockOn.Value && _playerCharacterModel.LockOnTarget.Value != null)
             {
                 CharacterRotationTarget.localPosition = transform.position;
-                CharacterRotationTarget.LookAt(_spawningPlayerCharacterModel.LockOnTarget.Value);
+                CharacterRotationTarget.LookAt(_playerCharacterModel.LockOnTarget.Value);
                 characterInputs.Rotation = CharacterRotationTarget.rotation;
             }
             else

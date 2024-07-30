@@ -6,7 +6,7 @@ namespace Cores.Models.Interfaces
     /// <summary>
     /// 空間に生成されているプレーヤー向けのキャラクター
     /// </summary>
-    public interface ISpawningPlayerCharacterModel
+    public interface IPlayerCharacterModel
     {
         ReactiveProperty<ICharacterModel> CharacterModel { get; }
         ReactiveProperty<bool> IsNormalAttack { get; }

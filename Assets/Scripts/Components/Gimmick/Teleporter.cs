@@ -12,20 +12,20 @@ namespace Components.Gimmick
         public Teleporter TeleportTo;
         public UnityAction<CharacterMovementController> OnCharacterTeleport;
 
-        private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
+        private IPlayerCharacterModel _playerCharacterModel;
         private bool _isBeingTeleportedTo { get; set; }
 
         private CompositeDisposable _disposables = new CompositeDisposable();
 
         [Inject]
-        public void Construct(ISpawningPlayerCharacterModel spawningPlayerCharacterModel)
+        public void Construct(IPlayerCharacterModel playerCharacterModel)
         {
-            _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
+            _playerCharacterModel = playerCharacterModel;
         }
 
         void Start()
         {
-            _spawningPlayerCharacterModel.CharacterModel.Subscribe(character =>
+            _playerCharacterModel.CharacterModel.Subscribe(character =>
             {
 
             }).AddTo(_disposables);

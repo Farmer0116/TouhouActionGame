@@ -10,18 +10,18 @@ namespace Components.Combat
     {
         private CombatMotor _combatMotor;
         private IInputSystemModel _inputSystemModel;
-        private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
+        private IPlayerCharacterModel _playerCharacterModel;
         private ZenAutoInjecter _zenAutoInjecter;
         private CompositeDisposable _disposables = new CompositeDisposable();
 
         [Inject]
         private void construct(
             IInputSystemModel inputSystemModel,
-            ISpawningPlayerCharacterModel spawningPlayerCharacterModel
+            IPlayerCharacterModel playerCharacterModel
         )
         {
             _inputSystemModel = inputSystemModel;
-            _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
+            _playerCharacterModel = playerCharacterModel;
             var injecter = GetComponent<ZenAutoInjecter>();
         }
 
@@ -36,7 +36,7 @@ namespace Components.Combat
         {
             // 魔法攻撃
             _combatMotor.SetInput(new CombatInput(isMagicAttack: _inputSystemModel.MagicAttack.Value));
-            _spawningPlayerCharacterModel.IsMagicAttack.Value = _inputSystemModel.MagicAttack.Value;
+            _playerCharacterModel.IsMagicAttack.Value = _inputSystemModel.MagicAttack.Value;
         }
 
         private void Start()
@@ -51,7 +51,7 @@ namespace Components.Combat
             _inputSystemModel.NormalAttack.Subscribe(flag =>
             {
                 if (flag) _combatMotor.SetInput(new CombatInput(isNormalAttack: true));
-                _spawningPlayerCharacterModel.IsNormalAttack.Value = flag;
+                _playerCharacterModel.IsNormalAttack.Value = flag;
             }).AddTo(_disposables);
 
             // _inputSystemModel.MagicAttack.Where(flag => flag).Subscribe(flag =>
@@ -64,9 +64,9 @@ namespace Components.Combat
             {
                 // todo: 取得する敵を選別
                 var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-                if (enemies.Count() > 0) _spawningPlayerCharacterModel.LockOnTarget.Value = enemies[0].transform;
+                if (enemies.Count() > 0) _playerCharacterModel.LockOnTarget.Value = enemies[0].transform;
 
-                _spawningPlayerCharacterModel.IsLockOn.Value = !_spawningPlayerCharacterModel.IsLockOn.Value;
+                _playerCharacterModel.IsLockOn.Value = !_playerCharacterModel.IsLockOn.Value;
             }).AddTo(_disposables);
         }
 

@@ -17,7 +17,7 @@ namespace Components.Character
         // ファクトリー
         private ReimuModel.Factory _reimuFactory;
         // モデル
-        private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
+        private IPlayerCharacterModel _playerCharacterModel;
 
         private ICharacterModel _character;
         private CompositeDisposable _disposables = new CompositeDisposable();
@@ -28,13 +28,13 @@ namespace Components.Character
             CharacterParamAsset characterParamAsset,
 
             ReimuModel.Factory factory,
-            ISpawningPlayerCharacterModel spawningPlayerCharacterModel
+            IPlayerCharacterModel playerCharacterModel
         )
         {
             _characterParamAsset = characterParamAsset;
 
             _reimuFactory = factory;
-            _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
+            _playerCharacterModel = playerCharacterModel;
         }
 
         void Start()
@@ -59,13 +59,13 @@ namespace Components.Character
             // スポーン時にSpawingModelに追加
             _character.OnSpawnSubject.Subscribe(root =>
             {
-                _spawningPlayerCharacterModel.Set(_character);
+                _playerCharacterModel.Set(_character);
             }).AddTo(_disposables);
 
             // デスポーン時にSpawingModelから削除
             _character.OnDespawnSubject.Subscribe(root =>
             {
-                // _spawningPlayerCharacterModel.Remove();
+                // _playerCharacterModel.Remove();
             }).AddTo(_disposables);
 
             // キャラクタールート生成

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Cores.Models
 {
-    public class SpawningPlayerCharacterModel : ISpawningPlayerCharacterModel
+    public class PlayerCharacterModel : IPlayerCharacterModel
     {
         public ReactiveProperty<ICharacterModel> CharacterModel { get; private set; } = new ReactiveProperty<ICharacterModel>();
         public ReactiveProperty<bool> IsNormalAttack { get; private set; } = new ReactiveProperty<bool>(false);
