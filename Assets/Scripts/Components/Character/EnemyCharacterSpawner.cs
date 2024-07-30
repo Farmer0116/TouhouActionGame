@@ -1,8 +1,5 @@
-using System;
-using Cinemachine;
 using Cores.Models;
 using Cores.Models.Interfaces;
-using ScriptableObjects.Camera;
 using ScriptableObjects.Character;
 using Types.Character;
 using UniRx;
@@ -27,7 +24,6 @@ namespace Components.Character
         public void Construct
         (
             CharacterParamAsset characterParamAsset,
-            PlayerCharacterCameraAsset playerCharacterCameraAsset,
             ReimuModel.Factory factory
         )
         {

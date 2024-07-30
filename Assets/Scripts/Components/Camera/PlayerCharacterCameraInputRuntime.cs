@@ -12,7 +12,7 @@ namespace Components.Camera
         public Transform CameraRotationTarget { get; private set; }
         public Transform Target { get; private set; }
 
-        private PlayerCharacterCameraAsset _playerCharacterCameraAsset;
+        private PlayerCameraAsset _playerCameraAsset;
 
         private IInputSystemModel _inputSystemModel;
         private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
@@ -29,12 +29,12 @@ namespace Components.Camera
             IInputSystemModel inputSystemModel,
             ISpawningPlayerCharacterModel spawningPlayerCharacterModel,
             ISpawningCameraModel spawningCameraModel,
-                        PlayerCharacterCameraAsset playerCharacterCameraAsset
+            PlayerCameraAsset playerCharacterCameraAsset
         )
         {
             _inputSystemModel = inputSystemModel;
             _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
-            _playerCharacterCameraAsset = playerCharacterCameraAsset;
+            _playerCameraAsset = playerCharacterCameraAsset;
             _spawningCameraModel = spawningCameraModel;
         }
 
@@ -45,7 +45,7 @@ namespace Components.Camera
             else Debug.LogError("CharacterCameraControllerが設定されていません");
 
             // カメラの生成
-            _spawningCameraModel.SetCurrentCamera(CameraUtility.SpawnCharacterCamera(_playerCharacterCameraAsset.TPSCamera, CameraRotationTarget, CameraRotationTarget));
+            _spawningCameraModel.SetCurrentCamera(CameraUtility.SpawnCharacterCamera(_playerCameraAsset.TPSCamera, CameraRotationTarget, CameraRotationTarget));
         }
 
         void Awake()
