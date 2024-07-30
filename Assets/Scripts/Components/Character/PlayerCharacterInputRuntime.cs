@@ -13,7 +13,7 @@ namespace Components.Character
 
         private IInputSystemModel _inputSystemModel;
         private IPlayerCharacterModel _playerCharacterModel;
-        private Vector3 _lookCharacterVector = Vector3.zero;
+        private Vector3 _characterFrontVector = Vector3.zero;
         private ZenAutoInjecter _zenAutoInjecter;
 
         private const float _maxViewField = 89f;
@@ -76,17 +76,19 @@ namespace Components.Character
 
             if (_playerCharacterModel.IsLockOn && _playerCharacterModel.LockOnTarget != null)
             {
-                CharacterRotationTarget.localPosition = transform.position;
+                CharacterRotationTarget.position = CharacterMovementController.CameraTarget.position;
                 CharacterRotationTarget.LookAt(_playerCharacterModel.LockOnTarget);
                 characterInputs.Rotation = CharacterRotationTarget.rotation;
+
+                _characterFrontVector = CharacterRotationTarget.rotation.eulerAngles;
             }
             else
             {
-                CharacterRotationTarget.localPosition = transform.position;
-                _lookCharacterVector.y += _inputSystemModel.Look.Value.x;
-                _lookCharacterVector.x += _inputSystemModel.Look.Value.y;
-                _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, _minViewField, _maxViewField);
-                CharacterRotationTarget.localRotation = Quaternion.Euler(new Vector3(_lookCharacterVector.x, _lookCharacterVector.y, 0));
+                CharacterRotationTarget.position = CharacterMovementController.CameraTarget.position;
+                _characterFrontVector.y += _inputSystemModel.Look.Value.x;
+                _characterFrontVector.x += _inputSystemModel.Look.Value.y;
+                _characterFrontVector.x = Mathf.Clamp(_characterFrontVector.x, _minViewField, _maxViewField);
+                CharacterRotationTarget.rotation = Quaternion.Euler(new Vector3(_characterFrontVector.x, _characterFrontVector.y, 0));
                 characterInputs.Rotation = CharacterRotationTarget.rotation;
             }
 

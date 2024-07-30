@@ -13,7 +13,6 @@ namespace Components.Camera
         private IInputSystemModel _inputSystemModel;
         private IPlayerCharacterModel _playerCharacterModel;
         private IPlayerCameraModel _playerCameraModel;
-        private Vector3 _lookCharacterVector = Vector3.zero;
         private ZenAutoInjecter _zenAutoInjecter;
         private Transform _cameraOffset;
 
@@ -62,8 +61,14 @@ namespace Components.Camera
             // ロックオン
             _playerCharacterModel.OnChangeIsLockOn.Subscribe(value =>
             {
-                if (value) _playerCameraModel.SwitchCamera(PlayerCameraType.TPSLockOn);
-                else _playerCameraModel.SwitchCamera(PlayerCameraType.TPS);
+                if (value)
+                {
+                    _playerCameraModel.SwitchCamera(PlayerCameraType.TPSLockOn);
+                }
+                else
+                {
+                    _playerCameraModel.SwitchCamera(PlayerCameraType.TPS);
+                }
             }).AddTo(disposables);
         }
 
@@ -76,10 +81,13 @@ namespace Components.Camera
         {
             // TPS
             TPSCameraTarget.position = _cameraOffset.position;
-            TPSCameraTarget.rotation = _playerCharacterModel.CharacterRotation;
+            if (!_playerCharacterModel.IsLockOn)
+            {
+                TPSCameraTarget.rotation = _playerCharacterModel.CharacterRotation;
+            }
 
             // TPSLockOn
-            TPSLockOnCameraTarget.localPosition = _cameraOffset.position;
+            TPSLockOnCameraTarget.position = _cameraOffset.position;
             TPSLockOnCameraTarget.LookAt(_playerCharacterModel.LockOnTarget);
         }
 
