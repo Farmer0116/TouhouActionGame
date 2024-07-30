@@ -31,6 +31,8 @@ namespace Components.Combat
         public Transform NormalSpawnPoint;
         public Transform MagicSpawnPoint;
 
+        public Transform Target;
+
         public IReadOnlyReactiveProperty<bool> OnNormalAttack => _onNormalAttack;
         public IReadOnlyReactiveProperty<bool> OnMagicAttack => _onMagicAttack;
         private ReactiveProperty<bool> _onNormalAttack = new ReactiveProperty<bool>();

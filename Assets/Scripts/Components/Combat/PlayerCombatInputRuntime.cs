@@ -64,7 +64,7 @@ namespace Components.Combat
             {
                 // todo: 取得する敵を選別
                 var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-                if (enemies.Count() > 0) _playerCharacterModel.LockOnTarget = enemies[0].transform;
+                if (enemies.Count() > 0) _playerCharacterModel.LockOnTarget = enemies[0].GetComponent<CombatMotor>().Target;
 
                 _playerCharacterModel.IsLockOn = !_playerCharacterModel.IsLockOn;
             }).AddTo(_disposables);

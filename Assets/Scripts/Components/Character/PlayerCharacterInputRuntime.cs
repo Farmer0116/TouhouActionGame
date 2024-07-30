@@ -76,7 +76,7 @@ namespace Components.Character
 
             if (_playerCharacterModel.IsLockOn && _playerCharacterModel.LockOnTarget != null)
             {
-                CharacterRotationTarget.position = CharacterMovementController.CameraTarget.position;
+                CharacterRotationTarget.position = CharacterMovementController.RotationTargetOffset.position;
                 CharacterRotationTarget.LookAt(_playerCharacterModel.LockOnTarget);
                 characterInputs.Rotation = CharacterRotationTarget.rotation;
 
@@ -84,7 +84,7 @@ namespace Components.Character
             }
             else
             {
-                CharacterRotationTarget.position = CharacterMovementController.CameraTarget.position;
+                CharacterRotationTarget.position = CharacterMovementController.RotationTargetOffset.position;
                 _characterFrontVector.y += _inputSystemModel.Look.Value.x;
                 _characterFrontVector.x += _inputSystemModel.Look.Value.y;
                 _characterFrontVector.x = Mathf.Clamp(_characterFrontVector.x, _minViewField, _maxViewField);
