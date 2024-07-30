@@ -59,7 +59,7 @@ namespace Components.Character
             // スポーン時にSpawingModelに追加
             _character.OnSpawnSubject.Subscribe(root =>
             {
-                _spawningPlayerCharacterModel.Add(_character);
+                _spawningPlayerCharacterModel.Set(_character);
             }).AddTo(_disposables);
 
             // デスポーン時にSpawingModelから削除

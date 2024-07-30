@@ -15,7 +15,7 @@ namespace Cores.Models.Interfaces
         ReactiveProperty<Transform> LockOnTarget { get; }
         OrientationMethod OrientationMethod { get; set; }
 
-        void Add(ICharacterModel characterModel);
+        void Set(ICharacterModel characterModel);
         void Remove();
     }
 

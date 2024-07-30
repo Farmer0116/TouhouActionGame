@@ -13,7 +13,7 @@ namespace Cores.Models
         public ReactiveProperty<Transform> LockOnTarget { get; private set; } = new ReactiveProperty<Transform>();
         public OrientationMethod OrientationMethod { get; set; } = OrientationMethod.TowardsCamera;
 
-        public void Add(ICharacterModel characterModel)
+        public void Set(ICharacterModel characterModel)
         {
             CharacterModel.Value = characterModel;
             if (CharacterModel.Value != null)
