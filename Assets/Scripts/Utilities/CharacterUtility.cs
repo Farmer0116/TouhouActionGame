@@ -46,7 +46,7 @@ namespace Utilities
 
             var input = character.AddComponent<PlayerCharacterInputRuntime>();
             var combat = character.AddComponent<PlayerCombatInputRuntime>();
-            var camera = character.AddComponent<PlayerCharacterCameraInputRuntime>();
+            var camera = character.AddComponent<PlayerCameraInputRuntime>();
             input.Initialize(characterMovementController);
             camera.Initialize(characterCameraController);
         }

@@ -7,7 +7,7 @@ using ScriptableObjects.Camera;
 
 namespace Components.Camera
 {
-    public class PlayerCharacterCameraInputRuntime : MonoBehaviour
+    public class PlayerCameraInputRuntime : MonoBehaviour
     {
         public Transform CameraRotationTarget { get; private set; }
         public Transform Target { get; private set; }
@@ -16,7 +16,7 @@ namespace Components.Camera
 
         private IInputSystemModel _inputSystemModel;
         private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
-        private ISpawningCameraModel _spawningCameraModel;
+        private IPlayerCameraModel _playerCameraModel;
         private Vector3 _lookCharacterVector = Vector3.zero;
         private ZenAutoInjecter _zenAutoInjecter;
 
@@ -28,14 +28,14 @@ namespace Components.Camera
         private void construct(
             IInputSystemModel inputSystemModel,
             ISpawningPlayerCharacterModel spawningPlayerCharacterModel,
-            ISpawningCameraModel spawningCameraModel,
-            PlayerCameraAsset playerCharacterCameraAsset
+            IPlayerCameraModel playerCameraModel,
+            PlayerCameraAsset playerCameraAsset
         )
         {
             _inputSystemModel = inputSystemModel;
             _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
-            _playerCameraAsset = playerCharacterCameraAsset;
-            _spawningCameraModel = spawningCameraModel;
+            _playerCameraAsset = playerCameraAsset;
+            _playerCameraModel = playerCameraModel;
         }
 
         public void Initialize(CharacterCameraController characterCameraController)
@@ -45,7 +45,7 @@ namespace Components.Camera
             else Debug.LogError("CharacterCameraControllerが設定されていません");
 
             // カメラの生成
-            _spawningCameraModel.SetCurrentCamera(CameraUtility.SpawnCharacterCamera(_playerCameraAsset.TPSCamera, CameraRotationTarget, CameraRotationTarget));
+            _playerCameraModel.SetCurrentCamera(CameraUtility.SpawnCharacterCamera(_playerCameraAsset.TPSCamera, CameraRotationTarget, CameraRotationTarget));
         }
 
         void Awake()

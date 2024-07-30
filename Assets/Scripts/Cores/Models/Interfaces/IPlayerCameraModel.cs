@@ -1,10 +1,9 @@
 using Cinemachine;
 using UniRx;
-using UnityEngine;
 
 namespace Cores.Models.Interfaces
 {
-    public interface ISpawningCameraModel
+    public interface IPlayerCameraModel
     {
         CinemachineVirtualCamera CurrentCinemachineVirtualCamera { get; }
 

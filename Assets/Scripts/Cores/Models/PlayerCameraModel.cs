@@ -4,7 +4,7 @@ using UniRx;
 
 namespace Cores.Models
 {
-    public class SpawningCameraModel : ISpawningCameraModel
+    public class PlayerCameraModel : IPlayerCameraModel
     {
         public CinemachineVirtualCamera CurrentCinemachineVirtualCamera { get { return _currentCinemachineVirtualCamera; } }
         private CinemachineVirtualCamera _currentCinemachineVirtualCamera;
@@ -12,7 +12,7 @@ namespace Cores.Models
         public Subject<CinemachineVirtualCamera> OnChangeVirtualCamera => _onChangeVirtualCamera;
         private Subject<CinemachineVirtualCamera> _onChangeVirtualCamera = new Subject<CinemachineVirtualCamera>();
 
-        public SpawningCameraModel() { }
+        public PlayerCameraModel() { }
 
         public void SetCurrentCamera(CinemachineVirtualCamera cinemachineVirtualCamera)
         {
