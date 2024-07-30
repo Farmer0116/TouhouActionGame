@@ -47,8 +47,6 @@ namespace Cores.Models
             Debug.Log($"{_characterModelParam.Name}を{position}に{rotation}を向いて生成します");
 #endif
             _characterInstance = CharacterUtility.SpawnCharacter(_characterModelParam.ControllerType, _characterModelParam.Model, position, rotation);
-            // _characterInstance = await Spawn(id, position, rotation, scale);
-            // _characterInstance.AddComponent<AudioSource>();
             OnSpawnSubject.OnNext(_characterInstance);
             return _characterInstance;
         }

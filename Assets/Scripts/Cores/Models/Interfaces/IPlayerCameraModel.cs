@@ -1,5 +1,5 @@
 using Cinemachine;
-using UniRx;
+using UnityEngine;
 
 namespace Cores.Models.Interfaces
 {
@@ -7,8 +7,7 @@ namespace Cores.Models.Interfaces
     {
         CinemachineVirtualCamera CurrentCinemachineVirtualCamera { get; }
 
-        Subject<CinemachineVirtualCamera> OnChangeVirtualCamera { get; }
-
+        CinemachineVirtualCamera SpawnTPSCamera(Transform rotationTarget, Transform lookTarget);
         void SetCurrentCamera(CinemachineVirtualCamera cinemachineVirtualCamera);
     }
 }

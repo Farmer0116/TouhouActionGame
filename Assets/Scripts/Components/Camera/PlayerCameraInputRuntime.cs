@@ -10,9 +10,7 @@ namespace Components.Camera
     public class PlayerCameraInputRuntime : MonoBehaviour
     {
         public Transform CameraRotationTarget { get; private set; }
-        public Transform Target { get; private set; }
-
-        private PlayerCameraAsset _playerCameraAsset;
+        public Transform BaseTransform { get; private set; }
 
         private IInputSystemModel _inputSystemModel;
         private IPlayerCharacterModel _playerCharacterModel;
@@ -28,24 +26,23 @@ namespace Components.Camera
         private void construct(
             IInputSystemModel inputSystemModel,
             IPlayerCharacterModel playerCharacterModel,
-            IPlayerCameraModel playerCameraModel,
-            PlayerCameraAsset playerCameraAsset
+            IPlayerCameraModel playerCameraModel
         )
         {
             _inputSystemModel = inputSystemModel;
             _playerCharacterModel = playerCharacterModel;
-            _playerCameraAsset = playerCameraAsset;
             _playerCameraModel = playerCameraModel;
         }
 
         public void Initialize(CharacterCameraController characterCameraController)
         {
-            CameraRotationTarget = new GameObject(_cameraRotationTargetName).transform;
-            if (characterCameraController.CameraTarget != null) Target = characterCameraController.CameraTarget;
+            if (characterCameraController.CameraTarget != null) BaseTransform = characterCameraController.CameraTarget;
             else Debug.LogError("CharacterCameraControllerが設定されていません");
 
             // カメラの生成
-            _playerCameraModel.SetCurrentCamera(CameraUtility.SpawnCharacterCamera(_playerCameraAsset.TPSCamera, CameraRotationTarget, CameraRotationTarget));
+            CameraRotationTarget = new GameObject(_cameraRotationTargetName).transform;
+            var vc = _playerCameraModel.SpawnTPSCamera(CameraRotationTarget, CameraRotationTarget);
+            _playerCameraModel.SetCurrentCamera(vc);
         }
 
         void Awake()
@@ -67,23 +64,23 @@ namespace Components.Camera
 
         void Update()
         {
-            HandleCharacterInput();
+            HandleCameraInput();
         }
 
-        private void HandleCharacterInput()
+        private void HandleCameraInput()
         {
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
             if (_playerCharacterModel.IsLockOn.Value && _playerCharacterModel.LockOnTarget.Value != null)
             {
-                CameraRotationTarget.localPosition = Target.position;
+                CameraRotationTarget.localPosition = BaseTransform.position;
                 CameraRotationTarget.LookAt(_playerCharacterModel.LockOnTarget.Value);
                 characterInputs.Rotation = CameraRotationTarget.rotation;
             }
             else
             {
                 // 回転
-                CameraRotationTarget.localPosition = Target.position;
+                CameraRotationTarget.localPosition = BaseTransform.position;
                 _lookCharacterVector.y += _inputSystemModel.Look.Value.x;
                 _lookCharacterVector.x += _inputSystemModel.Look.Value.y;
                 _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, _minViewField, _maxViewField);

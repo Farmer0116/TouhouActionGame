@@ -1,22 +1,34 @@
 using Cinemachine;
 using Cores.Models.Interfaces;
+using ScriptableObjects.Camera;
 using UniRx;
+using UnityEngine;
+using Utilities;
 
 namespace Cores.Models
 {
     public class PlayerCameraModel : IPlayerCameraModel
     {
-        public CinemachineVirtualCamera CurrentCinemachineVirtualCamera { get { return _currentCinemachineVirtualCamera; } }
-        private CinemachineVirtualCamera _currentCinemachineVirtualCamera;
+        public CinemachineVirtualCamera CurrentCinemachineVirtualCamera { get; private set; }
 
-        public Subject<CinemachineVirtualCamera> OnChangeVirtualCamera => _onChangeVirtualCamera;
-        private Subject<CinemachineVirtualCamera> _onChangeVirtualCamera = new Subject<CinemachineVirtualCamera>();
+        private PlayerCameraAsset _playerCameraAsset;
 
-        public PlayerCameraModel() { }
+        public PlayerCameraModel
+        (
+            PlayerCameraAsset playerCameraAsset
+        )
+        {
+            _playerCameraAsset = playerCameraAsset;
+        }
+
+        public CinemachineVirtualCamera SpawnTPSCamera(Transform rotationTarget, Transform lookTarget)
+        {
+            return CameraUtility.SpawnCharacterCamera(_playerCameraAsset.TPSCamera, rotationTarget, lookTarget);
+        }
 
         public void SetCurrentCamera(CinemachineVirtualCamera cinemachineVirtualCamera)
         {
-            _currentCinemachineVirtualCamera = cinemachineVirtualCamera;
+            CurrentCinemachineVirtualCamera = cinemachineVirtualCamera;
         }
     }
 }
