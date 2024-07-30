@@ -1,23 +1,26 @@
 using UnityEngine;
 using Zenject;
 using Cores.Models.Interfaces;
+using UniRx;
 
 namespace Components.Camera
 {
     public class PlayerCameraInputRuntime : MonoBehaviour
     {
-        public Transform CameraRotationTarget { get; private set; }
-        public Transform BaseTransform { get; private set; }
+        public Transform TPSCameraTarget { get; private set; }
+        public Transform TPSLockOnCameraTarget { get; private set; }
 
         private IInputSystemModel _inputSystemModel;
         private IPlayerCharacterModel _playerCharacterModel;
         private IPlayerCameraModel _playerCameraModel;
         private Vector3 _lookCharacterVector = Vector3.zero;
         private ZenAutoInjecter _zenAutoInjecter;
+        private Transform _cameraOffset;
 
-        private const float _maxViewField = 89f;
-        private const float _minViewField = -89f;
-        private const string _cameraRotationTargetName = "CameraRotationTarget";
+        private const string _tpsCameraTargetName = "TPSCameraTarget";
+        private const string _tpsLockOnCameraTargetName = "TPSLockOnCameraTarget";
+
+        private CompositeDisposable disposables = new CompositeDisposable();
 
         [Inject]
         private void construct(
@@ -33,9 +36,8 @@ namespace Components.Camera
 
         public void Initialize(CharacterCameraController characterCameraController)
         {
-            if (characterCameraController.CameraTarget != null) BaseTransform = characterCameraController.CameraTarget;
-            else Debug.LogError("CharacterCameraControllerが設定されていません");
-            CameraRotationTarget = new GameObject(_cameraRotationTargetName).transform;
+            if (characterCameraController.CameraOffset == null) Debug.LogError("CharacterCameraControllerが設定されていません");
+            else _cameraOffset = characterCameraController.CameraOffset;
         }
 
         void Awake()
@@ -44,6 +46,9 @@ namespace Components.Camera
             {
                 _zenAutoInjecter = gameObject.AddComponent<ZenAutoInjecter>();
             }
+
+            TPSCameraTarget = new GameObject(_tpsCameraTargetName).transform;
+            TPSLockOnCameraTarget = new GameObject(_tpsLockOnCameraTargetName).transform;
         }
 
         void Start()
@@ -53,6 +58,13 @@ namespace Components.Camera
                 Destroy(_zenAutoInjecter);
                 _zenAutoInjecter = null;
             }
+
+            // ロックオン
+            _playerCharacterModel.OnChangeIsLockOn.Subscribe(value =>
+            {
+                if (value) _playerCameraModel.SwitchCamera(PlayerCameraType.TPSLockOn);
+                else _playerCameraModel.SwitchCamera(PlayerCameraType.TPS);
+            }).AddTo(disposables);
         }
 
         void Update()
@@ -62,23 +74,18 @@ namespace Components.Camera
 
         private void HandleCameraInput()
         {
-            Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
+            // TPS
+            TPSCameraTarget.position = _cameraOffset.position;
+            TPSCameraTarget.rotation = _playerCharacterModel.CharacterRotation;
 
-            if (_playerCharacterModel.IsLockOn && _playerCharacterModel.LockOnTarget != null)
-            {
-                CameraRotationTarget.localPosition = BaseTransform.position;
-                CameraRotationTarget.LookAt(_playerCharacterModel.LockOnTarget);
-                characterInputs.Rotation = CameraRotationTarget.rotation;
-            }
-            else
-            {
-                // 回転
-                CameraRotationTarget.localPosition = BaseTransform.position;
-                _lookCharacterVector.y += _inputSystemModel.Look.Value.x;
-                _lookCharacterVector.x += _inputSystemModel.Look.Value.y;
-                _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, _minViewField, _maxViewField);
-                CameraRotationTarget.localRotation = Quaternion.Euler(new Vector3(_lookCharacterVector.x, _lookCharacterVector.y, 0));
-            }
+            // TPSLockOn
+            TPSLockOnCameraTarget.localPosition = _cameraOffset.position;
+            TPSLockOnCameraTarget.LookAt(_playerCharacterModel.LockOnTarget);
+        }
+
+        void OnDestroy()
+        {
+            disposables.Dispose();
         }
     }
 }

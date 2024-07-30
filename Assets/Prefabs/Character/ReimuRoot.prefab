@@ -73,7 +73,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7717156629798457293}
   m_Layer: 0
-  m_Name: CameraTarget
+  m_Name: CameraOffset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -369,7 +369,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 299d7eb055196184a85ea5c515ea1591, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CameraTarget: {fileID: 7717156629798457293}
+  CameraOffset: {fileID: 7717156629798457293}
 --- !u!1 &8082070368705344367
 GameObject:
   m_ObjectHideFlags: 0

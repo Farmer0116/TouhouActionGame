@@ -4,6 +4,6 @@ namespace Components.Camera
 {
     public class CharacterCameraController : MonoBehaviour
     {
-        public Transform CameraTarget;
+        public Transform CameraOffset;
     }
 }

@@ -6,18 +6,22 @@ namespace Utilities
 {
     public static class CameraUtility
     {
-        public static CinemachineVirtualCamera SpawnPlayerCharacterCamera(GameObject character, CinemachineVirtualCamera virtualCamera)
+        public static (CinemachineVirtualCamera tps, CinemachineVirtualCamera tpsLockOn) SpawnALLCameras(GameObject character, CinemachineVirtualCamera tpsCamera, CinemachineVirtualCamera tpsLockOnCamera)
         {
-            var camera = GameObject.Instantiate(virtualCamera);
+            var tps = GameObject.Instantiate(tpsCamera);
+            var tpsLockOn = GameObject.Instantiate(tpsLockOnCamera);
 
             var characterCameraController = character.GetComponent<CharacterCameraController>();
 
             var playerCameraInputRuntime = character.AddComponent<PlayerCameraInputRuntime>();
             playerCameraInputRuntime.Initialize(characterCameraController);
 
-            camera.Follow = playerCameraInputRuntime.CameraRotationTarget;
-            camera.LookAt = playerCameraInputRuntime.CameraRotationTarget;
-            return camera;
+            tps.Follow = playerCameraInputRuntime.TPSCameraTarget;
+            tps.LookAt = playerCameraInputRuntime.TPSCameraTarget;
+
+            tpsLockOn.Follow = playerCameraInputRuntime.TPSLockOnCameraTarget;
+            tpsLockOn.LookAt = playerCameraInputRuntime.TPSLockOnCameraTarget;
+            return (tps, tpsLockOn);
         }
     }
 }

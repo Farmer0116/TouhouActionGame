@@ -90,6 +90,9 @@ namespace Components.Character
                 characterInputs.Rotation = CharacterRotationTarget.rotation;
             }
 
+            // モデルに回転情報を共有
+            _playerCharacterModel.CharacterRotation = CharacterRotationTarget.rotation;
+
             // characterInputsへの代入
             characterInputs.MoveAxisForward = _inputSystemModel.Move.Value.y;
             characterInputs.MoveAxisRight = _inputSystemModel.Move.Value.x;

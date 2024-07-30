@@ -60,9 +60,11 @@ namespace Components.Character
             // スポーンイベント
             _character.OnSpawnSubject.Subscribe(root =>
             {
+                // PlayerModelに格納
                 _playerCharacterModel.CharacterModel = _character;
-                var vc = _playerCameraModel.SpawnTPSCamera(root);
-                _playerCameraModel.SetCurrentCamera(vc);
+                // カメラ生成
+                var cameras = _playerCameraModel.SpawnAllCameras(root);
+                _playerCameraModel.SetCurrentCamera(cameras.tps);
             }).AddTo(_disposables);
 
             // デスポーンイベント
