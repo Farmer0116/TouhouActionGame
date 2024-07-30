@@ -25,10 +25,6 @@ namespace Components.Gimmick
 
         void Start()
         {
-            _playerCharacterModel.CharacterModel.Subscribe(character =>
-            {
-
-            }).AddTo(_disposables);
         }
 
         private void OnTriggerEnter(Collider other)

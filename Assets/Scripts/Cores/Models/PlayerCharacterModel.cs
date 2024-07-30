@@ -1,37 +1,15 @@
 using Cores.Models.Interfaces;
-using UniRx;
 using UnityEngine;
 
 namespace Cores.Models
 {
     public class PlayerCharacterModel : IPlayerCharacterModel
     {
-        public ReactiveProperty<ICharacterModel> CharacterModel { get; private set; } = new ReactiveProperty<ICharacterModel>();
-        public ReactiveProperty<bool> IsNormalAttack { get; private set; } = new ReactiveProperty<bool>(false);
-        public ReactiveProperty<bool> IsMagicAttack { get; private set; } = new ReactiveProperty<bool>(false);
-        public ReactiveProperty<bool> IsLockOn { get; private set; } = new ReactiveProperty<bool>(false);
-        public ReactiveProperty<Transform> LockOnTarget { get; private set; } = new ReactiveProperty<Transform>();
+        public ICharacterModel CharacterModel { get; set; }
+        public bool IsNormalAttack { get; set; }
+        public bool IsMagicAttack { get; set; }
+        public bool IsLockOn { get; set; }
+        public Transform LockOnTarget { get; set; }
         public OrientationMethod OrientationMethod { get; set; } = OrientationMethod.TowardsCamera;
-
-        public void Set(ICharacterModel characterModel)
-        {
-            CharacterModel.Value = characterModel;
-            if (CharacterModel.Value != null)
-            {
-                Debug.LogWarning("すでにキャラクターを生成済みです。そのため上書きを実行しました。");
-            }
-        }
-
-        public void Remove()
-        {
-            if (CharacterModel.Value != null)
-            {
-                CharacterModel.Value = null;
-            }
-            else
-            {
-                Debug.LogWarning("削除対象となるキャラクターが格納されていません。");
-            }
-        }
     }
 }

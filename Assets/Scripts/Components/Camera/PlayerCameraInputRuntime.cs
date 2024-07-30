@@ -1,9 +1,6 @@
 using UnityEngine;
 using Zenject;
 using Cores.Models.Interfaces;
-using Cinemachine;
-using Utilities;
-using ScriptableObjects.Camera;
 
 namespace Components.Camera
 {
@@ -38,11 +35,7 @@ namespace Components.Camera
         {
             if (characterCameraController.CameraTarget != null) BaseTransform = characterCameraController.CameraTarget;
             else Debug.LogError("CharacterCameraControllerが設定されていません");
-
-            // カメラの生成
             CameraRotationTarget = new GameObject(_cameraRotationTargetName).transform;
-            var vc = _playerCameraModel.SpawnTPSCamera(CameraRotationTarget, CameraRotationTarget);
-            _playerCameraModel.SetCurrentCamera(vc);
         }
 
         void Awake()
@@ -71,10 +64,10 @@ namespace Components.Camera
         {
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
-            if (_playerCharacterModel.IsLockOn.Value && _playerCharacterModel.LockOnTarget.Value != null)
+            if (_playerCharacterModel.IsLockOn && _playerCharacterModel.LockOnTarget != null)
             {
                 CameraRotationTarget.localPosition = BaseTransform.position;
-                CameraRotationTarget.LookAt(_playerCharacterModel.LockOnTarget.Value);
+                CameraRotationTarget.LookAt(_playerCharacterModel.LockOnTarget);
                 characterInputs.Rotation = CameraRotationTarget.rotation;
             }
             else

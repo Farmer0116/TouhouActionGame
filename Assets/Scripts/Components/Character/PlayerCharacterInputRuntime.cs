@@ -74,10 +74,10 @@ namespace Components.Character
         {
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
-            if (_playerCharacterModel.IsLockOn.Value && _playerCharacterModel.LockOnTarget.Value != null)
+            if (_playerCharacterModel.IsLockOn && _playerCharacterModel.LockOnTarget != null)
             {
                 CharacterRotationTarget.localPosition = transform.position;
-                CharacterRotationTarget.LookAt(_playerCharacterModel.LockOnTarget.Value);
+                CharacterRotationTarget.LookAt(_playerCharacterModel.LockOnTarget);
                 characterInputs.Rotation = CharacterRotationTarget.rotation;
             }
             else

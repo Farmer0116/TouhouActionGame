@@ -18,6 +18,7 @@ namespace Components.Character
         private ReimuModel.Factory _reimuFactory;
         // モデル
         private IPlayerCharacterModel _playerCharacterModel;
+        private IPlayerCameraModel _playerCameraModel;
 
         private ICharacterModel _character;
         private CompositeDisposable _disposables = new CompositeDisposable();
@@ -26,15 +27,15 @@ namespace Components.Character
         public void Construct
         (
             CharacterParamAsset characterParamAsset,
-
             ReimuModel.Factory factory,
-            IPlayerCharacterModel playerCharacterModel
+            IPlayerCharacterModel playerCharacterModel,
+            IPlayerCameraModel playerCameraModel
         )
         {
             _characterParamAsset = characterParamAsset;
-
             _reimuFactory = factory;
             _playerCharacterModel = playerCharacterModel;
+            _playerCameraModel = playerCameraModel;
         }
 
         void Start()
@@ -56,19 +57,21 @@ namespace Components.Character
                     break;
             }
 
-            // スポーン時にSpawingModelに追加
+            // スポーンイベント
             _character.OnSpawnSubject.Subscribe(root =>
             {
-                _playerCharacterModel.Set(_character);
+                _playerCharacterModel.CharacterModel = _character;
+                var vc = _playerCameraModel.SpawnTPSCamera(root);
+                _playerCameraModel.SetCurrentCamera(vc);
             }).AddTo(_disposables);
 
-            // デスポーン時にSpawingModelから削除
+            // デスポーンイベント
             _character.OnDespawnSubject.Subscribe(root =>
             {
                 // _playerCharacterModel.Remove();
             }).AddTo(_disposables);
 
-            // キャラクタールート生成
+            // キャラクター生成
             _character.Spawn(
                 transform.position,
                 transform.rotation

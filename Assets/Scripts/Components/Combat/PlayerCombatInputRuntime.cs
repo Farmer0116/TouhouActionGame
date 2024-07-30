@@ -36,7 +36,7 @@ namespace Components.Combat
         {
             // 魔法攻撃
             _combatMotor.SetInput(new CombatInput(isMagicAttack: _inputSystemModel.MagicAttack.Value));
-            _playerCharacterModel.IsMagicAttack.Value = _inputSystemModel.MagicAttack.Value;
+            _playerCharacterModel.IsMagicAttack = _inputSystemModel.MagicAttack.Value;
         }
 
         private void Start()
@@ -51,7 +51,7 @@ namespace Components.Combat
             _inputSystemModel.NormalAttack.Subscribe(flag =>
             {
                 if (flag) _combatMotor.SetInput(new CombatInput(isNormalAttack: true));
-                _playerCharacterModel.IsNormalAttack.Value = flag;
+                _playerCharacterModel.IsNormalAttack = flag;
             }).AddTo(_disposables);
 
             // _inputSystemModel.MagicAttack.Where(flag => flag).Subscribe(flag =>
@@ -64,9 +64,9 @@ namespace Components.Combat
             {
                 // todo: 取得する敵を選別
                 var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-                if (enemies.Count() > 0) _playerCharacterModel.LockOnTarget.Value = enemies[0].transform;
+                if (enemies.Count() > 0) _playerCharacterModel.LockOnTarget = enemies[0].transform;
 
-                _playerCharacterModel.IsLockOn.Value = !_playerCharacterModel.IsLockOn.Value;
+                _playerCharacterModel.IsLockOn = !_playerCharacterModel.IsLockOn;
             }).AddTo(_disposables);
         }
 

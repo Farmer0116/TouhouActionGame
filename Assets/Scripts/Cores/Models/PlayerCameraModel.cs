@@ -1,7 +1,6 @@
 using Cinemachine;
 using Cores.Models.Interfaces;
 using ScriptableObjects.Camera;
-using UniRx;
 using UnityEngine;
 using Utilities;
 
@@ -21,9 +20,9 @@ namespace Cores.Models
             _playerCameraAsset = playerCameraAsset;
         }
 
-        public CinemachineVirtualCamera SpawnTPSCamera(Transform rotationTarget, Transform lookTarget)
+        public CinemachineVirtualCamera SpawnTPSCamera(GameObject character)
         {
-            return CameraUtility.SpawnCharacterCamera(_playerCameraAsset.TPSCamera, rotationTarget, lookTarget);
+            return CameraUtility.SpawnPlayerCharacterCamera(character, _playerCameraAsset.TPSCamera);
         }
 
         public void SetCurrentCamera(CinemachineVirtualCamera cinemachineVirtualCamera)

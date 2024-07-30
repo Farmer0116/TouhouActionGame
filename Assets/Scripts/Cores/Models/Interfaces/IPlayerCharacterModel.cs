@@ -1,22 +1,18 @@
-using UniRx;
 using UnityEngine;
 
 namespace Cores.Models.Interfaces
 {
     /// <summary>
-    /// 空間に生成されているプレーヤー向けのキャラクター
+    /// プレーヤーキャラクタの状態を保持するモデル
     /// </summary>
     public interface IPlayerCharacterModel
     {
-        ReactiveProperty<ICharacterModel> CharacterModel { get; }
-        ReactiveProperty<bool> IsNormalAttack { get; }
-        ReactiveProperty<bool> IsMagicAttack { get; }
-        ReactiveProperty<bool> IsLockOn { get; }
-        ReactiveProperty<Transform> LockOnTarget { get; }
+        ICharacterModel CharacterModel { get; set; }
+        bool IsNormalAttack { get; set; }
+        bool IsMagicAttack { get; set; }
+        bool IsLockOn { get; set; }
+        Transform LockOnTarget { get; set; }
         OrientationMethod OrientationMethod { get; set; }
-
-        void Set(ICharacterModel characterModel);
-        void Remove();
     }
 
     public enum OrientationMethod

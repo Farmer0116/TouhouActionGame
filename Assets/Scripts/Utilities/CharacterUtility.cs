@@ -1,4 +1,3 @@
-using Components.Camera;
 using Components.Character;
 using Components.Combat;
 using Types.Character;
@@ -42,13 +41,10 @@ namespace Utilities
             character.layer = PlayerLayer;
 
             var characterMovementController = character.GetComponent<CharacterMovementController>();
-            var characterCameraController = character.GetComponent<CharacterCameraController>();
 
             var input = character.AddComponent<PlayerCharacterInputRuntime>();
             var combat = character.AddComponent<PlayerCombatInputRuntime>();
-            var camera = character.AddComponent<PlayerCameraInputRuntime>();
             input.Initialize(characterMovementController);
-            camera.Initialize(characterCameraController);
         }
 
         /// <summary>
