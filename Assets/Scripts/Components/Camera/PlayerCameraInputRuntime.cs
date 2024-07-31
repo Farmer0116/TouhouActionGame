@@ -11,8 +11,7 @@ namespace Components.Camera
         public Transform TPSCameraTarget { get; private set; }
         public Transform TPSLockOnCameraTarget { get; private set; }
 
-        private IInputSystemModel _inputSystemModel;
-        private IPlayerCameraModel _playerCameraModel;
+        private IPlayerCameraModel _playerCameraModel1;
         private CharacterModelComponent _characterModelComponent;
         private ZenAutoInjecter _zenAutoInjecter;
 
@@ -23,12 +22,10 @@ namespace Components.Camera
 
         [Inject]
         private void construct(
-            IInputSystemModel inputSystemModel,
-            IPlayerCameraModel playerCameraModel
+            IPlayerCameraModel playerCameraModel1
         )
         {
-            _inputSystemModel = inputSystemModel;
-            _playerCameraModel = playerCameraModel;
+            _playerCameraModel1 = playerCameraModel1;
         }
 
         public void Init(CharacterModelComponent characterModelComponent)
@@ -38,7 +35,7 @@ namespace Components.Camera
 
         void Awake()
         {
-            if (_inputSystemModel == null)
+            if (_playerCameraModel1 == null)
             {
                 _zenAutoInjecter = gameObject.AddComponent<ZenAutoInjecter>();
             }
@@ -56,16 +53,15 @@ namespace Components.Camera
             }
 
             // ロックオン
-            _characterModelComponent.CharacterModel.OnChangeIsLockOn.Subscribe(value =>
+            _characterModelComponent.CharacterModel.OnLockOn.Subscribe(value =>
             {
-                if (value)
-                {
-                    _playerCameraModel.SwitchCamera(PlayerCameraType.TPSLockOn);
-                }
-                else
-                {
-                    _playerCameraModel.SwitchCamera(PlayerCameraType.TPS);
-                }
+                _playerCameraModel1.SwitchCamera(PlayerCameraType.TPSLockOn);
+            }).AddTo(disposables);
+
+            // アンロック
+            _characterModelComponent.CharacterModel.OnUnLock.Subscribe(value =>
+            {
+                _playerCameraModel1.SwitchCamera(PlayerCameraType.TPS);
             }).AddTo(disposables);
         }
 

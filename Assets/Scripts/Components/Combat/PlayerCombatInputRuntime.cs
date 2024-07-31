@@ -66,11 +66,20 @@ namespace Components.Combat
             // ロックオン
             _inputSystemModel.LockOn.Where(flag => flag).Subscribe(flag =>
             {
-                // todo: 取得する敵を選別
-                var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-                if (enemies.Count() > 0) _characterModelComponent.CharacterModel.LockOnTarget = enemies[0].GetComponent<CombatMotor>().Target;
-
-                _characterModelComponent.CharacterModel.IsLockOn = !_characterModelComponent.CharacterModel.IsLockOn;
+                if (_characterModelComponent.CharacterModel.IsLockOn)
+                {
+                    _characterModelComponent.CharacterModel.UnLock();
+                }
+                else
+                {
+                    // todo: 取得する敵を選別
+                    var enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                    if (enemies.Count() > 0)
+                    {
+                        var target = enemies[0].GetComponent<CombatMotor>().Target;
+                        _characterModelComponent.CharacterModel.LockOn(target);
+                    }
+                }
             }).AddTo(_disposables);
         }
 

@@ -64,7 +64,7 @@ namespace Components.Character
                 _playerCharacterModel.CharacterModel = _character;
                 // カメラ生成
                 var cameras = _playerCameraModel.SpawnAllCameras(root);
-                _playerCameraModel.SetCurrentCamera(cameras.tps);
+                _playerCameraModel.SwitchCamera(PlayerCameraType.TPS);
             }).AddTo(_disposables);
 
             // デスポーンイベント

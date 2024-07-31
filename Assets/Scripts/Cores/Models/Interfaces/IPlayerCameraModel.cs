@@ -9,14 +9,13 @@ namespace Cores.Models.Interfaces
     public interface IPlayerCameraModel
     {
         PlayerCameraType CurrentCameraType { get; }
-        CinemachineVirtualCamera CurrentCinemachineVirtualCamera { get; }
+        CinemachineVirtualCamera CurrentCamera { get; }
 
         CinemachineVirtualCamera TPSCamera { get; }
         CinemachineVirtualCamera TPSLockOnCamera { get; }
 
         void SwitchCamera(PlayerCameraType playerCameraType);
         (CinemachineVirtualCamera tps, CinemachineVirtualCamera tpsLockOn) SpawnAllCameras(GameObject character);
-        void SetCurrentCamera(CinemachineVirtualCamera cinemachineVirtualCamera);
     }
 
     public enum PlayerCameraType

@@ -9,7 +9,7 @@ namespace Cores.Models
     public class PlayerCameraModel : IPlayerCameraModel
     {
         public PlayerCameraType CurrentCameraType { get; private set; }
-        public CinemachineVirtualCamera CurrentCinemachineVirtualCamera { get; private set; }
+        public CinemachineVirtualCamera CurrentCamera { get; private set; }
         public CinemachineVirtualCamera TPSCamera { get; private set; }
         public CinemachineVirtualCamera TPSLockOnCamera { get; private set; }
 
@@ -29,12 +29,12 @@ namespace Cores.Models
             switch (playerCameraType)
             {
                 case PlayerCameraType.TPS:
-                    CurrentCinemachineVirtualCamera = TPSCamera;
+                    CurrentCamera = TPSCamera;
                     TPSCamera.Priority = 1;
                     TPSLockOnCamera.Priority = 0;
                     break;
                 case PlayerCameraType.TPSLockOn:
-                    CurrentCinemachineVirtualCamera = TPSLockOnCamera;
+                    CurrentCamera = TPSLockOnCamera;
                     TPSCamera.Priority = 0;
                     TPSLockOnCamera.Priority = 1;
                     break;
@@ -53,11 +53,6 @@ namespace Cores.Models
             TPSLockOnCamera = cameras.tpsLockOn;
 
             return cameras;
-        }
-
-        public void SetCurrentCamera(CinemachineVirtualCamera cinemachineVirtualCamera)
-        {
-            CurrentCinemachineVirtualCamera = cinemachineVirtualCamera;
         }
     }
 }

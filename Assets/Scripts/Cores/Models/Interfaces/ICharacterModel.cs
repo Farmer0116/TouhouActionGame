@@ -14,19 +14,22 @@ namespace Cores.Models.Interfaces
         // 行動パターン
         bool IsNormalAttack { get; set; }
         bool IsMagicAttack { get; set; }
-        bool IsLockOn { get; set; }
-        Transform LockOnTarget { get; set; }
+        bool IsLockOn { get; }
+        Transform LockOnTarget { get; }
         // イベント
         Subject<GameObject> OnSpawnSubject { get; }
         Subject<GameObject> OnDespawnSubject { get; }
-        ReactiveProperty<bool> OnChangeIsLockOn { get; }
+        Subject<Transform> OnLockOn { get; }
+        Subject<Unit> OnUnLock { get; }
         // インスタンス
         GameObject CharacterInstance { get; }
         // Dispose
         CompositeDisposable DespawnDisposables { get; }
-
+        // 関数
         GameObject Spawn(Vector3 position, Quaternion rotation);
         void Despawn();
+        void LockOn(Transform transform);
+        void UnLock();
     }
 
     // 初期化パラメータ
