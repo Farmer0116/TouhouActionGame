@@ -73,14 +73,14 @@ namespace Components.Camera
         private void HandleCameraInput()
         {
             // TPS
-            TPSCameraTarget.position = _characterModelComponent.Center.position;
+            TPSCameraTarget.position = _characterModelComponent.EyeLevel.position;
             if (!_characterModelComponent.CharacterModel.IsLockOn)
             {
-                TPSCameraTarget.rotation = _characterModelComponent.CharacterRotation;
+                TPSCameraTarget.rotation = _characterModelComponent.HeadRotation;
             }
 
             // TPSLockOn
-            TPSLockOnCameraTarget.position = _characterModelComponent.Center.position;
+            TPSLockOnCameraTarget.position = _characterModelComponent.EyeLevel.position;
             TPSLockOnCameraTarget.LookAt(_characterModelComponent.CharacterModel.LockOnTarget);
         }
 

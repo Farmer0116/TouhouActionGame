@@ -2,8 +2,6 @@ using Cores.Models.Interfaces;
 using UniRx;
 using UnityEngine;
 using Utilities;
-using Types.Character;
-using Zenject;
 
 namespace Cores.Models
 {
@@ -17,12 +15,11 @@ namespace Cores.Models
             CharacterModelParam characterModelParam
         )
         {
-            _characterModelParam = characterModelParam;
+            CharacterModelParam = characterModelParam;
         }
 
         // パラメータ
-        public CharacterModelParam CharacterModelParam { get { return _characterModelParam; } set { _characterModelParam = value; } }
-        private CharacterModelParam _characterModelParam;
+        public CharacterModelParam CharacterModelParam { get; set; }
         // 行動パターン
         public bool IsNormalAttack { get; set; } = false;
         public bool IsMagicAttack { get; set; } = false;
@@ -41,9 +38,9 @@ namespace Cores.Models
         public GameObject Spawn(Vector3 position, Quaternion rotation)
         {
 #if UNITY_EDITOR
-            Debug.Log($"{_characterModelParam.Name}を{position}に{rotation}を向いて生成します");
+            Debug.Log($"{CharacterModelParam.Name}を{position}に{rotation}を向いて生成します");
 #endif
-            CharacterInstance = CharacterUtility.SpawnCharacter(_characterModelParam.ControllerType, _characterModelParam.Model, position, rotation, this);
+            CharacterInstance = CharacterUtility.SpawnCharacter(CharacterModelParam.ControllerType, CharacterModelParam.Model, position, rotation, this);
             OnSpawnSubject.OnNext(CharacterInstance);
             return CharacterInstance;
         }
@@ -51,7 +48,7 @@ namespace Cores.Models
         public void Despawn()
         {
 #if UNITY_EDITOR
-            Debug.Log($"{_characterModelParam.Name}を削除します");
+            Debug.Log($"{CharacterModelParam.Name}を削除します");
 #endif
             if (CharacterInstance != null)
             {

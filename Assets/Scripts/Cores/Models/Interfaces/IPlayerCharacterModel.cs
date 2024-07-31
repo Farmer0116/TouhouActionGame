@@ -10,6 +10,4 @@ namespace Cores.Models.Interfaces
     {
         ICharacterModel CharacterModel { get; set; }
     }
-
-
 }

@@ -8,7 +8,8 @@ namespace Components.Character
         public ICharacterModel CharacterModel;
 
         public Transform Center;
+        public Transform EyeLevel;
         public OrientationMethod OrientationMethod = OrientationMethod.TowardsCamera;
-        [HideInInspector] public Quaternion CharacterRotation;
+        [HideInInspector] public Quaternion HeadRotation;
     }
 }
