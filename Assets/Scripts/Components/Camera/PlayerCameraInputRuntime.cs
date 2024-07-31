@@ -2,6 +2,7 @@ using UnityEngine;
 using Zenject;
 using Cores.Models.Interfaces;
 using UniRx;
+using Components.Character;
 
 namespace Components.Camera
 {
@@ -11,10 +12,9 @@ namespace Components.Camera
         public Transform TPSLockOnCameraTarget { get; private set; }
 
         private IInputSystemModel _inputSystemModel;
-        private IPlayerCharacterModel _playerCharacterModel;
         private IPlayerCameraModel _playerCameraModel;
+        private CharacterModelComponent _characterModelComponent;
         private ZenAutoInjecter _zenAutoInjecter;
-        private Transform _cameraOffset;
 
         private const string _tpsCameraTargetName = "TPSCameraTarget";
         private const string _tpsLockOnCameraTargetName = "TPSLockOnCameraTarget";
@@ -24,19 +24,16 @@ namespace Components.Camera
         [Inject]
         private void construct(
             IInputSystemModel inputSystemModel,
-            IPlayerCharacterModel playerCharacterModel,
             IPlayerCameraModel playerCameraModel
         )
         {
             _inputSystemModel = inputSystemModel;
-            _playerCharacterModel = playerCharacterModel;
             _playerCameraModel = playerCameraModel;
         }
 
-        public void Initialize(CharacterCameraController characterCameraController)
+        public void Init(CharacterModelComponent characterModelComponent)
         {
-            if (characterCameraController.CameraOffset == null) Debug.LogError("CharacterCameraControllerが設定されていません");
-            else _cameraOffset = characterCameraController.CameraOffset;
+            _characterModelComponent = characterModelComponent;
         }
 
         void Awake()
@@ -59,7 +56,7 @@ namespace Components.Camera
             }
 
             // ロックオン
-            _playerCharacterModel.OnChangeIsLockOn.Subscribe(value =>
+            _characterModelComponent.CharacterModel.OnChangeIsLockOn.Subscribe(value =>
             {
                 if (value)
                 {
@@ -80,15 +77,15 @@ namespace Components.Camera
         private void HandleCameraInput()
         {
             // TPS
-            TPSCameraTarget.position = _cameraOffset.position;
-            if (!_playerCharacterModel.IsLockOn)
+            TPSCameraTarget.position = _characterModelComponent.Center.position;
+            if (!_characterModelComponent.CharacterModel.IsLockOn)
             {
-                TPSCameraTarget.rotation = _playerCharacterModel.CharacterRotation;
+                TPSCameraTarget.rotation = _characterModelComponent.CharacterRotation;
             }
 
             // TPSLockOn
-            TPSLockOnCameraTarget.position = _cameraOffset.position;
-            TPSLockOnCameraTarget.LookAt(_playerCharacterModel.LockOnTarget);
+            TPSLockOnCameraTarget.position = _characterModelComponent.Center.position;
+            TPSLockOnCameraTarget.LookAt(_characterModelComponent.CharacterModel.LockOnTarget);
         }
 
         void OnDestroy()

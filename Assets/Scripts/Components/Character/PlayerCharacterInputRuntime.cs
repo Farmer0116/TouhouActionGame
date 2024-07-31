@@ -12,7 +12,7 @@ namespace Components.Character
         [SerializeField] private Transform _characterRotationTarget;
 
         private IInputSystemModel _inputSystemModel;
-        private IPlayerCharacterModel _playerCharacterModel;
+        private CharacterModelComponent _characterModelComponent;
         private Vector3 _characterFrontVector = Vector3.zero;
         private ZenAutoInjecter _zenAutoInjecter;
 
@@ -22,18 +22,17 @@ namespace Components.Character
 
         [Inject]
         private void construct(
-            IInputSystemModel inputSystemModel,
-            IPlayerCharacterModel playerCharacterModel
+            IInputSystemModel inputSystemModel
         )
         {
             _inputSystemModel = inputSystemModel;
-            _playerCharacterModel = playerCharacterModel;
         }
 
-        public void Initialize(CharacterMovementController characterMovementController)
+        public void Init(CharacterMovementController characterMovementController, CharacterModelComponent characterModelComponent)
         {
             CharacterMovementController = characterMovementController;
             CharacterRotationTarget = new GameObject(_characterRotationTargetName).transform;
+            _characterModelComponent = characterModelComponent;
         }
 
         void Awake()
@@ -55,15 +54,15 @@ namespace Components.Character
 
         void Update()
         {
-            if (_playerCharacterModel.OrientationMethod.ToString() != CharacterMovementController.OrientationMethod.ToString())
+            if (_characterModelComponent.OrientationMethod != CharacterMovementController.OrientationMethod)
             {
                 switch (CharacterMovementController.OrientationMethod)
                 {
                     case OrientationMethod.TowardsCamera:
-                        _playerCharacterModel.OrientationMethod = Cores.Models.Interfaces.OrientationMethod.TowardsCamera;
+                        _characterModelComponent.OrientationMethod = OrientationMethod.TowardsCamera;
                         break;
                     case OrientationMethod.TowardsMovement:
-                        _playerCharacterModel.OrientationMethod = Cores.Models.Interfaces.OrientationMethod.TowardsMovement;
+                        _characterModelComponent.OrientationMethod = OrientationMethod.TowardsMovement;
                         break;
                 }
             }
@@ -74,17 +73,17 @@ namespace Components.Character
         {
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
-            if (_playerCharacterModel.IsLockOn && _playerCharacterModel.LockOnTarget != null)
+            if (_characterModelComponent.CharacterModel.IsLockOn && _characterModelComponent.CharacterModel.LockOnTarget != null)
             {
-                CharacterRotationTarget.position = CharacterMovementController.RotationTargetOffset.position;
-                CharacterRotationTarget.LookAt(_playerCharacterModel.LockOnTarget);
+                CharacterRotationTarget.position = transform.position;
+                CharacterRotationTarget.LookAt(_characterModelComponent.CharacterModel.LockOnTarget);
                 characterInputs.Rotation = CharacterRotationTarget.rotation;
 
                 _characterFrontVector = CharacterRotationTarget.rotation.eulerAngles;
             }
             else
             {
-                CharacterRotationTarget.position = CharacterMovementController.RotationTargetOffset.position;
+                CharacterRotationTarget.position = transform.position;
                 _characterFrontVector.y += _inputSystemModel.Look.Value.x;
                 _characterFrontVector.x += _inputSystemModel.Look.Value.y;
                 _characterFrontVector.x = Mathf.Clamp(_characterFrontVector.x, _minViewField, _maxViewField);
@@ -93,7 +92,7 @@ namespace Components.Character
             }
 
             // モデルに回転情報を共有
-            _playerCharacterModel.CharacterRotation = CharacterRotationTarget.rotation;
+            _characterModelComponent.CharacterRotation = CharacterRotationTarget.rotation;
 
             // characterInputsへの代入
             characterInputs.MoveAxisForward = _inputSystemModel.Move.Value.y;

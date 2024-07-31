@@ -1,5 +1,6 @@
 using Components.Character;
 using Components.Combat;
+using Cores.Models.Interfaces;
 using Types.Character;
 using UnityEngine;
 
@@ -13,9 +14,12 @@ namespace Utilities
         public static LayerMask PlayerLayer { get { return LayerMask.NameToLayer("Player"); } }
         public static LayerMask EnemyLayer { get { return LayerMask.NameToLayer("Enemy"); } }
 
-        public static GameObject SpawnCharacter(ControllerType controllerType, GameObject character, Vector3 position, Quaternion rotation)
+        public static GameObject SpawnCharacter(ControllerType controllerType, GameObject character, Vector3 position, Quaternion rotation, ICharacterModel characterModel)
         {
             var root = GameObject.Instantiate(character, position, rotation);
+            var characterModelComponent = root.GetComponent<CharacterModelComponent>();
+            characterModelComponent.CharacterModel = characterModel;
+
             switch (controllerType)
             {
                 case ControllerType.Player:
@@ -41,10 +45,12 @@ namespace Utilities
             character.layer = PlayerLayer;
 
             var characterMovementController = character.GetComponent<CharacterMovementController>();
+            var characterModelComponent = character.GetComponent<CharacterModelComponent>();
 
             var input = character.AddComponent<PlayerCharacterInputRuntime>();
             var combat = character.AddComponent<PlayerCombatInputRuntime>();
-            input.Initialize(characterMovementController);
+            input.Init(characterMovementController, characterModelComponent);
+            combat.Init(characterModelComponent);
         }
 
         /// <summary>

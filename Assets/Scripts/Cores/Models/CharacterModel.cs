@@ -20,24 +20,24 @@ namespace Cores.Models
             _characterModelParam = characterModelParam;
         }
 
-        // 初期値
+        // パラメータ
         public CharacterModelParam CharacterModelParam { get { return _characterModelParam; } set { _characterModelParam = value; } }
         private CharacterModelParam _characterModelParam;
-
-        // その他
+        // 行動パターン
+        public bool IsNormalAttack { get; set; } = false;
+        public bool IsMagicAttack { get; set; } = false;
+        public bool IsLockOn { get => OnChangeIsLockOn.Value; set { OnChangeIsLockOn.Value = value; } }
+        public Transform LockOnTarget { get; set; }
+        // インスタンス
         public GameObject CharacterInstance { get { return _characterInstance; } set { _characterInstance = value; } }
         private GameObject _characterInstance = null;
-
-        public ControllerType ControllerType { get { return _controllerType; } set { _controllerType = value; } }
-        private ControllerType _controllerType = ControllerType.Non;
-
-        // 機能
+        // イベント
+        public ReactiveProperty<bool> OnChangeIsLockOn { get; private set; } = new ReactiveProperty<bool>(false);
         public Subject<GameObject> OnSpawnSubject => _onSpawnSubject;
         public Subject<GameObject> OnDespawnSubject => _onDespawnSubject;
-
         private Subject<GameObject> _onSpawnSubject = new Subject<GameObject>();
         private Subject<GameObject> _onDespawnSubject = new Subject<GameObject>();
-
+        // Dispose
         public CompositeDisposable DespawnDisposables { get { return _despawnDisposables; } }
         private CompositeDisposable _despawnDisposables = new CompositeDisposable();
 
@@ -46,7 +46,7 @@ namespace Cores.Models
 #if UNITY_EDITOR
             Debug.Log($"{_characterModelParam.Name}を{position}に{rotation}を向いて生成します");
 #endif
-            _characterInstance = CharacterUtility.SpawnCharacter(_characterModelParam.ControllerType, _characterModelParam.Model, position, rotation);
+            _characterInstance = CharacterUtility.SpawnCharacter(_characterModelParam.ControllerType, _characterModelParam.Model, position, rotation, this);
             OnSpawnSubject.OnNext(_characterInstance);
             return _characterInstance;
         }

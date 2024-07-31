@@ -9,13 +9,21 @@ namespace Cores.Models.Interfaces
     /// </summary>
     public interface ICharacterModel
     {
+        // パラメータ
         CharacterModelParam CharacterModelParam { get; set; }
-
-        GameObject CharacterInstance { get; }
-        CompositeDisposable DespawnDisposables { get; }
-
+        // 行動パターン
+        bool IsNormalAttack { get; set; }
+        bool IsMagicAttack { get; set; }
+        bool IsLockOn { get; set; }
+        Transform LockOnTarget { get; set; }
+        // イベント
         Subject<GameObject> OnSpawnSubject { get; }
         Subject<GameObject> OnDespawnSubject { get; }
+        ReactiveProperty<bool> OnChangeIsLockOn { get; }
+        // インスタンス
+        GameObject CharacterInstance { get; }
+        // Dispose
+        CompositeDisposable DespawnDisposables { get; }
 
         GameObject Spawn(Vector3 position, Quaternion rotation);
         void Despawn();

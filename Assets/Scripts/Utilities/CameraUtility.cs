@@ -1,5 +1,6 @@
 using Cinemachine;
 using Components.Camera;
+using Components.Character;
 using UnityEngine;
 
 namespace Utilities
@@ -11,10 +12,10 @@ namespace Utilities
             var tps = GameObject.Instantiate(tpsCamera);
             var tpsLockOn = GameObject.Instantiate(tpsLockOnCamera);
 
-            var characterCameraController = character.GetComponent<CharacterCameraController>();
+            var characterModelComponent = character.GetComponent<CharacterModelComponent>();
 
             var playerCameraInputRuntime = character.AddComponent<PlayerCameraInputRuntime>();
-            playerCameraInputRuntime.Initialize(characterCameraController);
+            playerCameraInputRuntime.Init(characterModelComponent);
 
             tps.Follow = playerCameraInputRuntime.TPSCameraTarget;
             tps.LookAt = playerCameraInputRuntime.TPSCameraTarget;

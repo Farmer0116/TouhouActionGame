@@ -87,7 +87,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4696602705621712117}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -218,10 +218,10 @@ GameObject:
   m_Component:
   - component: {fileID: 7322933704203835038}
   - component: {fileID: 310253737578176370}
+  - component: {fileID: 3405630830285749136}
   - component: {fileID: 7087727160688228555}
   - component: {fileID: 6881790898558161858}
   - component: {fileID: 9121845746348103571}
-  - component: {fileID: 6462749039790132009}
   m_Layer: 0
   m_Name: ReimuRoot
   m_TagString: Untagged
@@ -245,7 +245,6 @@ Transform:
   - {fileID: 7717156629798457293}
   - {fileID: 6390518192539471309}
   - {fileID: 7975531034725826610}
-  - {fileID: 4539445556432923117}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -263,6 +262,21 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &3405630830285749136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7322933704203835039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf7d1c4a9efb87742b5bcd55d406cb9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Center: {fileID: 7717156629798457293}
+  OrientationMethod: 0
+  CharacterRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &7087727160688228555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,7 +310,6 @@ MonoBehaviour:
   BonusOrientationSharpness: 20
   Gravity: {x: 0, y: -30, z: 0}
   MeshRoot: {fileID: 0}
-  RotationTargetOffset: {fileID: 7717156629798457293}
   CrouchedCapsuleHeight: 1
 --- !u!114 &6881790898558161858
 MonoBehaviour:
@@ -356,53 +369,9 @@ MonoBehaviour:
   MagicCombo: {fileID: 11400000, guid: 3ca32a118c496a9418ea7d8680cc6445, type: 2}
   NormalSpawnPoint: {fileID: 6390518192539471309}
   MagicSpawnPoint: {fileID: 7975531034725826610}
-  Target: {fileID: 4539445556432923117}
+  Target: {fileID: 7717156629798457293}
   _normalAttackInstance: []
   _magicAttackInstance: []
---- !u!114 &6462749039790132009
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7322933704203835039}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 299d7eb055196184a85ea5c515ea1591, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CameraOffset: {fileID: 7717156629798457293}
---- !u!1 &7417992715774996970
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4539445556432923117}
-  m_Layer: 0
-  m_Name: CombatTarget
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4539445556432923117
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7417992715774996970}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7322933704203835038}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8082070368705344367
 GameObject:
   m_ObjectHideFlags: 0
