@@ -2,8 +2,6 @@ using Cores.Models.Interfaces;
 using UniRx;
 using UnityEngine;
 using Utilities;
-using Types.Character;
-using Zenject;
 
 namespace Cores.Models
 {
@@ -17,58 +15,66 @@ namespace Cores.Models
             CharacterModelParam characterModelParam
         )
         {
-            _characterModelParam = characterModelParam;
+            CharacterModelParam = characterModelParam;
         }
 
-        // 初期値
-        public CharacterModelParam CharacterModelParam { get { return _characterModelParam; } set { _characterModelParam = value; } }
-        private CharacterModelParam _characterModelParam;
-
-        // その他
-        public GameObject CharacterInstance { get { return _characterInstance; } set { _characterInstance = value; } }
-        private GameObject _characterInstance = null;
-
-        public ControllerType ControllerType { get { return _controllerType; } set { _controllerType = value; } }
-        private ControllerType _controllerType = ControllerType.Non;
-
-        // 機能
-        public Subject<GameObject> OnSpawnSubject => _onSpawnSubject;
-        public Subject<GameObject> OnDespawnSubject => _onDespawnSubject;
-
-        private Subject<GameObject> _onSpawnSubject = new Subject<GameObject>();
-        private Subject<GameObject> _onDespawnSubject = new Subject<GameObject>();
-
-        public CompositeDisposable DespawnDisposables { get { return _despawnDisposables; } }
-        private CompositeDisposable _despawnDisposables = new CompositeDisposable();
+        // パラメータ
+        public CharacterModelParam CharacterModelParam { get; set; }
+        // 行動パターン
+        public bool IsNormalAttack { get; set; } = false;
+        public bool IsMagicAttack { get; set; } = false;
+        public bool IsLockOn { get; private set; } = false;
+        public Transform LockOnTarget { get; private set; } = null;
+        // イベント
+        public Subject<GameObject> OnSpawnSubject { get; private set; } = new Subject<GameObject>();
+        public Subject<GameObject> OnDespawnSubject { get; private set; } = new Subject<GameObject>();
+        public Subject<Transform> OnLockOn { get; private set; } = new Subject<Transform>();
+        public Subject<Unit> OnUnLock { get; private set; } = new Subject<Unit>();
+        // インスタンス
+        public GameObject CharacterInstance { get; private set; }
+        // Dispose
+        public CompositeDisposable DespawnDisposables { get; private set; } = new CompositeDisposable();
 
         public GameObject Spawn(Vector3 position, Quaternion rotation)
         {
 #if UNITY_EDITOR
-            Debug.Log($"{_characterModelParam.Name}を{position}に{rotation}を向いて生成します");
+            Debug.Log($"{CharacterModelParam.Name}を{position}に{rotation}を向いて生成します");
 #endif
-            _characterInstance = CharacterUtility.SpawnCharacter(_characterModelParam.ControllerType, _characterModelParam.Model, position, rotation);
-            // _characterInstance = await Spawn(id, position, rotation, scale);
-            // _characterInstance.AddComponent<AudioSource>();
-            OnSpawnSubject.OnNext(_characterInstance);
-            return _characterInstance;
+            CharacterInstance = CharacterUtility.SpawnCharacter(CharacterModelParam.ControllerType, CharacterModelParam.Model, position, rotation, this);
+            OnSpawnSubject.OnNext(CharacterInstance);
+            return CharacterInstance;
         }
 
         public void Despawn()
         {
 #if UNITY_EDITOR
-            Debug.Log($"{_characterModelParam.Name}を削除します");
+            Debug.Log($"{CharacterModelParam.Name}を削除します");
 #endif
-            if (_characterInstance != null)
+            if (CharacterInstance != null)
             {
-                OnDespawnSubject.OnNext(_characterInstance);
+                OnDespawnSubject.OnNext(CharacterInstance);
                 DespawnDisposables.Dispose();
-                GameObject.Destroy(_characterInstance);
-                _characterInstance = null;
+                GameObject.Destroy(CharacterInstance);
+                CharacterInstance = null;
             }
             else
             {
                 Debug.LogError("モデルに対応したキャラクタが生成されていません");
             }
+        }
+
+        public void LockOn(Transform transform)
+        {
+            IsLockOn = true;
+            LockOnTarget = transform;
+            OnLockOn.OnNext(transform);
+        }
+
+        public void UnLock()
+        {
+            IsLockOn = false;
+            LockOnTarget = null;
+            OnUnLock.OnNext(new Unit());
         }
     }
 }

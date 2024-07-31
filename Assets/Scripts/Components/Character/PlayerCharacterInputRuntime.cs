@@ -1,12 +1,6 @@
 using UnityEngine;
-using KinematicCharacterController;
-using KinematicCharacterController.Examples;
 using Zenject;
 using Cores.Models.Interfaces;
-using static Zenject.ZenAutoInjecter;
-using UnityEngine.UIElements.Experimental;
-using UniRx;
-using System.Linq;
 
 namespace Components.Character
 {
@@ -14,22 +8,15 @@ namespace Components.Character
     {
         public CharacterMovementController CharacterMovementController { get { return _characterMovementController; } private set { _characterMovementController = value; } }
         [SerializeField] private CharacterMovementController _characterMovementController;
-        public Transform CameraRotationTarget { get { return _cameraRotationTarget; } private set { _cameraRotationTarget = value; } }
-        [SerializeField] private Transform _cameraRotationTarget;
-        public Transform CharacterRotationTarget { get { return _characterRotationTarget; } private set { _characterRotationTarget = value; } }
-        [SerializeField] private Transform _characterRotationTarget;
-        public Transform LookTarget { get { return _lookTarget; } }
-        [SerializeField] private Transform _lookTarget;
+        public Transform CharacterRotationTarget { get; private set; }
 
         private IInputSystemModel _inputSystemModel;
-        private Vector3 _lookCharacterVector = Vector3.zero;
+        private CharacterModelComponent _characterModelComponent;
+        private Vector3 _characterFrontVector = Vector3.zero;
         private ZenAutoInjecter _zenAutoInjecter;
-        private bool _isLockOn = false;
-        private Transform _lockOnTarget;
 
         private const float _maxViewField = 89f;
         private const float _minViewField = -89f;
-        private const string _cameraRotationTargetName = "CameraRotationTarget";
         private const string _characterRotationTargetName = "CharacterRotationTarget";
 
         [Inject]
@@ -40,13 +27,11 @@ namespace Components.Character
             _inputSystemModel = inputSystemModel;
         }
 
-        public void Initialize(CharacterMovementController characterMovementController)
+        public void Init(CharacterMovementController characterMovementController, CharacterModelComponent characterModelComponent)
         {
             CharacterMovementController = characterMovementController;
-            CameraRotationTarget = new GameObject(_cameraRotationTargetName).transform;
             CharacterRotationTarget = new GameObject(_characterRotationTargetName).transform;
-            if (characterMovementController.CameraTarget != null) _lookTarget = characterMovementController.CameraTarget;
-            else Debug.LogError("キャラクターのカメラのフォロー対象が設定されていません");
+            _characterModelComponent = characterModelComponent;
         }
 
         void Awake()
@@ -64,18 +49,22 @@ namespace Components.Character
                 Destroy(_zenAutoInjecter);
                 _zenAutoInjecter = null;
             }
-
-            _inputSystemModel.LockOn.Where(value => value).Subscribe(value =>
-            {
-                _isLockOn = !_isLockOn;
-                // todo: 取得する敵を選別
-                var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-                if (enemies.Count() > 0) _lockOnTarget = enemies[0].transform;
-            });
         }
 
         void Update()
         {
+            if (_characterModelComponent.OrientationMethod != CharacterMovementController.OrientationMethod)
+            {
+                switch (CharacterMovementController.OrientationMethod)
+                {
+                    case OrientationMethod.TowardsCamera:
+                        _characterModelComponent.OrientationMethod = OrientationMethod.TowardsCamera;
+                        break;
+                    case OrientationMethod.TowardsMovement:
+                        _characterModelComponent.OrientationMethod = OrientationMethod.TowardsMovement;
+                        break;
+                }
+            }
             HandleCharacterInput();
         }
 
@@ -83,43 +72,26 @@ namespace Components.Character
         {
             Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
 
-            if (_isLockOn && _lockOnTarget)
+            if (_characterModelComponent.CharacterModel.IsLockOn && _characterModelComponent.CharacterModel.LockOnTarget != null)
             {
-                if (CharacterMovementController.OrientationMethod == OrientationMethod.TowardsCamera)
-                {
-                    CameraRotationTarget.localPosition = LookTarget.position;
-                    CameraRotationTarget.LookAt(_lockOnTarget);
-                    characterInputs.Rotation = CameraRotationTarget.rotation;
+                CharacterRotationTarget.position = _characterModelComponent.EyeLevel.position;
+                CharacterRotationTarget.LookAt(_characterModelComponent.CharacterModel.LockOnTarget);
+                characterInputs.Rotation = CharacterRotationTarget.rotation;
 
-                    characterInputs.IsLockOn = true;
-                }
-                else
-                {
-                    CameraRotationTarget.localPosition = LookTarget.position;
-                    _lookCharacterVector.y += _inputSystemModel.Look.Value.x;
-                    _lookCharacterVector.x += _inputSystemModel.Look.Value.y;
-                    _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, _minViewField, _maxViewField);
-                    CameraRotationTarget.localRotation = Quaternion.Euler(new Vector3(_lookCharacterVector.x, _lookCharacterVector.y, 0));
-
-                    CharacterRotationTarget.localPosition = LookTarget.position;
-                    CharacterRotationTarget.LookAt(_lockOnTarget);
-                    characterInputs.Rotation = CharacterRotationTarget.rotation;
-
-                    characterInputs.IsLockOn = true;
-                }
+                _characterFrontVector = CharacterRotationTarget.rotation.eulerAngles;
             }
             else
             {
-                // 回転
-                CameraRotationTarget.localPosition = LookTarget.position;
-                _lookCharacterVector.y += _inputSystemModel.Look.Value.x;
-                _lookCharacterVector.x += _inputSystemModel.Look.Value.y;
-                _lookCharacterVector.x = Mathf.Clamp(_lookCharacterVector.x, _minViewField, _maxViewField);
-                CameraRotationTarget.localRotation = Quaternion.Euler(new Vector3(_lookCharacterVector.x, _lookCharacterVector.y, 0));
-                characterInputs.Rotation = CameraRotationTarget.rotation;
-
-                characterInputs.IsLockOn = false;
+                CharacterRotationTarget.position = _characterModelComponent.EyeLevel.position;
+                _characterFrontVector.y += _inputSystemModel.Look.Value.x;
+                _characterFrontVector.x += _inputSystemModel.Look.Value.y;
+                _characterFrontVector.x = Mathf.Clamp(_characterFrontVector.x, _minViewField, _maxViewField);
+                CharacterRotationTarget.rotation = Quaternion.Euler(new Vector3(_characterFrontVector.x, _characterFrontVector.y, 0));
+                characterInputs.Rotation = CharacterRotationTarget.rotation;
             }
+
+            // モデルに回転情報を共有
+            _characterModelComponent.HeadRotation = CharacterRotationTarget.rotation;
 
             // characterInputsへの代入
             characterInputs.MoveAxisForward = _inputSystemModel.Move.Value.y;

@@ -1,8 +1,5 @@
-using System;
-using Cinemachine;
 using Cores.Models;
 using Cores.Models.Interfaces;
-using ScriptableObjects.Camera;
 using ScriptableObjects.Character;
 using Types.Character;
 using UniRx;
@@ -17,12 +14,11 @@ namespace Components.Character
 
         // データ
         private CharacterParamAsset _characterParamAsset;
-        private PlayerCharacterCameraAsset _playerCharacterCameraAsset;
         // ファクトリー
         private ReimuModel.Factory _reimuFactory;
         // モデル
-        private ISpawningPlayerCharacterModel _spawningPlayerCharacterModel;
-        private ISpawningCameraModel _spawningCameraModel;
+        private IPlayerCharacterModel _playerCharacterModel;
+        private IPlayerCameraModel _playerCameraModel;
 
         private ICharacterModel _character;
         private CompositeDisposable _disposables = new CompositeDisposable();
@@ -31,17 +27,15 @@ namespace Components.Character
         public void Construct
         (
             CharacterParamAsset characterParamAsset,
-            PlayerCharacterCameraAsset playerCharacterCameraAsset,
             ReimuModel.Factory factory,
-            ISpawningPlayerCharacterModel spawningPlayerCharacterModel,
-            ISpawningCameraModel spawningCameraModel
+            IPlayerCharacterModel playerCharacterModel,
+            IPlayerCameraModel playerCameraModel
         )
         {
             _characterParamAsset = characterParamAsset;
-            _playerCharacterCameraAsset = playerCharacterCameraAsset;
             _reimuFactory = factory;
-            _spawningPlayerCharacterModel = spawningPlayerCharacterModel;
-            _spawningCameraModel = spawningCameraModel;
+            _playerCharacterModel = playerCharacterModel;
+            _playerCameraModel = playerCameraModel;
         }
 
         void Start()
@@ -63,32 +57,27 @@ namespace Components.Character
                     break;
             }
 
-            // スポーン時にSpawingModelに追加
+            // スポーンイベント
             _character.OnSpawnSubject.Subscribe(root =>
             {
-                _spawningPlayerCharacterModel.Add(_character);
+                // PlayerModelに格納
+                _playerCharacterModel.CharacterModel = _character;
+                // カメラ生成
+                var cameras = _playerCameraModel.SpawnAllCameras(root);
+                _playerCameraModel.SwitchCamera(PlayerCameraType.TPS);
             }).AddTo(_disposables);
 
-            // デスポーン時にSpawingModelから削除
+            // デスポーンイベント
             _character.OnDespawnSubject.Subscribe(root =>
             {
-                // _spawningPlayerCharacterModel.Remove();
+                // _playerCharacterModel.Remove();
             }).AddTo(_disposables);
 
-            // キャラクタールート生成
+            // キャラクター生成
             _character.Spawn(
                 transform.position,
                 transform.rotation
             );
-
-            // カメラの生成
-            var playerCharacterInput = _character.CharacterInstance.GetComponent<PlayerCharacterInputRuntime>();
-            if (playerCharacterInput == null)
-            {
-                Debug.LogError("キャラクターにPlayerCharacterInputRuntimeがアタッチされていません");
-                return;
-            }
-            _spawningCameraModel.SetCurrentCamera(SpawnCharacterCamera(_playerCharacterCameraAsset, playerCharacterInput.CameraRotationTarget, playerCharacterInput.LookTarget));
         }
 
         private ICharacterModel CreateReimuModel(CharacterParam characterParam)
@@ -101,14 +90,6 @@ namespace Components.Character
                 characterParam.Attack,
                 ControllerType.Player
             ));
-        }
-
-        private CinemachineVirtualCamera SpawnCharacterCamera(PlayerCharacterCameraAsset playerCharacterCameraAsset, Transform rotateTarget, Transform lookTarget)
-        {
-            var camera = GameObject.Instantiate(playerCharacterCameraAsset.TPSCamera);
-            camera.Follow = rotateTarget;
-            camera.LookAt = lookTarget;
-            return camera;
         }
 
         void Destroy()

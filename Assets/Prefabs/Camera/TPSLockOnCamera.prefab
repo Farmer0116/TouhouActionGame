@@ -60,9 +60,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BindingMode: 3
   m_FollowOffset: {x: 0, y: 0, z: -4}
-  m_XDamping: 0.025
-  m_YDamping: 0.025
-  m_ZDamping: 0.025
+  m_XDamping: 1
+  m_YDamping: 1
+  m_ZDamping: 0.25
   m_AngularDampingMode: 0
   m_PitchDamping: 0
   m_YawDamping: 0
@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 7864305447215889417}
   - component: {fileID: 3836303732636316417}
   m_Layer: 0
-  m_Name: TPSCamera
+  m_Name: TPSLockOnCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

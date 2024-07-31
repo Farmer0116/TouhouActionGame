@@ -1,5 +1,6 @@
 using Components.Character;
 using Components.Combat;
+using Cores.Models.Interfaces;
 using Types.Character;
 using UnityEngine;
 
@@ -13,17 +14,19 @@ namespace Utilities
         public static LayerMask PlayerLayer { get { return LayerMask.NameToLayer("Player"); } }
         public static LayerMask EnemyLayer { get { return LayerMask.NameToLayer("Enemy"); } }
 
-        public static GameObject SpawnCharacter(ControllerType controllerType, GameObject character, Vector3 position, Quaternion rotation)
+        public static GameObject SpawnCharacter(ControllerType controllerType, GameObject character, Vector3 position, Quaternion rotation, ICharacterModel characterModel)
         {
             var root = GameObject.Instantiate(character, position, rotation);
-            var characterMovementController = root.GetComponent<CharacterMovementController>();
+            var characterModelComponent = root.GetComponent<CharacterModelComponent>();
+            characterModelComponent.CharacterModel = characterModel;
+
             switch (controllerType)
             {
                 case ControllerType.Player:
-                    SetupPlayerCharacter(root, characterMovementController);
+                    SetupPlayerCharacter(root);
                     break;
                 case ControllerType.Enemy:
-                    SetupEnemyCharacter(root, characterMovementController);
+                    SetupEnemyCharacter(root);
                     break;
                 case ControllerType.Neutral:
                     break;
@@ -36,20 +39,24 @@ namespace Utilities
         /// <summary>
         /// プレーヤー向けのキャラクターセットアップ
         /// </summary>
-        private static void SetupPlayerCharacter(GameObject character, CharacterMovementController characterMovementController)
+        private static void SetupPlayerCharacter(GameObject character)
         {
             character.tag = PlayerTag;
             character.layer = PlayerLayer;
 
+            var characterMovementController = character.GetComponent<CharacterMovementController>();
+            var characterModelComponent = character.GetComponent<CharacterModelComponent>();
+
             var input = character.AddComponent<PlayerCharacterInputRuntime>();
             var combat = character.AddComponent<PlayerCombatInputRuntime>();
-            input.Initialize(characterMovementController);
+            input.Init(characterMovementController, characterModelComponent);
+            combat.Init(characterModelComponent);
         }
 
         /// <summary>
         /// 敵キャラクターセットアップ
         /// </summary>
-        private static void SetupEnemyCharacter(GameObject character, CharacterMovementController characterMovementController)
+        private static void SetupEnemyCharacter(GameObject character)
         {
             character.tag = EnemyTag;
             character.layer = EnemyLayer;

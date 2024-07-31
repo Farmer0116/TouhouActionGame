@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: GameDataInstaller
   m_EditorClassIdentifier: 
   _characterParamAsset: {fileID: 11400000, guid: c535fe8f65c5d6d4698bc3ba6cacf4af, type: 2}
-  _playerCharacterCameraAsset: {fileID: 11400000, guid: 4de19f05d1dc88748add90ea71db03ac, type: 2}
+  _playerCameraAsset: {fileID: 11400000, guid: 4de19f05d1dc88748add90ea71db03ac, type: 2}

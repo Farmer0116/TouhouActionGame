@@ -9,12 +9,12 @@ namespace Cores.Installers
     public class GameDataInstaller : ScriptableObjectInstaller<GameDataInstaller>
     {
         [SerializeField] private CharacterParamAsset _characterParamAsset;
-        [SerializeField] private PlayerCharacterCameraAsset _playerCharacterCameraAsset;
+        [SerializeField] private PlayerCameraAsset _playerCameraAsset;
 
         public override void InstallBindings()
         {
             Container.BindInstance(_characterParamAsset).AsCached();
-            Container.BindInstance(_playerCharacterCameraAsset).AsCached();
+            Container.BindInstance(_playerCameraAsset).AsCached();
         }
     }
 }
