@@ -27,7 +27,7 @@
                     "name": "Look",
                     "type": "Value",
                     "id": "9ef36afa-3fac-4304-8623-07fe316f492f",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "Analog",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -183,7 +183,7 @@
                     "id": "a0a6ee67-d541-4f8b-946d-fecb14dd4a1b",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "InvertVector2(invertX=false),ScaleVector2(x=0.5,y=0.5),NormalizeVector2",
+                    "processors": "InvertVector2(invertX=false),StickDeadzone,ScaleVector2(x=0.4,y=0.4)",
                     "groups": "",
                     "action": "Look",
                     "isComposite": false,
