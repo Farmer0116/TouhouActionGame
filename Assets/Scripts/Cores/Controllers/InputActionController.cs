@@ -7,6 +7,7 @@ namespace Cores.Controllers
 {
     public class InputActionController : MonoBehaviour
     {
+        [SerializeField] private float stickRunThreshold = 0.9f;
         private IInputSystemModel inputSystemModel;
 
         void Start()
@@ -59,6 +60,17 @@ namespace Cores.Controllers
         public void OnMagicAttack(InputValue value)
         {
             inputSystemModel.SetMagicAttack(value.isPressed);
+        }
+
+        public void OnRunStick(InputValue value)
+        {
+            var input = value.Get<Vector2>();
+            var distance = input.magnitude;
+            if (distance > stickRunThreshold)
+            {
+                inputSystemModel.SetRun(true);
+            }
+            else inputSystemModel.SetRun(false);
         }
     }
 }

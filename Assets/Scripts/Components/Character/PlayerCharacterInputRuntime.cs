@@ -31,6 +31,7 @@ namespace Components.Character
         {
             CharacterMovementController = characterMovementController;
             CharacterRotationTarget = new GameObject(_characterRotationTargetName).transform;
+            CharacterRotationTarget.rotation = characterModelComponent.Center.rotation;
             _characterModelComponent = characterModelComponent;
         }
 
@@ -79,6 +80,7 @@ namespace Components.Character
                 characterInputs.Rotation = CharacterRotationTarget.rotation;
 
                 _characterFrontVector = CharacterRotationTarget.rotation.eulerAngles;
+                characterInputs.IsLockOn = _characterModelComponent.CharacterModel.IsLockOn;
             }
             else
             {

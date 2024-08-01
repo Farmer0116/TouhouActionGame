@@ -51,6 +51,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "RunStick",
+                    "type": "Value",
+                    "id": "68cdfb93-9bbe-4d12-a220-a5084b3fc2bc",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "NormalAttack",
                     "type": "Button",
                     "id": "37c60de7-4fd3-4bea-bf9d-08396f87c475",
@@ -130,18 +139,7 @@
                     "id": "2ad78a08-3f54-4789-84f0-b5e94558f34c",
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "e7f172f2-510b-401d-9659-68195464d768",
-                    "path": "<Gamepad>/dpad",
-                    "interactions": "",
-                    "processors": "",
+                    "processors": "NormalizeVector2,StickDeadzone",
                     "groups": "",
                     "action": "Move",
                     "isComposite": false,
@@ -151,6 +149,17 @@
                     "name": "",
                     "id": "391ae414-17e2-4e87-9136-4a420f7f7546",
                     "path": "<Keyboard>/space",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cb24cbe1-eb06-470a-9824-05862795905c",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",
@@ -171,6 +180,17 @@
                 },
                 {
                     "name": "",
+                    "id": "a0a6ee67-d541-4f8b-946d-fecb14dd4a1b",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "InvertVector2(invertX=false),ScaleVector2(x=0.5,y=0.5),NormalizeVector2",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "39646190-a44a-44ee-b1be-0e4849c99bc2",
                     "path": "<Mouse>/rightButton",
                     "interactions": "Press(behavior=2)",
@@ -182,8 +202,30 @@
                 },
                 {
                     "name": "",
+                    "id": "7c442806-64ef-4ac1-b83c-0a6deba813fd",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MagicAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "9c54c00f-c21d-4759-be58-30d8edc7de3c",
                     "path": "<Mouse>/leftButton",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NormalAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4061388d-05d7-4132-a94e-ae276d07dfb8",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",
@@ -210,6 +252,61 @@
                     "processors": "",
                     "groups": "",
                     "action": "LockOn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b7e8bea7-34a6-4a99-b73d-368f8a08c09d",
+                    "path": "<Gamepad>/dpad/up",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LockOn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "beebb2a2-4b35-45e5-be9f-d424a39fbaef",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LockOn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9fb361dd-9007-4e3a-86af-d525f88bbc2e",
+                    "path": "<Gamepad>/dpad/right",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LockOn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a14a59f0-932a-466a-8e0e-9245045b9a01",
+                    "path": "<Gamepad>/dpad/up",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LockOn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "932d702c-f910-4f1a-8c29-fb62ea4b9398",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "StickDeadzone",
+                    "groups": "",
+                    "action": "RunStick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
