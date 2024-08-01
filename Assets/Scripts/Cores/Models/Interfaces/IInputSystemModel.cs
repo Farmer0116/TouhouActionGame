@@ -13,6 +13,7 @@ namespace Cores.Models.Interfaces
         IReadOnlyReactiveProperty<bool> Run { get; }
         IReadOnlyReactiveProperty<bool> NormalAttack { get; }
         IReadOnlyReactiveProperty<bool> MagicAttack { get; }
+        IReadOnlyReactiveProperty<bool> Flight { get; }
 
         void SetMove(Vector2 value);
         void SetJump(bool value);
@@ -22,5 +23,6 @@ namespace Cores.Models.Interfaces
         void SetRun(bool value);
         void SetNormalAttack(bool value);
         void SetMagicAttack(bool value);
+        void SetFlight(bool value);
     }
 }

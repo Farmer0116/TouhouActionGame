@@ -25,11 +25,14 @@ namespace Cores.Models
         public bool IsMagicAttack { get; set; } = false;
         public bool IsLockOn { get; private set; } = false;
         public Transform LockOnTarget { get; private set; } = null;
+        public bool IsFlight { get; private set; } = false;
         // イベント
         public Subject<GameObject> OnSpawnSubject { get; private set; } = new Subject<GameObject>();
         public Subject<GameObject> OnDespawnSubject { get; private set; } = new Subject<GameObject>();
         public Subject<Transform> OnLockOn { get; private set; } = new Subject<Transform>();
         public Subject<Unit> OnUnLock { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnFlightEnabled { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnFlightDisabled { get; private set; } = new Subject<Unit>();
         // インスタンス
         public GameObject CharacterInstance { get; private set; }
         // Dispose
@@ -75,6 +78,18 @@ namespace Cores.Models
             IsLockOn = false;
             LockOnTarget = null;
             OnUnLock.OnNext(new Unit());
+        }
+
+        public void FlightEnabled()
+        {
+            IsFlight = true;
+            OnFlightEnabled.OnNext(new Unit());
+        }
+
+        public void FlightDisabled()
+        {
+            IsFlight = false;
+            OnFlightDisabled.OnNext(new Unit());
         }
     }
 }

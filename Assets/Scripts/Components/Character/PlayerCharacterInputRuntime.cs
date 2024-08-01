@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zenject;
 using Cores.Models.Interfaces;
+using UniRx;
 
 namespace Components.Character
 {
@@ -13,7 +14,9 @@ namespace Components.Character
         private IInputSystemModel _inputSystemModel;
         private CharacterModelComponent _characterModelComponent;
         private Vector3 _characterFrontVector = Vector3.zero;
+        private bool _flight = false;
         private ZenAutoInjecter _zenAutoInjecter;
+        private CompositeDisposable _disposables = new CompositeDisposable();
 
         private const float _maxViewField = 89f;
         private const float _minViewField = -89f;
@@ -50,6 +53,21 @@ namespace Components.Character
                 Destroy(_zenAutoInjecter);
                 _zenAutoInjecter = null;
             }
+
+            // 飛行
+            _inputSystemModel.Flight.Where(flag => flag).Subscribe(flag =>
+            {
+                if (_characterModelComponent.CharacterModel.IsFlight)
+                {
+                    _characterModelComponent.CharacterModel.FlightDisabled();
+                    _flight = true;
+                }
+                else
+                {
+                    _characterModelComponent.CharacterModel.FlightEnabled();
+                    _flight = true;
+                }
+            }).AddTo(_disposables);
         }
 
         void Update()
@@ -66,6 +84,7 @@ namespace Components.Character
                         break;
                 }
             }
+
             HandleCharacterInput();
         }
 
@@ -80,7 +99,7 @@ namespace Components.Character
                 characterInputs.Rotation = CharacterRotationTarget.rotation;
 
                 _characterFrontVector = CharacterRotationTarget.rotation.eulerAngles;
-                characterInputs.IsLockOn = _characterModelComponent.CharacterModel.IsLockOn;
+                characterInputs.EnableLockOn = _characterModelComponent.CharacterModel.IsLockOn;
             }
             else
             {
@@ -99,10 +118,21 @@ namespace Components.Character
             characterInputs.MoveAxisForward = _inputSystemModel.Move.Value.y;
             characterInputs.MoveAxisRight = _inputSystemModel.Move.Value.x;
             characterInputs.JumpDown = _inputSystemModel.Jump.Value;
-            characterInputs.IsRun = _inputSystemModel.Run.Value;
+            characterInputs.EnableRun = _inputSystemModel.Run.Value;
+            // flightは1フレ内単入力
+            if (_flight)
+            {
+                characterInputs.EnableFlight = true;
+                _flight = false;
+            }
 
             // Apply inputs to character
             CharacterMovementController.SetInputs(ref characterInputs);
+        }
+
+        void OnDestroy()
+        {
+            _disposables.Dispose();
         }
     }
 }

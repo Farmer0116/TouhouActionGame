@@ -1,14 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using KinematicCharacterController;
-using System;
 
 namespace Components.Character
 {
     public enum CharacterState
     {
         Default,
+        Flight
     }
 
     public enum OrientationMethod
@@ -23,10 +22,13 @@ namespace Components.Character
         public float MoveAxisRight;
         public Quaternion Rotation;
         public bool JumpDown;
+        public bool JumpHeld;
         public bool CrouchDown;
         public bool CrouchUp;
-        public bool IsRun;
-        public bool IsLockOn;
+        public bool CrouchHeld;
+        public bool EnableRun;
+        public bool EnableLockOn;
+        public bool EnableFlight;
     }
 
     public struct AICharacterInputs
@@ -54,7 +56,7 @@ namespace Components.Character
         public float OrientationSharpness = 10f;
         public OrientationMethod OrientationMethod = OrientationMethod.TowardsCamera;
 
-        [Header("空中での移動")]
+        [Header("空中での移動（飛行時を除く）")]
         public float MaxAirMoveSpeed = 10f;
         public float MaxAirRunMoveSpeed = 15f;
         public float AirAccelerationSpeed = 50f;
@@ -68,6 +70,11 @@ namespace Components.Character
         public float JumpPreGroundingGraceTime = 0f;
         public float JumpPostGroundingGraceTime = 0f;
 
+        [Header("飛行")]
+        public float FlightMoveSpeed = 10f;
+        public float FlightRunMoveSpeed = 15f;
+        public float FlightSharpness = 15;
+
         [Header("その他")]
         public List<Collider> IgnoredColliders = new List<Collider>();
         public BonusOrientationMethod BonusOrientationMethod = BonusOrientationMethod.None;
@@ -75,6 +82,7 @@ namespace Components.Character
         public Vector3 Gravity = new Vector3(0, -30f, 0);
         public Transform MeshRoot;
         public float CrouchedCapsuleHeight = 1f;
+        public bool OrientTowardsGravity = false;
 
         public CharacterState CurrentCharacterState { get; private set; }
 
@@ -95,16 +103,18 @@ namespace Components.Character
         private int _keepJumpingCount = 0;
         private bool _isRun = false;
         private bool _isLockOn = false;
+        private bool _jumpInputIsHeld = false;
+        private bool _crouchInputIsHeld = false;
         private Vector3 lastInnerNormal = Vector3.zero;
         private Vector3 lastOuterNormal = Vector3.zero;
 
         private void Awake()
         {
-            // 初期状態を処理する
-            TransitionToState(CharacterState.Default);
-
             // motorにcharacterControllerを割り当てる
             Motor.CharacterController = this;
+
+            // 初期状態を処理する
+            TransitionToState(CharacterState.Default);
         }
 
         /// <summary>
@@ -129,6 +139,13 @@ namespace Components.Character
                     {
                         break;
                     }
+                case CharacterState.Flight:
+                    {
+                        Motor.SetCapsuleCollisionsActivation(false);
+                        Motor.SetMovementCollisionsSolvingActivation(false);
+                        Motor.SetGroundSolvingActivation(false);
+                        break;
+                    }
             }
         }
 
@@ -143,6 +160,13 @@ namespace Components.Character
                     {
                         break;
                     }
+                case CharacterState.Flight:
+                    {
+                        Motor.SetCapsuleCollisionsActivation(true);
+                        Motor.SetMovementCollisionsSolvingActivation(true);
+                        Motor.SetGroundSolvingActivation(true);
+                        break;
+                    }
             }
         }
 
@@ -151,6 +175,21 @@ namespace Components.Character
         /// </summary>
         public void SetInputs(ref PlayerCharacterInputs inputs)
         {
+            if (inputs.EnableFlight)
+            {
+                if (CurrentCharacterState == CharacterState.Default)
+                {
+                    TransitionToState(CharacterState.Flight);
+                }
+                else if (CurrentCharacterState == CharacterState.Flight)
+                {
+                    TransitionToState(CharacterState.Default);
+                }
+            }
+
+            _jumpInputIsHeld = inputs.JumpHeld;
+            _crouchInputIsHeld = inputs.CrouchHeld;
+
             // Clamp入力
             Vector3 moveInputVector = Vector3.ClampMagnitude(new Vector3(inputs.MoveAxisRight, 0f, inputs.MoveAxisForward), 1f);
 
@@ -162,8 +201,8 @@ namespace Components.Character
             }
             Quaternion cameraPlanarRotation = Quaternion.LookRotation(cameraPlanarDirection, Motor.CharacterUp);
 
-            _isRun = inputs.IsRun;
-            _isLockOn = inputs.IsLockOn;
+            _isRun = inputs.EnableRun;
+            _isLockOn = inputs.EnableLockOn;
 
             switch (CurrentCharacterState)
             {
@@ -211,6 +250,12 @@ namespace Components.Character
                             _shouldBeCrouching = false;
                         }
 
+                        break;
+                    }
+                case CharacterState.Flight:
+                    {
+                        _moveInputVector = inputs.Rotation * moveInputVector;
+                        _lookInputVector = cameraPlanarDirection;
                         break;
                     }
             }
@@ -294,6 +339,23 @@ namespace Components.Character
                         {
                             Vector3 smoothedGravityDir = Vector3.Slerp(currentUp, Vector3.up, 1 - Mathf.Exp(-BonusOrientationSharpness * deltaTime));
                             currentRotation = Quaternion.FromToRotation(currentUp, smoothedGravityDir) * currentRotation;
+                        }
+                        break;
+                    }
+                case CharacterState.Flight:
+                    {
+                        if (_lookInputVector != Vector3.zero && OrientationSharpness > 0f)
+                        {
+                            //  現在のルック方向からターゲット・ルック方向へのスムーズな補間
+                            Vector3 smoothedLookInputDirection = Vector3.Slerp(Motor.CharacterForward, _lookInputVector, 1 - Mathf.Exp(-OrientationSharpness * deltaTime)).normalized;
+
+                            // 現在の回転を設定する (KinematicCharacterMotorによって使用される)
+                            currentRotation = Quaternion.LookRotation(smoothedLookInputDirection, Motor.CharacterUp);
+                        }
+                        if (OrientTowardsGravity)
+                        {
+                            // 重力を反転させるため、現在より回転を上げる
+                            currentRotation = Quaternion.FromToRotation((currentRotation * Vector3.up), -Gravity) * currentRotation;
                         }
                         break;
                     }
@@ -454,6 +516,17 @@ namespace Components.Character
                             currentVelocity += _internalVelocityAdd;
                             _internalVelocityAdd = Vector3.zero;
                         }
+                        break;
+                    }
+                case CharacterState.Flight:
+                    {
+                        float verticalInput = 0f + (_jumpInputIsHeld ? 1f : 0f) + (_crouchInputIsHeld ? -1f : 0f);
+
+                        // 目標速度へのスムーズな補間
+                        Vector3 targetMovementVelocity = Vector3.zero;
+                        if (_isRun) targetMovementVelocity = (_moveInputVector + (Motor.CharacterUp * verticalInput)).normalized * FlightRunMoveSpeed;
+                        else targetMovementVelocity = (_moveInputVector + (Motor.CharacterUp * verticalInput)).normalized * FlightMoveSpeed;
+                        currentVelocity = Vector3.Lerp(currentVelocity, targetMovementVelocity, 1 - Mathf.Exp(-FlightSharpness * deltaTime));
                         break;
                     }
             }

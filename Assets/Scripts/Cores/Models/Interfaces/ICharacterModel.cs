@@ -16,11 +16,14 @@ namespace Cores.Models.Interfaces
         bool IsMagicAttack { get; set; }
         bool IsLockOn { get; }
         Transform LockOnTarget { get; }
+        bool IsFlight { get; }
         // イベント
         Subject<GameObject> OnSpawnSubject { get; }
         Subject<GameObject> OnDespawnSubject { get; }
         Subject<Transform> OnLockOn { get; }
         Subject<Unit> OnUnLock { get; }
+        Subject<Unit> OnFlightEnabled { get; }
+        Subject<Unit> OnFlightDisabled { get; }
         // インスタンス
         GameObject CharacterInstance { get; }
         // Dispose
@@ -30,6 +33,8 @@ namespace Cores.Models.Interfaces
         void Despawn();
         void LockOn(Transform transform);
         void UnLock();
+        void FlightEnabled();
+        void FlightDisabled();
     }
 
     // 初期化パラメータ

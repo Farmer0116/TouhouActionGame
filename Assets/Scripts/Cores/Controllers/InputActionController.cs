@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Cores.Models.Interfaces;
 using Zenject;
+using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
+using System;
 
 namespace Cores.Controllers
 {
@@ -71,6 +74,18 @@ namespace Cores.Controllers
                 inputSystemModel.SetRun(true);
             }
             else inputSystemModel.SetRun(false);
+        }
+
+        public void OnFlight(InputValue value)
+        {
+            SetDelay(inputSystemModel.SetFlight);
+        }
+
+        private async Task SetDelay(Action<bool> action)
+        {
+            action(true);
+            await UniTask.DelayFrame(1);
+            action(false);
         }
     }
 }
