@@ -141,9 +141,6 @@ namespace Components.Character
                     }
                 case CharacterState.Flight:
                     {
-                        Motor.SetCapsuleCollisionsActivation(false);
-                        Motor.SetMovementCollisionsSolvingActivation(false);
-                        Motor.SetGroundSolvingActivation(false);
                         break;
                     }
             }
@@ -162,9 +159,6 @@ namespace Components.Character
                     }
                 case CharacterState.Flight:
                     {
-                        Motor.SetCapsuleCollisionsActivation(true);
-                        Motor.SetMovementCollisionsSolvingActivation(true);
-                        Motor.SetGroundSolvingActivation(true);
                         break;
                     }
             }
