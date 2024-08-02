@@ -322,19 +322,8 @@
                 {
                     "name": "",
                     "id": "e06479ba-d773-455f-9fdf-b58787bed3e9",
-                    "path": "<Keyboard>/space",
-                    "interactions": "MultiTap",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Flight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2d9a1af5-52a1-4afa-bd54-34043ba922a1",
-                    "path": "<Gamepad>/buttonWest",
-                    "interactions": "MultiTap(tapDelay=0.15)",
+                    "path": "<Keyboard>/#(Q)",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Flight",
