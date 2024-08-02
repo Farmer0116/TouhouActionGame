@@ -254,8 +254,27 @@ namespace Components.Character
                     }
                 case CharacterState.Flight:
                     {
-                        _moveInputVector = inputs.Rotation * moveInputVector;
-                        _lookInputVector = cameraPlanarDirection;
+                        // ロックオン時はTowardsCameraと同様の計算
+                        if (_isLockOn)
+                        {
+                            _lookInputVector = cameraPlanarDirection;
+                            _moveInputVector = inputs.Rotation * moveInputVector;
+                        }
+                        else
+                        {
+                            switch (OrientationMethod)
+                            {
+                                case OrientationMethod.TowardsCamera:
+                                    _moveInputVector = inputs.Rotation * moveInputVector;
+                                    _lookInputVector = cameraPlanarDirection;
+                                    break;
+                                case OrientationMethod.TowardsMovement:
+                                    var yAxisRotation = Quaternion.Euler(new Vector3(0, inputs.Rotation.eulerAngles.y, 0));
+                                    _moveInputVector = yAxisRotation * moveInputVector;
+                                    _lookInputVector = _moveInputVector.normalized;
+                                    break;
+                            }
+                        }
                         break;
                     }
             }
@@ -521,7 +540,6 @@ namespace Components.Character
                 case CharacterState.Flight:
                     {
                         float verticalInput = 0f + (_jumpInputIsHeld ? 1f : 0f) + (_crouchInputIsHeld ? -1f : 0f);
-
                         // 目標速度へのスムーズな補間
                         Vector3 targetMovementVelocity = Vector3.zero;
                         if (_isRun) targetMovementVelocity = (_moveInputVector + (Motor.CharacterUp * verticalInput)).normalized * FlightRunMoveSpeed;
