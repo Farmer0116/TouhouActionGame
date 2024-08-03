@@ -35,6 +35,11 @@ namespace Cores.Controllers
             inputSystemModel.SetJump(value.isPressed);
         }
 
+        public void OnCrouch(InputValue value)
+        {
+            inputSystemModel.SetCrouch(value.isPressed);
+        }
+
         public void OnLook(InputValue value)
         {
             inputSystemModel.SetLook(value.Get<Vector2>());

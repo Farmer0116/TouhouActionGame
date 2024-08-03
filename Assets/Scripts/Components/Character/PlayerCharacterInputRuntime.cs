@@ -69,11 +69,18 @@ namespace Components.Character
                 }
             }).AddTo(_disposables);
 
-            // 昇降
+            // 上昇
             _inputSystemModel.Jump.Subscribe(value =>
             {
                 if (value) _characterModelComponent.CharacterModel.StartAscending();
                 else _characterModelComponent.CharacterModel.EndAscending();
+            }).AddTo(_disposables);
+
+            // 下降
+            _inputSystemModel.Crouch.Subscribe(value =>
+            {
+                if (value) _characterModelComponent.CharacterModel.StartDescending();
+                else _characterModelComponent.CharacterModel.EndDescending();
             }).AddTo(_disposables);
         }
 
@@ -127,6 +134,7 @@ namespace Components.Character
             characterInputs.JumpDown = _inputSystemModel.Jump.Value;
             characterInputs.EnableRun = _inputSystemModel.Run.Value;
             if (_characterModelComponent.CharacterModel.IsFlight) characterInputs.JumpHeld = _characterModelComponent.CharacterModel.IsAscending;
+            if (_characterModelComponent.CharacterModel.IsFlight) characterInputs.CrouchHeld = _characterModelComponent.CharacterModel.IsDescending;
             // flightは1フレ内単入力
             if (_flight)
             {
