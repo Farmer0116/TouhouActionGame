@@ -137,10 +137,12 @@ namespace Components.Character
             {
                 case CharacterState.Default:
                     {
+                        Motor.SetGroundSolvingActivation(true);
                         break;
                     }
                 case CharacterState.Flight:
                     {
+                        Motor.SetGroundSolvingActivation(false);
                         break;
                     }
             }

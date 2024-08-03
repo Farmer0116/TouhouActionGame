@@ -245,7 +245,7 @@
                 {
                     "name": "",
                     "id": "d7b7c4e1-e657-47b0-ae1a-1387b3d985c1",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/ctrl",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",

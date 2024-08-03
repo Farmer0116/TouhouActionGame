@@ -17,6 +17,7 @@ namespace Cores.Models.Interfaces
         bool IsLockOn { get; }
         Transform LockOnTarget { get; }
         bool IsFlight { get; }
+        bool IsAscending { get; }
         // イベント
         Subject<GameObject> OnSpawnSubject { get; }
         Subject<GameObject> OnDespawnSubject { get; }
@@ -24,6 +25,8 @@ namespace Cores.Models.Interfaces
         Subject<Unit> OnUnLock { get; }
         Subject<Unit> OnFlightEnabled { get; }
         Subject<Unit> OnFlightDisabled { get; }
+        Subject<Unit> OnStartAscending { get; }
+        Subject<Unit> OnEndAscending { get; }
         // インスタンス
         GameObject CharacterInstance { get; }
         // Dispose
@@ -35,6 +38,8 @@ namespace Cores.Models.Interfaces
         void UnLock();
         void FlightEnabled();
         void FlightDisabled();
+        void StartAscending();
+        void EndAscending();
     }
 
     // 初期化パラメータ

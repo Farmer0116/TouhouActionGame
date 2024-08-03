@@ -26,6 +26,7 @@ namespace Cores.Models
         public bool IsLockOn { get; private set; } = false;
         public Transform LockOnTarget { get; private set; } = null;
         public bool IsFlight { get; private set; } = false;
+        public bool IsAscending { get; private set; } = false;
         // イベント
         public Subject<GameObject> OnSpawnSubject { get; private set; } = new Subject<GameObject>();
         public Subject<GameObject> OnDespawnSubject { get; private set; } = new Subject<GameObject>();
@@ -33,6 +34,8 @@ namespace Cores.Models
         public Subject<Unit> OnUnLock { get; private set; } = new Subject<Unit>();
         public Subject<Unit> OnFlightEnabled { get; private set; } = new Subject<Unit>();
         public Subject<Unit> OnFlightDisabled { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnStartAscending { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnEndAscending { get; } = new Subject<Unit>();
         // インスタンス
         public GameObject CharacterInstance { get; private set; }
         // Dispose
@@ -90,6 +93,18 @@ namespace Cores.Models
         {
             IsFlight = false;
             OnFlightDisabled.OnNext(new Unit());
+        }
+
+        public void StartAscending()
+        {
+            IsAscending = true;
+            OnStartAscending.OnNext(new Unit());
+        }
+
+        public void EndAscending()
+        {
+            IsAscending = false;
+            OnEndAscending.OnNext(new Unit());
         }
     }
 }
