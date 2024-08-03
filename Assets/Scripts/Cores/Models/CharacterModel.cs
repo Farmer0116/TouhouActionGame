@@ -22,8 +22,6 @@ namespace Cores.Models
         public CharacterModelParam CharacterModelParam { get; set; }
 
         // 状態
-        public bool IsNormalAttack { get; set; } = false;
-        public bool IsMagicAttack { get; set; } = false;
         public bool IsLockOn { get; private set; } = false;
         public Transform LockOnTarget { get; private set; } = null;
         public bool IsFlight { get; private set; } = false;
@@ -35,6 +33,8 @@ namespace Cores.Models
         public Subject<Unit> OnUnLock { get; private set; } = new Subject<Unit>();
         public Subject<Unit> OnEnableFlight { get; private set; } = new Subject<Unit>();
         public Subject<Unit> OnDisableFlight { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnNormalAttack { get; } = new Subject<Unit>();
+        public Subject<Unit> OnMagicAttack { get; } = new Subject<Unit>();
         public Subject<Unit> OnJump { get; private set; } = new Subject<Unit>();
         public Subject<Unit> OnAscend { get; } = new Subject<Unit>();
         public Subject<Unit> OnDescend { get; private set; } = new Subject<Unit>();
@@ -98,6 +98,16 @@ namespace Cores.Models
         {
             IsFlight = false;
             OnDisableFlight.OnNext(new Unit());
+        }
+
+        public void NormalAttack()
+        {
+            OnNormalAttack.OnNext(new Unit()); ;
+        }
+
+        public void MagicAttack()
+        {
+            OnMagicAttack.OnNext(new Unit()); ;
         }
 
         public void Jump()

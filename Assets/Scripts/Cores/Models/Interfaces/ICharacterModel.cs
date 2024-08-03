@@ -13,8 +13,6 @@ namespace Cores.Models.Interfaces
         CharacterModelParam CharacterModelParam { get; set; }
 
         // 状態
-        bool IsNormalAttack { get; set; }
-        bool IsMagicAttack { get; set; }
         bool IsLockOn { get; }
         Transform LockOnTarget { get; }
         bool IsFlight { get; }
@@ -26,6 +24,8 @@ namespace Cores.Models.Interfaces
         Subject<Unit> OnUnLock { get; }
         Subject<Unit> OnEnableFlight { get; }
         Subject<Unit> OnDisableFlight { get; }
+        Subject<Unit> OnNormalAttack { get; }
+        Subject<Unit> OnMagicAttack { get; }
         Subject<Unit> OnJump { get; }
         Subject<Unit> OnAscend { get; }
         Subject<Unit> OnDescend { get; }
@@ -43,6 +43,8 @@ namespace Cores.Models.Interfaces
         void UnLock();
         void EnableFlight();
         void DisableFlight();
+        void NormalAttack();
+        void MagicAttack();
         void Jump();
         void Ascend();
         void Descend();
