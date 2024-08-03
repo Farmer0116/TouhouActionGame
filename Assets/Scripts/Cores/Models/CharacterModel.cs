@@ -20,28 +20,39 @@ namespace Cores.Models
 
         // パラメータ
         public CharacterModelParam CharacterModelParam { get; set; }
-        // 行動パターン
-        public bool IsNormalAttack { get; set; } = false;
-        public bool IsMagicAttack { get; set; } = false;
+
+        // 状態
         public bool IsLockOn { get; private set; } = false;
         public Transform LockOnTarget { get; private set; } = null;
+        public bool IsFlight { get; private set; } = false;
+
         // イベント
-        public Subject<GameObject> OnSpawnSubject { get; private set; } = new Subject<GameObject>();
-        public Subject<GameObject> OnDespawnSubject { get; private set; } = new Subject<GameObject>();
+        public Subject<GameObject> OnSpawn { get; private set; } = new Subject<GameObject>();
+        public Subject<GameObject> OnDespawn { get; private set; } = new Subject<GameObject>();
         public Subject<Transform> OnLockOn { get; private set; } = new Subject<Transform>();
         public Subject<Unit> OnUnLock { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnEnableFlight { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnDisableFlight { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnNormalAttack { get; } = new Subject<Unit>();
+        public Subject<Unit> OnMagicAttack { get; } = new Subject<Unit>();
+        public Subject<Unit> OnJump { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnAscend { get; } = new Subject<Unit>();
+        public Subject<Unit> OnDescend { get; private set; } = new Subject<Unit>();
+
         // インスタンス
         public GameObject CharacterInstance { get; private set; }
+
         // Dispose
         public CompositeDisposable DespawnDisposables { get; private set; } = new CompositeDisposable();
 
+        // 関数
         public GameObject Spawn(Vector3 position, Quaternion rotation)
         {
 #if UNITY_EDITOR
             Debug.Log($"{CharacterModelParam.Name}を{position}に{rotation}を向いて生成します");
 #endif
             CharacterInstance = CharacterUtility.SpawnCharacter(CharacterModelParam.ControllerType, CharacterModelParam.Model, position, rotation, this);
-            OnSpawnSubject.OnNext(CharacterInstance);
+            OnSpawn.OnNext(CharacterInstance);
             return CharacterInstance;
         }
 
@@ -52,7 +63,7 @@ namespace Cores.Models
 #endif
             if (CharacterInstance != null)
             {
-                OnDespawnSubject.OnNext(CharacterInstance);
+                OnDespawn.OnNext(CharacterInstance);
                 DespawnDisposables.Dispose();
                 GameObject.Destroy(CharacterInstance);
                 CharacterInstance = null;
@@ -75,6 +86,43 @@ namespace Cores.Models
             IsLockOn = false;
             LockOnTarget = null;
             OnUnLock.OnNext(new Unit());
+        }
+
+        public void EnableFlight()
+        {
+            IsFlight = true;
+            OnEnableFlight.OnNext(new Unit());
+        }
+
+        public void DisableFlight()
+        {
+            IsFlight = false;
+            OnDisableFlight.OnNext(new Unit());
+        }
+
+        public void NormalAttack()
+        {
+            OnNormalAttack.OnNext(new Unit()); ;
+        }
+
+        public void MagicAttack()
+        {
+            OnMagicAttack.OnNext(new Unit()); ;
+        }
+
+        public void Jump()
+        {
+            OnJump.OnNext(new Unit());
+        }
+
+        public void Ascend()
+        {
+            OnAscend.OnNext(new Unit());
+        }
+
+        public void Descend()
+        {
+            OnDescend.OnNext(new Unit());
         }
     }
 }

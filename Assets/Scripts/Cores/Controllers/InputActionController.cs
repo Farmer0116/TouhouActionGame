@@ -2,11 +2,15 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Cores.Models.Interfaces;
 using Zenject;
+using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
+using System;
 
 namespace Cores.Controllers
 {
     public class InputActionController : MonoBehaviour
     {
+        [SerializeField] private float stickRunThreshold = 0.9f;
         private IInputSystemModel inputSystemModel;
 
         void Start()
@@ -29,6 +33,11 @@ namespace Cores.Controllers
         public void OnJump(InputValue value)
         {
             inputSystemModel.SetJump(value.isPressed);
+        }
+
+        public void OnCrouch(InputValue value)
+        {
+            inputSystemModel.SetCrouch(value.isPressed);
         }
 
         public void OnLook(InputValue value)
@@ -59,6 +68,29 @@ namespace Cores.Controllers
         public void OnMagicAttack(InputValue value)
         {
             inputSystemModel.SetMagicAttack(value.isPressed);
+        }
+
+        public void OnRunStick(InputValue value)
+        {
+            var input = value.Get<Vector2>();
+            var distance = input.magnitude;
+            if (distance > stickRunThreshold)
+            {
+                inputSystemModel.SetRun(true);
+            }
+            else inputSystemModel.SetRun(false);
+        }
+
+        public void OnFlight(InputValue value)
+        {
+            SetDelay(inputSystemModel.SetFlight);
+        }
+
+        private async Task SetDelay(Action<bool> action)
+        {
+            action(true);
+            await UniTask.DelayFrame(1);
+            action(false);
         }
     }
 }

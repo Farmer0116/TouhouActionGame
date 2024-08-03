@@ -308,8 +308,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Center: {fileID: 7717156629798457293}
   EyeLevel: {fileID: 5949670704835367203}
-  OrientationMethod: 0
-  CharacterRotation: {x: 0, y: 0, z: 0, w: 0}
+  OrientationMethod: 1
+  HeadRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &7087727160688228555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,7 +327,7 @@ MonoBehaviour:
   MaxStableRunMoveSpeed: 14
   StableMovementSharpness: 10
   OrientationSharpness: 10
-  OrientationMethod: 0
+  OrientationMethod: 1
   MaxAirMoveSpeed: 7
   MaxAirRunMoveSpeed: 14
   AirAccelerationSpeed: 50

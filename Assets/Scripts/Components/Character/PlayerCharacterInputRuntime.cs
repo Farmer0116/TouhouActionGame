@@ -1,19 +1,23 @@
 using UnityEngine;
 using Zenject;
 using Cores.Models.Interfaces;
+using UniRx;
 
 namespace Components.Character
 {
     public class PlayerCharacterInputRuntime : MonoBehaviour
     {
         public CharacterMovementController CharacterMovementController { get { return _characterMovementController; } private set { _characterMovementController = value; } }
+
         [SerializeField] private CharacterMovementController _characterMovementController;
-        public Transform CharacterRotationTarget { get; private set; }
+        [SerializeField] private Transform _characterRotationTarget;
 
         private IInputSystemModel _inputSystemModel;
         private CharacterModelComponent _characterModelComponent;
         private Vector3 _characterFrontVector = Vector3.zero;
+        private (Vector2 move, Vector2 look, bool run, bool flight, bool jump, bool ascend, bool descend) _inputState;
         private ZenAutoInjecter _zenAutoInjecter;
+        private CompositeDisposable _disposables = new CompositeDisposable();
 
         private const float _maxViewField = 89f;
         private const float _minViewField = -89f;
@@ -30,7 +34,8 @@ namespace Components.Character
         public void Init(CharacterMovementController characterMovementController, CharacterModelComponent characterModelComponent)
         {
             CharacterMovementController = characterMovementController;
-            CharacterRotationTarget = new GameObject(_characterRotationTargetName).transform;
+            _characterRotationTarget = new GameObject(_characterRotationTargetName).transform;
+            _characterRotationTarget.rotation = characterModelComponent.Center.rotation;
             _characterModelComponent = characterModelComponent;
         }
 
@@ -49,6 +54,9 @@ namespace Components.Character
                 Destroy(_zenAutoInjecter);
                 _zenAutoInjecter = null;
             }
+
+            SetUpInput();
+            SetUpModelEvent();
         }
 
         void Update()
@@ -65,42 +73,132 @@ namespace Components.Character
                         break;
                 }
             }
+
             HandleCharacterInput();
+        }
+
+        /// <summary>
+        /// 入力とモデルのイベントの紐づけ
+        /// </summary>
+        private void SetUpInput()
+        {
+            // 移動
+            _inputSystemModel.Move.Subscribe(value =>
+            {
+                _inputState.move = value;
+            }).AddTo(_disposables);
+
+            // 回転
+            _inputSystemModel.Look.Subscribe(value =>
+            {
+                _inputState.look = value;
+            }).AddTo(_disposables);
+
+            // 走る
+            _inputSystemModel.Run.Subscribe(value =>
+            {
+                _inputState.run = value;
+            }).AddTo(_disposables);
+
+            // 飛行
+            _inputSystemModel.Flight.Where(flag => flag).Subscribe(flag =>
+            {
+                if (_characterModelComponent.CharacterModel.IsFlight)
+                {
+                    _inputState.flight = true;
+                    _characterModelComponent.CharacterModel.DisableFlight();
+                }
+                else
+                {
+                    _inputState.flight = true;
+                    _characterModelComponent.CharacterModel.EnableFlight();
+                }
+            }).AddTo(_disposables);
+
+            // ジャンプ
+            _inputSystemModel.Jump.Subscribe(value =>
+            {
+                _inputState.jump = value;
+                if (value) _characterModelComponent.CharacterModel.Jump();
+            }).AddTo(_disposables);
+
+            // 上昇
+            _inputSystemModel.Jump.Subscribe(value =>
+            {
+                _inputState.ascend = value;
+                if (value) _characterModelComponent.CharacterModel.Ascend();
+            }).AddTo(_disposables);
+
+            // 下降
+            _inputSystemModel.Crouch.Subscribe(value =>
+            {
+                _inputState.descend = value;
+                if (value) _characterModelComponent.CharacterModel.Descend();
+            }).AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// モデルのイベントと紐づけ
+        /// </summary>
+        private void SetUpModelEvent()
+        {
+            _characterModelComponent.CharacterModel.OnEnableFlight.Subscribe(_ =>
+            {
+            }).AddTo(_disposables);
+
+            _characterModelComponent.CharacterModel.OnDisableFlight.Subscribe(_ =>
+            {
+            }).AddTo(_disposables);
+
+            _characterModelComponent.CharacterModel.OnJump.Subscribe(_ =>
+            {
+            }).AddTo(_disposables);
         }
 
         private void HandleCharacterInput()
         {
-            Components.Character.PlayerCharacterInputs characterInputs = new Components.Character.PlayerCharacterInputs();
+            PlayerCharacterInputs characterInputs = new PlayerCharacterInputs();
 
             if (_characterModelComponent.CharacterModel.IsLockOn && _characterModelComponent.CharacterModel.LockOnTarget != null)
             {
-                CharacterRotationTarget.position = _characterModelComponent.EyeLevel.position;
-                CharacterRotationTarget.LookAt(_characterModelComponent.CharacterModel.LockOnTarget);
-                characterInputs.Rotation = CharacterRotationTarget.rotation;
+                _characterRotationTarget.position = _characterModelComponent.EyeLevel.position;
+                _characterRotationTarget.LookAt(_characterModelComponent.CharacterModel.LockOnTarget);
+                _characterFrontVector = _characterRotationTarget.rotation.eulerAngles;
 
-                _characterFrontVector = CharacterRotationTarget.rotation.eulerAngles;
+                characterInputs.Rotation = _characterRotationTarget.rotation;
+                characterInputs.EnableLockOn = _characterModelComponent.CharacterModel.IsLockOn;
             }
             else
             {
-                CharacterRotationTarget.position = _characterModelComponent.EyeLevel.position;
-                _characterFrontVector.y += _inputSystemModel.Look.Value.x;
-                _characterFrontVector.x += _inputSystemModel.Look.Value.y;
+                _characterRotationTarget.position = _characterModelComponent.EyeLevel.position;
+                _characterFrontVector.y += _inputState.look.x;
+                _characterFrontVector.x += _inputState.look.y;
                 _characterFrontVector.x = Mathf.Clamp(_characterFrontVector.x, _minViewField, _maxViewField);
-                CharacterRotationTarget.rotation = Quaternion.Euler(new Vector3(_characterFrontVector.x, _characterFrontVector.y, 0));
-                characterInputs.Rotation = CharacterRotationTarget.rotation;
+                _characterRotationTarget.rotation = Quaternion.Euler(new Vector3(_characterFrontVector.x, _characterFrontVector.y, 0));
+
+                characterInputs.Rotation = _characterRotationTarget.rotation;
+            }
+            _characterModelComponent.HeadRotation = _characterRotationTarget.rotation;
+
+            characterInputs.MoveAxisForward = _inputState.move.y;
+            characterInputs.MoveAxisRight = _inputState.move.x;
+            characterInputs.JumpDown = _inputState.jump;
+            characterInputs.EnableRun = _inputState.run;
+            if (_characterModelComponent.CharacterModel.IsFlight) characterInputs.JumpHeld = _inputState.ascend;
+            if (_characterModelComponent.CharacterModel.IsFlight) characterInputs.CrouchHeld = _inputState.descend;
+            if (_inputState.flight) // flightは1フレ内単入力
+            {
+                characterInputs.EnableFlight = true;
+                _inputState.flight = false;
             }
 
-            // モデルに回転情報を共有
-            _characterModelComponent.HeadRotation = CharacterRotationTarget.rotation;
-
-            // characterInputsへの代入
-            characterInputs.MoveAxisForward = _inputSystemModel.Move.Value.y;
-            characterInputs.MoveAxisRight = _inputSystemModel.Move.Value.x;
-            characterInputs.JumpDown = _inputSystemModel.Jump.Value;
-            characterInputs.IsRun = _inputSystemModel.Run.Value;
-
-            // Apply inputs to character
+            // キャラクターへ入力情報のセット
             CharacterMovementController.SetInputs(ref characterInputs);
+        }
+
+        void OnDestroy()
+        {
+            _disposables.Dispose();
         }
     }
 }

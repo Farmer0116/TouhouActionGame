@@ -11,25 +11,43 @@ namespace Cores.Models.Interfaces
     {
         // パラメータ
         CharacterModelParam CharacterModelParam { get; set; }
-        // 行動パターン
-        bool IsNormalAttack { get; set; }
-        bool IsMagicAttack { get; set; }
+
+        // 状態
         bool IsLockOn { get; }
         Transform LockOnTarget { get; }
+        bool IsFlight { get; }
+
         // イベント
-        Subject<GameObject> OnSpawnSubject { get; }
-        Subject<GameObject> OnDespawnSubject { get; }
+        Subject<GameObject> OnSpawn { get; }
+        Subject<GameObject> OnDespawn { get; }
         Subject<Transform> OnLockOn { get; }
         Subject<Unit> OnUnLock { get; }
+        Subject<Unit> OnEnableFlight { get; }
+        Subject<Unit> OnDisableFlight { get; }
+        Subject<Unit> OnNormalAttack { get; }
+        Subject<Unit> OnMagicAttack { get; }
+        Subject<Unit> OnJump { get; }
+        Subject<Unit> OnAscend { get; }
+        Subject<Unit> OnDescend { get; }
+
         // インスタンス
         GameObject CharacterInstance { get; }
+
         // Dispose
         CompositeDisposable DespawnDisposables { get; }
+
         // 関数
         GameObject Spawn(Vector3 position, Quaternion rotation);
         void Despawn();
         void LockOn(Transform transform);
         void UnLock();
+        void EnableFlight();
+        void DisableFlight();
+        void NormalAttack();
+        void MagicAttack();
+        void Jump();
+        void Ascend();
+        void Descend();
     }
 
     // 初期化パラメータ

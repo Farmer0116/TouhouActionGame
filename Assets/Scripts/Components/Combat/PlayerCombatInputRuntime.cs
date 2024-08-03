@@ -12,6 +12,7 @@ namespace Components.Combat
         private CombatMotor _combatMotor;
         private IInputSystemModel _inputSystemModel;
         private CharacterModelComponent _characterModelComponent;
+        private (bool normalAttack, bool magicAttack, bool lockOn) _inputState;
         private ZenAutoInjecter _zenAutoInjecter;
         private CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -39,8 +40,7 @@ namespace Components.Combat
         private void Update()
         {
             // 魔法攻撃
-            _combatMotor.SetInput(new CombatInput(isMagicAttack: _inputSystemModel.MagicAttack.Value));
-            _characterModelComponent.CharacterModel.IsMagicAttack = _inputSystemModel.MagicAttack.Value;
+            _combatMotor.SetInput(new CombatInput(isMagicAttack: _inputState.magicAttack));
         }
 
         private void Start()
@@ -51,35 +51,67 @@ namespace Components.Combat
                 _zenAutoInjecter = null;
             }
 
+            SetUpInput();
+            SetUpModelEvent();
+        }
+
+        /// <summary>
+        /// 入力とモデルのイベントの紐づけ
+        /// </summary>
+        private void SetUpInput()
+        {
             // 通常攻撃
-            _inputSystemModel.NormalAttack.Subscribe(flag =>
+            _inputSystemModel.NormalAttack.Subscribe(value =>
             {
-                if (flag) _combatMotor.SetInput(new CombatInput(isNormalAttack: true));
-                _characterModelComponent.CharacterModel.IsNormalAttack = flag;
+                _inputState.normalAttack = value;
+                _characterModelComponent.CharacterModel.NormalAttack();
             }).AddTo(_disposables);
 
-            // _inputSystemModel.MagicAttack.Where(flag => flag).Subscribe(flag =>
-            // {
-            //     _combatMotor.SetInput(new CombatInput(isMagicAttack: true));
-            // }).AddTo(_disposables);
+            // 魔法攻撃
+            _inputSystemModel.MagicAttack.Subscribe(value =>
+            {
+                _inputState.magicAttack = value;
+                _characterModelComponent.CharacterModel.MagicAttack();
+            }).AddTo(_disposables);
 
             // ロックオン
-            _inputSystemModel.LockOn.Where(flag => flag).Subscribe(flag =>
+            _inputSystemModel.LockOn.Subscribe(value =>
             {
-                if (_characterModelComponent.CharacterModel.IsLockOn)
+                _inputState.lockOn = value;
+                if (value)
                 {
-                    _characterModelComponent.CharacterModel.UnLock();
-                }
-                else
-                {
-                    // todo: 取得する敵を選別
-                    var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-                    if (enemies.Count() > 0)
+                    if (_characterModelComponent.CharacterModel.IsLockOn)
                     {
-                        var target = enemies[0].GetComponent<CombatMotor>().Target;
-                        _characterModelComponent.CharacterModel.LockOn(target);
+                        _characterModelComponent.CharacterModel.UnLock();
+                    }
+                    else
+                    {
+                        // todo: 取得する敵を選別
+                        var enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                        if (enemies.Count() > 0)
+                        {
+                            var target = enemies[0].GetComponent<CombatMotor>().Target;
+                            _characterModelComponent.CharacterModel.LockOn(target);
+                        }
                     }
                 }
+            }).AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// モデルのイベントと紐づけ
+        /// </summary>
+        private void SetUpModelEvent()
+        {
+            // 通常攻撃
+            _characterModelComponent.CharacterModel.OnNormalAttack.Subscribe(_ =>
+            {
+                _combatMotor.SetInput(new CombatInput(isNormalAttack: true));
+            }).AddTo(_disposables);
+
+            // 魔法攻撃
+            _characterModelComponent.CharacterModel.OnMagicAttack.Subscribe(_ =>
+            {
             }).AddTo(_disposables);
         }
 

@@ -58,7 +58,7 @@ namespace Components.Character
             }
 
             // スポーンイベント
-            _character.OnSpawnSubject.Subscribe(root =>
+            _character.OnSpawn.Subscribe(root =>
             {
                 // PlayerModelに格納
                 _playerCharacterModel.CharacterModel = _character;
@@ -68,7 +68,7 @@ namespace Components.Character
             }).AddTo(_disposables);
 
             // デスポーンイベント
-            _character.OnDespawnSubject.Subscribe(root =>
+            _character.OnDespawn.Subscribe(root =>
             {
                 // _playerCharacterModel.Remove();
             }).AddTo(_disposables);
