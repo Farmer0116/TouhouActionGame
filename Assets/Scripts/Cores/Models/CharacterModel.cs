@@ -20,37 +20,39 @@ namespace Cores.Models
 
         // パラメータ
         public CharacterModelParam CharacterModelParam { get; set; }
-        // 行動パターン
+
+        // 状態
         public bool IsNormalAttack { get; set; } = false;
         public bool IsMagicAttack { get; set; } = false;
         public bool IsLockOn { get; private set; } = false;
         public Transform LockOnTarget { get; private set; } = null;
         public bool IsFlight { get; private set; } = false;
-        public bool IsAscending { get; private set; } = false;
-        public bool IsDescending { get; private set; } = false;
+
         // イベント
-        public Subject<GameObject> OnSpawnSubject { get; private set; } = new Subject<GameObject>();
-        public Subject<GameObject> OnDespawnSubject { get; private set; } = new Subject<GameObject>();
+        public Subject<GameObject> OnSpawn { get; private set; } = new Subject<GameObject>();
+        public Subject<GameObject> OnDespawn { get; private set; } = new Subject<GameObject>();
         public Subject<Transform> OnLockOn { get; private set; } = new Subject<Transform>();
         public Subject<Unit> OnUnLock { get; private set; } = new Subject<Unit>();
-        public Subject<Unit> OnFlightEnabled { get; private set; } = new Subject<Unit>();
-        public Subject<Unit> OnFlightDisabled { get; private set; } = new Subject<Unit>();
-        public Subject<Unit> OnStartAscending { get; private set; } = new Subject<Unit>();
-        public Subject<Unit> OnEndAscending { get; } = new Subject<Unit>();
-        public Subject<Unit> OnStartDescending { get; private set; } = new Subject<Unit>();
-        public Subject<Unit> OnEndDescending { get; } = new Subject<Unit>();
+        public Subject<Unit> OnEnableFlight { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnDisableFlight { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnJump { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnAscend { get; } = new Subject<Unit>();
+        public Subject<Unit> OnDescend { get; private set; } = new Subject<Unit>();
+
         // インスタンス
         public GameObject CharacterInstance { get; private set; }
+
         // Dispose
         public CompositeDisposable DespawnDisposables { get; private set; } = new CompositeDisposable();
 
+        // 関数
         public GameObject Spawn(Vector3 position, Quaternion rotation)
         {
 #if UNITY_EDITOR
             Debug.Log($"{CharacterModelParam.Name}を{position}に{rotation}を向いて生成します");
 #endif
             CharacterInstance = CharacterUtility.SpawnCharacter(CharacterModelParam.ControllerType, CharacterModelParam.Model, position, rotation, this);
-            OnSpawnSubject.OnNext(CharacterInstance);
+            OnSpawn.OnNext(CharacterInstance);
             return CharacterInstance;
         }
 
@@ -61,7 +63,7 @@ namespace Cores.Models
 #endif
             if (CharacterInstance != null)
             {
-                OnDespawnSubject.OnNext(CharacterInstance);
+                OnDespawn.OnNext(CharacterInstance);
                 DespawnDisposables.Dispose();
                 GameObject.Destroy(CharacterInstance);
                 CharacterInstance = null;
@@ -86,40 +88,31 @@ namespace Cores.Models
             OnUnLock.OnNext(new Unit());
         }
 
-        public void FlightEnabled()
+        public void EnableFlight()
         {
             IsFlight = true;
-            OnFlightEnabled.OnNext(new Unit());
+            OnEnableFlight.OnNext(new Unit());
         }
 
-        public void FlightDisabled()
+        public void DisableFlight()
         {
             IsFlight = false;
-            OnFlightDisabled.OnNext(new Unit());
+            OnDisableFlight.OnNext(new Unit());
         }
 
-        public void StartAscending()
+        public void Jump()
         {
-            IsAscending = true;
-            OnStartAscending.OnNext(new Unit());
+            OnJump.OnNext(new Unit());
         }
 
-        public void EndAscending()
+        public void Ascend()
         {
-            IsAscending = false;
-            OnEndAscending.OnNext(new Unit());
+            OnAscend.OnNext(new Unit());
         }
 
-        public void StartDescending()
+        public void Descend()
         {
-            IsDescending = true;
-            OnStartDescending.OnNext(new Unit());
-        }
-
-        public void EndDescending()
-        {
-            IsDescending = false;
-            OnEndDescending.OnNext(new Unit());
+            OnDescend.OnNext(new Unit());
         }
     }
 }
