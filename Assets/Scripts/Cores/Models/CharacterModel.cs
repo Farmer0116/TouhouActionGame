@@ -38,6 +38,7 @@ namespace Cores.Models
         public Subject<Unit> OnJump { get; private set; } = new Subject<Unit>();
         public Subject<Unit> OnAscend { get; } = new Subject<Unit>();
         public Subject<Unit> OnDescend { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnDodge { get; private set; } = new Subject<Unit>();
 
         // インスタンス
         public GameObject CharacterInstance { get; private set; }
@@ -123,6 +124,11 @@ namespace Cores.Models
         public void Descend()
         {
             OnDescend.OnNext(new Unit());
+        }
+
+        public void Dodge()
+        {
+            OnDodge.OnNext(new Unit());
         }
     }
 }

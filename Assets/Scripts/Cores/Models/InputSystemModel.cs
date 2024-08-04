@@ -7,9 +7,9 @@ namespace Cores.Models
     public class InputSystemModel : IInputSystemModel
     {
         public IReadOnlyReactiveProperty<Vector2> Move => move;
+        public IReadOnlyReactiveProperty<Vector2> Look => look;
         public IReadOnlyReactiveProperty<bool> Jump => jump;
         public IReadOnlyReactiveProperty<bool> Crouch => crouch;
-        public IReadOnlyReactiveProperty<Vector2> Look => look;
         public IReadOnlyReactiveProperty<bool> LockOn => lockOn;
         public IReadOnlyReactiveProperty<bool> LightAttack => lightAttack;
         public IReadOnlyReactiveProperty<bool> Sneak => sneak;
@@ -17,11 +17,12 @@ namespace Cores.Models
         public IReadOnlyReactiveProperty<bool> NormalAttack => normalAttack;
         public IReadOnlyReactiveProperty<bool> MagicAttack => magicAttack;
         public IReadOnlyReactiveProperty<bool> Flight => flight;
+        public IReadOnlyReactiveProperty<bool> Dodge => dodge;
 
         private ReactiveProperty<Vector2> move;
+        private ReactiveProperty<Vector2> look;
         private ReactiveProperty<bool> jump;
         private ReactiveProperty<bool> crouch;
-        private ReactiveProperty<Vector2> look;
         private ReactiveProperty<bool> lockOn;
         private ReactiveProperty<bool> lightAttack;
         private ReactiveProperty<bool> sneak;
@@ -29,13 +30,14 @@ namespace Cores.Models
         private ReactiveProperty<bool> normalAttack;
         private ReactiveProperty<bool> magicAttack;
         private ReactiveProperty<bool> flight;
+        private ReactiveProperty<bool> dodge;
 
         public InputSystemModel()
         {
             move = new ReactiveProperty<Vector2>();
+            look = new ReactiveProperty<Vector2>();
             jump = new ReactiveProperty<bool>();
             crouch = new ReactiveProperty<bool>();
-            look = new ReactiveProperty<Vector2>();
             lockOn = new ReactiveProperty<bool>();
             lightAttack = new ReactiveProperty<bool>();
             sneak = new ReactiveProperty<bool>();
@@ -43,11 +45,16 @@ namespace Cores.Models
             normalAttack = new ReactiveProperty<bool>();
             magicAttack = new ReactiveProperty<bool>();
             flight = new ReactiveProperty<bool>();
+            dodge = new ReactiveProperty<bool>();
         }
 
         public void SetMove(Vector2 value)
         {
             move.Value = value;
+        }
+        public void SetLook(Vector2 value)
+        {
+            look.Value = value;
         }
         public void SetJump(bool value)
         {
@@ -56,10 +63,6 @@ namespace Cores.Models
         public void SetCrouch(bool value)
         {
             crouch.Value = value;
-        }
-        public void SetLook(Vector2 value)
-        {
-            look.Value = value;
         }
         public void SetLockOn(bool value)
         {
@@ -88,6 +91,10 @@ namespace Cores.Models
         public void SetFlight(bool value)
         {
             flight.Value = value;
+        }
+        public void SetDodge(bool value)
+        {
+            dodge.Value = value;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Components.Character
         private IInputSystemModel _inputSystemModel;
         private CharacterModelComponent _characterModelComponent;
         private Vector3 _characterFrontVector = Vector3.zero;
-        private (Vector2 move, Vector2 look, bool run, bool flight, bool jump, bool ascend, bool descend) _inputState;
+        private (Vector2 move, Vector2 look, bool run, bool flight, bool jump, bool ascend, bool descend, bool dodge) _inputState;
         private ZenAutoInjecter _zenAutoInjecter;
         private CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -135,6 +135,13 @@ namespace Components.Character
                 _inputState.descend = value;
                 if (value) _characterModelComponent.CharacterModel.Descend();
             }).AddTo(_disposables);
+
+            // 回避
+            _inputSystemModel.Dodge.Subscribe(value =>
+            {
+                _inputState.dodge = value;
+                if (value) _characterModelComponent.CharacterModel.Dodge();
+            }).AddTo(_disposables);
         }
 
         /// <summary>
@@ -161,7 +168,7 @@ namespace Components.Character
 
             if (_characterModelComponent.CharacterModel.IsLockOn && _characterModelComponent.CharacterModel.LockOnTarget != null)
             {
-                _characterRotationTarget.position = _characterModelComponent.EyeLevel.position;
+                _characterRotationTarget.position = _characterModelComponent.Center.position;
                 _characterRotationTarget.LookAt(_characterModelComponent.CharacterModel.LockOnTarget);
                 _characterFrontVector = _characterRotationTarget.rotation.eulerAngles;
 
@@ -190,6 +197,11 @@ namespace Components.Character
             {
                 characterInputs.EnableFlight = true;
                 _inputState.flight = false;
+            }
+            if (_inputState.dodge) // dodgeは1フレ内単入力
+            {
+                characterInputs.DodgeDown = true;
+                _inputState.dodge = false;
             }
 
             // キャラクターへ入力情報のセット
