@@ -61,6 +61,7 @@ namespace Components.Character
 
         void Update()
         {
+            // OrientationMethodの変更をモデルコンポーネントに適応
             if (_characterModelComponent.OrientationMethod != CharacterMovementController.OrientationMethod)
             {
                 switch (CharacterMovementController.OrientationMethod)
@@ -164,10 +165,13 @@ namespace Components.Character
 
         private void HandleCharacterInput()
         {
+            // Motorへの入力変数定義
             PlayerCharacterInputs characterInputs = new PlayerCharacterInputs();
 
+            // ロックオン時の回転
             if (_characterModelComponent.CharacterModel.IsLockOn && _characterModelComponent.CharacterModel.LockOnTarget != null)
             {
+                // モデルに登録されたのターゲットの方向を回転情報として入力
                 _characterRotationTarget.position = _characterModelComponent.Center.position;
                 _characterRotationTarget.LookAt(_characterModelComponent.CharacterModel.LockOnTarget);
                 _characterFrontVector = _characterRotationTarget.rotation.eulerAngles;
@@ -175,8 +179,10 @@ namespace Components.Character
                 characterInputs.Rotation = _characterRotationTarget.rotation;
                 characterInputs.EnableLockOn = _characterModelComponent.CharacterModel.IsLockOn;
             }
+            // 非ロックオン時の回転
             else
             {
+                // 手動での回転入力
                 _characterRotationTarget.position = _characterModelComponent.EyeLevel.position;
                 _characterFrontVector.y += _inputState.look.x;
                 _characterFrontVector.x += _inputState.look.y;
