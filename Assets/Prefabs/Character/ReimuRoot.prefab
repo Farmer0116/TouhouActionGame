@@ -338,12 +338,20 @@ MonoBehaviour:
   JumpScalableForwardSpeed: 1
   JumpPreGroundingGraceTime: 0
   JumpPostGroundingGraceTime: 0
+  FlightMoveSpeed: 10
+  FlightRunMoveSpeed: 15
+  FlightSharpness: 15
+  DefaultDodgeSpeed: 25
+  FlightDodgeSpeed: 35
+  MaxDodgeTime: 0.125
+  StoppedTime: 0.125
   IgnoredColliders: []
   BonusOrientationMethod: 1
   BonusOrientationSharpness: 20
   Gravity: {x: 0, y: -30, z: 0}
   MeshRoot: {fileID: 0}
   CrouchedCapsuleHeight: 1
+  OrientTowardsGravity: 0
 --- !u!114 &6881790898558161858
 MonoBehaviour:
   m_ObjectHideFlags: 0

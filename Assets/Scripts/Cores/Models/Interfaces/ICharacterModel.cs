@@ -29,6 +29,7 @@ namespace Cores.Models.Interfaces
         Subject<Unit> OnJump { get; }
         Subject<Unit> OnAscend { get; }
         Subject<Unit> OnDescend { get; }
+        Subject<Unit> OnDodge { get; }
 
         // インスタンス
         GameObject CharacterInstance { get; }
@@ -48,6 +49,7 @@ namespace Cores.Models.Interfaces
         void Jump();
         void Ascend();
         void Descend();
+        void Dodge();
     }
 
     // 初期化パラメータ

@@ -7,7 +7,9 @@ namespace Components.Character
     public enum CharacterState
     {
         Default,
-        Flight
+        Flight,
+        DefaultDodge,
+        FlightDodge
     }
 
     public enum OrientationMethod
@@ -29,6 +31,7 @@ namespace Components.Character
         public bool EnableRun;
         public bool EnableLockOn;
         public bool EnableFlight;
+        public bool DodgeDown;
     }
 
     public struct AICharacterInputs
@@ -75,6 +78,12 @@ namespace Components.Character
         public float FlightRunMoveSpeed = 15f;
         public float FlightSharpness = 15;
 
+        [Header("回避")]
+        public float DefaultDodgeSpeed = 25f;
+        public float FlightDodgeSpeed = 35f;
+        public float MaxDodgeTime = 0.125f;
+        public float StoppedTime = 0.125f;
+
         [Header("その他")]
         public List<Collider> IgnoredColliders = new List<Collider>();
         public BonusOrientationMethod BonusOrientationMethod = BonusOrientationMethod.None;
@@ -105,6 +114,11 @@ namespace Components.Character
         private bool _isLockOn = false;
         private bool _jumpInputIsHeld = false;
         private bool _crouchInputIsHeld = false;
+        private Vector3 _currentChargeVelocity;
+        private bool _isStopped;
+        private bool _mustStopVelocity = false;
+        private float _timeSinceStartedCharge = 0;
+        private float _timeSinceStopped = 0;
         private Vector3 lastInnerNormal = Vector3.zero;
         private Vector3 lastOuterNormal = Vector3.zero;
 
@@ -145,6 +159,20 @@ namespace Components.Character
                         Motor.SetGroundSolvingActivation(false);
                         break;
                     }
+                case CharacterState.DefaultDodge:
+                    {
+                        _isStopped = false;
+                        _timeSinceStartedCharge = 0f;
+                        _timeSinceStopped = 0f;
+                        break;
+                    }
+                case CharacterState.FlightDodge:
+                    {
+                        _isStopped = false;
+                        _timeSinceStartedCharge = 0f;
+                        _timeSinceStopped = 0f;
+                        break;
+                    }
             }
         }
 
@@ -173,14 +201,17 @@ namespace Components.Character
         {
             if (inputs.EnableFlight)
             {
-                if (CurrentCharacterState == CharacterState.Default)
-                {
-                    TransitionToState(CharacterState.Flight);
-                }
-                else if (CurrentCharacterState == CharacterState.Flight)
-                {
-                    TransitionToState(CharacterState.Default);
-                }
+                if (CurrentCharacterState == CharacterState.Default) TransitionToState(CharacterState.Flight);
+                else if (CurrentCharacterState == CharacterState.Flight) TransitionToState(CharacterState.Default);
+            }
+
+            // 回避モードは以下の条件出なければ切り替わらない
+            // 飛行モード有効の入力と同時に実行できない
+            // 前後左右・上昇下降の入力を同時にしないと実行できない
+            if (inputs.DodgeDown && !inputs.EnableFlight && (inputs.MoveAxisForward != 0 || inputs.MoveAxisRight != 0 || inputs.JumpHeld || inputs.CrouchHeld))
+            {
+                if (CurrentCharacterState == CharacterState.Default) TransitionToState(CharacterState.DefaultDodge);
+                else if (CurrentCharacterState == CharacterState.Flight) TransitionToState(CharacterState.FlightDodge);
             }
 
             _jumpInputIsHeld = inputs.JumpHeld;
@@ -273,6 +304,14 @@ namespace Components.Character
                         }
                         break;
                     }
+                case CharacterState.DefaultDodge | CharacterState.FlightDodge:
+                    {
+                        if (_isLockOn)
+                        {
+                            _moveInputVector = cameraPlanarRotation * moveInputVector;
+                        }
+                        break;
+                    }
             }
         }
 
@@ -294,6 +333,27 @@ namespace Components.Character
         /// </summary>
         public void BeforeCharacterUpdate(float deltaTime)
         {
+            switch (CurrentCharacterState)
+            {
+                case CharacterState.DefaultDodge:
+                    {
+                        _timeSinceStartedCharge += deltaTime;
+                        if (_isStopped)
+                        {
+                            _timeSinceStopped += deltaTime;
+                        }
+                        break;
+                    }
+                case CharacterState.FlightDodge:
+                    {
+                        _timeSinceStartedCharge += deltaTime;
+                        if (_isStopped)
+                        {
+                            _timeSinceStopped += deltaTime;
+                        }
+                        break;
+                    }
+            }
         }
 
         /// <summary>
@@ -543,6 +603,49 @@ namespace Components.Character
                         currentVelocity = Vector3.Lerp(currentVelocity, targetMovementVelocity, 1 - Mathf.Exp(-FlightSharpness * deltaTime));
                         break;
                     }
+                case CharacterState.DefaultDodge:
+                    {
+                        // 停止して速度をキャンセルする必要がある場合は、ここで行う
+                        if (_mustStopVelocity)
+                        {
+                            // currentVelocity = Vector3.zero;
+                            // _mustStopVelocity = false;
+                        }
+
+                        if (_isStopped)
+                        {
+                            // 停止しているときは、重力以外の速度操作は行わない
+                            currentVelocity += Gravity * deltaTime;
+                        }
+                        else
+                        {
+                            // 速度は常に一定
+                            // float verticalInput = 0f + (_jumpInputIsHeld ? 1f : 0f);
+                            currentVelocity = _moveInputVector.normalized * DefaultDodgeSpeed;
+                            currentVelocity += Gravity * deltaTime;
+                        }
+                        break;
+                    }
+                case CharacterState.FlightDodge:
+                    {
+                        // 停止して速度をキャンセルする必要がある場合は、ここで行う
+                        if (_mustStopVelocity)
+                        {
+                            // currentVelocity = Vector3.zero;
+                            // _mustStopVelocity = false;
+                        }
+
+                        if (_isStopped)
+                        {
+                        }
+                        else
+                        {
+                            // 速度は常に一定
+                            float verticalInput = 0f + (_jumpInputIsHeld ? 1f : 0f) + (_crouchInputIsHeld ? -1f : 0f);
+                            currentVelocity = (_moveInputVector + (Motor.CharacterUp * verticalInput)).normalized * FlightDodgeSpeed;
+                        }
+                        break;
+                    }
             }
         }
 
@@ -605,6 +708,38 @@ namespace Components.Character
                         }
                         break;
                     }
+                case CharacterState.DefaultDodge:
+                    {
+                        // 経過時間による停止を検出
+                        if (!_isStopped && _timeSinceStartedCharge > MaxDodgeTime)
+                        {
+                            _mustStopVelocity = true;
+                            _isStopped = true;
+                        }
+
+                        // 停止フェーズの終了を検出し、デフォルトの動作状態に戻る
+                        if (_timeSinceStopped > StoppedTime)
+                        {
+                            TransitionToState(CharacterState.Default);
+                        }
+                        break;
+                    }
+                case CharacterState.FlightDodge:
+                    {
+                        // 経過時間による停止を検出
+                        if (!_isStopped && _timeSinceStartedCharge > MaxDodgeTime)
+                        {
+                            _mustStopVelocity = true;
+                            _isStopped = true;
+                        }
+
+                        // 停止フェーズの終了を検出し、デフォルトの動作状態に戻る
+                        if (_timeSinceStopped > StoppedTime)
+                        {
+                            TransitionToState(CharacterState.Flight);
+                        }
+                        break;
+                    }
             }
         }
 
@@ -642,6 +777,29 @@ namespace Components.Character
 
         public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
         {
+            switch (CurrentCharacterState)
+            {
+                case CharacterState.DefaultDodge:
+                    {
+                        // 障害物による停止を検知
+                        if (!_isStopped && !hitStabilityReport.IsStable && Vector3.Dot(-hitNormal, _currentChargeVelocity.normalized) > 0.5f)
+                        {
+                            _mustStopVelocity = true;
+                            _isStopped = true;
+                        }
+                        break;
+                    }
+                case CharacterState.FlightDodge:
+                    {
+                        // 障害物による停止を検知
+                        if (!_isStopped && !hitStabilityReport.IsStable && Vector3.Dot(-hitNormal, _currentChargeVelocity.normalized) > 0.5f)
+                        {
+                            _mustStopVelocity = true;
+                            _isStopped = true;
+                        }
+                        break;
+                    }
+            }
         }
 
         public void AddVelocity(Vector3 velocity)

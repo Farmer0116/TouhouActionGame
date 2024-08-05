@@ -30,6 +30,11 @@ namespace Cores.Controllers
             inputSystemModel.SetMove(value.Get<Vector2>());
         }
 
+        public void OnLook(InputValue value)
+        {
+            inputSystemModel.SetLook(value.Get<Vector2>());
+        }
+
         public void OnJump(InputValue value)
         {
             inputSystemModel.SetJump(value.isPressed);
@@ -38,11 +43,6 @@ namespace Cores.Controllers
         public void OnCrouch(InputValue value)
         {
             inputSystemModel.SetCrouch(value.isPressed);
-        }
-
-        public void OnLook(InputValue value)
-        {
-            inputSystemModel.SetLook(value.Get<Vector2>());
         }
 
         public void OnLockOn(InputValue value)
@@ -84,6 +84,11 @@ namespace Cores.Controllers
         public void OnFlight(InputValue value)
         {
             SetDelay(inputSystemModel.SetFlight);
+        }
+
+        public void OnDodge(InputValue value)
+        {
+            inputSystemModel.SetDodge(value.isPressed);
         }
 
         private async Task SetDelay(Action<bool> action)
