@@ -301,12 +301,16 @@ namespace Components.Character
                         }
                         break;
                     }
-                case CharacterState.DefaultDodge | CharacterState.FlightDodge:
+                case CharacterState.DefaultDodge:
                     {
-                        if (_isLockOn)
-                        {
-                            _moveInputVector = cameraPlanarRotation * moveInputVector;
-                        }
+                        // 回避中の入力
+                        _moveInputVector = cameraPlanarRotation * moveInputVector;
+                        break;
+                    }
+                case CharacterState.FlightDodge:
+                    {
+                        // 回避中の入力
+                        _moveInputVector = cameraPlanarRotation * moveInputVector;
                         break;
                     }
             }
@@ -739,7 +743,7 @@ namespace Components.Character
                             _isStopped = true;
                         }
 
-                        // 停止フェーズの終了を検出し、デフォルトの動作状態に戻る
+                        // 停止フェーズの終了を検出し、飛行の動作状態に戻る
                         if (_timeSinceStopped > StoppedTime)
                         {
                             TransitionToState(CharacterState.Flight);
