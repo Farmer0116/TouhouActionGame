@@ -69,7 +69,7 @@ namespace Components.Character
             _animator.SetFloat(AnimationType.VelocityZ.ToString(), _currentVelocity.z);
 
             // 速度段階
-            _animator.SetFloat(AnimationType.Speed.ToString(), _speed);
+            _animator.SetInteger(AnimationType.SpeedStep.ToString(), _speed);
 
             // 入力の有無
             _animator.SetBool(AnimationType.IsInputHorizontal.ToString(), _isInputHorizontal);
@@ -99,7 +99,7 @@ namespace Components.Character
         VelocityX,
         VelocityY,
         VelocityZ,
-        Speed,
+        SpeedStep,
         IsInputHorizontal,
         IsOnGround,
         IsFlight,

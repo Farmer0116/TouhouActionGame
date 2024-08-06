@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: b68dc56fdff46dd4d911e0d6c938c9d9
+guid: c5d390abe182b72439933c26a2ff6de2
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
   - first:
-      74: -3775439478193528841
-    second: FlyBack
+      74: 1602509858112578346
+    second: FlyRightFront
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -36,13 +36,13 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: FlyBack
-      takeName: move_back
+      name: FlyRightFront
+      takeName: move_right
       internalID: 0
       firstFrame: 0
       lastFrame: 40
       wrapMode: 0
-      orientationOffsetY: 0
+      orientationOffsetY: 17.6
       level: 0
       cycleOffset: 0
       loop: 0

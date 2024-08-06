@@ -5,7 +5,7 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: 942111399028449980
-    second: MoveFlyFront
+    second: FlyFront
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -36,7 +36,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: MoveFlyFront
+      name: FlyFront
       takeName: move_front2
       internalID: 0
       firstFrame: 0
