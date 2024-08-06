@@ -7,10 +7,8 @@ namespace Components.Character
 {
     public class PlayerCharacterInputRuntime : MonoBehaviour
     {
-        public CharacterMovementController CharacterMovementController { get { return _characterMovementController; } private set { _characterMovementController = value; } }
-
-        [SerializeField] private CharacterMovementController _characterMovementController;
-        [SerializeField] private Transform _characterRotationTarget;
+        public CharacterMovementController CharacterMovementController { get; private set; }
+        private Transform _characterRotationTarget;
 
         private IInputSystemModel _inputSystemModel;
         private CharacterModelComponent _characterModelComponent;
@@ -99,6 +97,8 @@ namespace Components.Character
             _inputSystemModel.Run.Subscribe(value =>
             {
                 _inputState.run = value;
+                if (value) _characterModelComponent.CharacterModel.EnableRun();
+                else _characterModelComponent.CharacterModel.DisableRun();
             }).AddTo(_disposables);
 
             // 飛行
@@ -191,6 +191,8 @@ namespace Components.Character
 
                 characterInputs.Rotation = _characterRotationTarget.rotation;
             }
+
+            // モデルコンポーネントに格納
             _characterModelComponent.HeadRotation = _characterRotationTarget.rotation;
 
             characterInputs.MoveAxisForward = _inputState.move.y;
