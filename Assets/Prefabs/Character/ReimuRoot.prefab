@@ -1456,7 +1456,7 @@ Animator:
   m_GameObject: {fileID: 4820729082510584745}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: b839bcc33118b1a4bbad73b02263c646, type: 3}
-  m_Controller: {fileID: 9100000, guid: fcf7ad349f79f7d4bbe65a36ecf3b248, type: 2}
+  m_Controller: {fileID: 9100000, guid: ac9118d45bd05394f9e8a1513639232d, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2019,8 +2019,8 @@ MonoBehaviour:
   FlightSharpness: 15
   DefaultDodgeSpeed: 25
   FlightDodgeSpeed: 35
-  MaxDodgeTime: 0.125
-  StoppedTime: 0.125
+  MaxDodgeTime: 0.2
+  StoppedTime: 0.2
   IgnoredColliders: []
   BonusOrientationMethod: 1
   BonusOrientationSharpness: 20
@@ -2106,8 +2106,15 @@ MonoBehaviour:
   _kinematicCharacterMotor: {fileID: 6881790898558161858}
   _characterMovementController: {fileID: 7087727160688228555}
   _currentVelocity: {x: 0, y: 0, z: 0}
-  _currentStableNormalizedVelocity: {x: 0, y: 0, z: 0}
-  _currentFlightNormalizedVelocity: {x: 0, y: 0, z: 0}
+  _currentMoveInput: {x: 0, y: 0, z: 0}
+  _speed: 0
+  _isInputHorizontal: 0
+  _isOnGround: 0
+  _isFlight: 0
+  _isLockOn: 0
+  _isDodge: 0
+  _currentState: 0
+  _currentOrientationMethod: 0
 --- !u!1 &7323633242197531861
 GameObject:
   m_ObjectHideFlags: 0

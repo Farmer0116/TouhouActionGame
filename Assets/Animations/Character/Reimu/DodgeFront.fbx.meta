@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: a0535de9999241743a40a5e590e56fb2
+guid: 24ec92a71ab3b6e4690606164a9aa356
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
   - first:
-      74: -1013778976438469329
-    second: DodgeBackRoll
+      74: 7906090268488041120
+    second: DodgeFront
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -36,8 +36,8 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: DodgeBackRoll
-      takeName: avoid_back_roll
+      name: DodgeFront
+      takeName: avoid_front
       internalID: 0
       firstFrame: 0
       lastFrame: 20
