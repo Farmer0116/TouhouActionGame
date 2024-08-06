@@ -16,6 +16,7 @@ namespace Cores.Models.Interfaces
         bool IsLockOn { get; }
         Transform LockOnTarget { get; }
         bool IsFlight { get; }
+        bool IsRun { get; }
 
         // イベント
         Subject<GameObject> OnSpawn { get; }
@@ -24,6 +25,8 @@ namespace Cores.Models.Interfaces
         Subject<Unit> OnUnLock { get; }
         Subject<Unit> OnEnableFlight { get; }
         Subject<Unit> OnDisableFlight { get; }
+        Subject<Unit> OnEnableRun { get; }
+        Subject<Unit> OnDisableRun { get; }
         Subject<Unit> OnNormalAttack { get; }
         Subject<Unit> OnMagicAttack { get; }
         Subject<Unit> OnJump { get; }
@@ -44,6 +47,8 @@ namespace Cores.Models.Interfaces
         void UnLock();
         void EnableFlight();
         void DisableFlight();
+        void EnableRun();
+        void DisableRun();
         void NormalAttack();
         void MagicAttack();
         void Jump();
