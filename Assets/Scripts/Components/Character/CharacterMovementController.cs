@@ -205,18 +205,6 @@ namespace Components.Character
                 else if (CurrentCharacterState == CharacterState.Flight) TransitionToState(CharacterState.Default);
             }
 
-            // 回避モードは以下の条件出なければ切り替わらない
-            // 飛行モード有効の入力と同時に実行できない
-            // 前後左右・上昇下降の入力を同時にしないと実行できない
-            if (inputs.DodgeDown && !inputs.EnableFlight && (inputs.MoveAxisForward != 0 || inputs.MoveAxisRight != 0 || inputs.JumpHeld || inputs.CrouchHeld))
-            {
-                if (CurrentCharacterState == CharacterState.Default) TransitionToState(CharacterState.DefaultDodge);
-                else if (CurrentCharacterState == CharacterState.Flight) TransitionToState(CharacterState.FlightDodge);
-            }
-
-            _jumpInputIsHeld = inputs.JumpHeld;
-            _crouchInputIsHeld = inputs.CrouchHeld;
-
             // Clamp入力
             Vector3 moveInputVector = Vector3.ClampMagnitude(new Vector3(inputs.MoveAxisRight, 0f, inputs.MoveAxisForward), 1f);
 
@@ -228,6 +216,8 @@ namespace Components.Character
             }
             Quaternion cameraPlanarRotation = Quaternion.LookRotation(cameraPlanarDirection, Motor.CharacterUp);
 
+            _jumpInputIsHeld = inputs.JumpHeld;
+            _crouchInputIsHeld = inputs.CrouchHeld;
             _isRun = inputs.EnableRun;
             _isLockOn = inputs.EnableLockOn;
 
@@ -312,6 +302,15 @@ namespace Components.Character
                         }
                         break;
                     }
+            }
+
+            // 回避モードは以下の条件出なければ切り替わらない
+            // 飛行モード有効の入力と同時に実行できない
+            // 前後左右・上昇下降の入力を同時にしないと実行できない
+            if (inputs.DodgeDown && !inputs.EnableFlight && (inputs.MoveAxisForward != 0.000 || inputs.MoveAxisRight != 0.000 || inputs.JumpHeld || inputs.CrouchHeld))
+            {
+                if (CurrentCharacterState == CharacterState.Default) TransitionToState(CharacterState.DefaultDodge);
+                else if (CurrentCharacterState == CharacterState.Flight) TransitionToState(CharacterState.FlightDodge);
             }
         }
 
