@@ -68,10 +68,6 @@ namespace Components.Character
             _animator.SetFloat(AnimationType.VelocityY.ToString(), _currentVelocity.y);
             _animator.SetFloat(AnimationType.VelocityZ.ToString(), _currentVelocity.z);
 
-            // // 入力
-            _animator.SetFloat(AnimationType.InputMoveX.ToString(), _currentMoveInput.x);
-            _animator.SetFloat(AnimationType.InputMoveZ.ToString(), _currentMoveInput.z);
-
             // 速度段階
             _animator.SetFloat(AnimationType.Speed.ToString(), _speed);
 
@@ -103,8 +99,6 @@ namespace Components.Character
         VelocityX,
         VelocityY,
         VelocityZ,
-        InputMoveX,
-        InputMoveZ,
         Speed,
         IsInputHorizontal,
         IsOnGround,
