@@ -199,6 +199,13 @@ namespace Components.Character
         /// </summary>
         public void SetInputs(ref PlayerCharacterInputs inputs)
         {
+            // 同時入力が許されないインプットのキャンセル
+            if (inputs.DodgeDown && inputs.EnableFlight) inputs.EnableFlight = false;
+
+            // 特定のStateの場合はインプットをキャンセル
+            if (CurrentCharacterState == CharacterState.DefaultDodge || CurrentCharacterState == CharacterState.FlightDodge) inputs.EnableFlight = false;
+
+            // flightモード
             if (inputs.EnableFlight)
             {
                 if (CurrentCharacterState == CharacterState.Default) TransitionToState(CharacterState.Flight);

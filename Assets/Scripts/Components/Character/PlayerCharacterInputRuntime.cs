@@ -2,6 +2,8 @@ using UnityEngine;
 using Zenject;
 using Cores.Models.Interfaces;
 using UniRx;
+using Unity.VisualScripting;
+using System.Data;
 
 namespace Components.Character
 {
@@ -97,51 +99,37 @@ namespace Components.Character
             _inputSystemModel.Run.Subscribe(value =>
             {
                 _inputState.run = value;
-                if (value) _characterModelComponent.CharacterModel.EnableRun();
-                else _characterModelComponent.CharacterModel.DisableRun();
             }).AddTo(_disposables);
 
             // 飛行
             _inputSystemModel.Flight.Where(flag => flag).Subscribe(flag =>
             {
-                if (_characterModelComponent.CharacterModel.IsFlight)
-                {
-                    _inputState.flight = true;
-                    _characterModelComponent.CharacterModel.DisableFlight();
-                }
-                else
-                {
-                    _inputState.flight = true;
-                    _characterModelComponent.CharacterModel.EnableFlight();
-                }
+                if (_characterModelComponent.CharacterModel.IsFlight) _inputState.flight = true;
+                else _inputState.flight = true;
             }).AddTo(_disposables);
 
             // ジャンプ
             _inputSystemModel.Jump.Subscribe(value =>
             {
                 _inputState.jump = value;
-                if (value) _characterModelComponent.CharacterModel.Jump();
             }).AddTo(_disposables);
 
             // 上昇
             _inputSystemModel.Jump.Subscribe(value =>
             {
                 _inputState.ascend = value;
-                if (value) _characterModelComponent.CharacterModel.Ascend();
             }).AddTo(_disposables);
 
             // 下降
             _inputSystemModel.Crouch.Subscribe(value =>
             {
                 _inputState.descend = value;
-                if (value) _characterModelComponent.CharacterModel.Descend();
             }).AddTo(_disposables);
 
             // 回避
             _inputSystemModel.Dodge.Subscribe(value =>
             {
                 _inputState.dodge = value;
-                if (value) _characterModelComponent.CharacterModel.Dodge();
             }).AddTo(_disposables);
         }
 
@@ -201,19 +189,50 @@ namespace Components.Character
             characterInputs.EnableRun = _inputState.run;
             if (_characterModelComponent.CharacterModel.IsFlight) characterInputs.JumpHeld = _inputState.ascend;
             if (_characterModelComponent.CharacterModel.IsFlight) characterInputs.CrouchHeld = _inputState.descend;
-            if (_inputState.flight) // flightは1フレ内単入力
-            {
-                characterInputs.EnableFlight = true;
-                _inputState.flight = false;
-            }
-            if (_inputState.dodge) // dodgeは1フレ内単入力
-            {
-                characterInputs.DodgeDown = true;
-                _inputState.dodge = false;
-            }
+            if (_inputState.flight) characterInputs.EnableFlight = true; // dodgeは1フレ内の単入力
+            else _inputState.flight = false;
+            if (_inputState.dodge) characterInputs.DodgeDown = true; // dodgeは1フレ内の単入力
 
             // キャラクターへ入力情報のセット
             CharacterMovementController.SetInputs(ref characterInputs);
+
+            // モデルの更新 
+            UpdateModelStatus();
+        }
+
+        /// <summary>
+        /// モデルの状態を更新する
+        /// (コントローラー側で管理しているステータスもあるため更新は押した瞬間ではなく実際に切り替わっているかを確認可能なタイミングでモデルを更新する)
+        /// </summary>
+        private void UpdateModelStatus()
+        {
+            // 走る
+            if (_inputState.run) _characterModelComponent.CharacterModel.EnableRun();
+            else _characterModelComponent.CharacterModel.DisableRun();
+
+            // ジャンプ
+            if (_inputState.jump) _characterModelComponent.CharacterModel.Jump();
+
+            // 上昇
+            if (_inputState.ascend) _characterModelComponent.CharacterModel.Ascend();
+
+            // 下降
+            if (_inputState.descend) _characterModelComponent.CharacterModel.Descend();
+
+            // 回避
+            if (_inputState.dodge)
+            {
+                _characterModelComponent.CharacterModel.Dodge();
+                _inputState.dodge = false;
+            }
+
+            // 飛行
+            if (_inputState.flight)
+            {
+                if (CharacterMovementController.CurrentCharacterState == CharacterState.Flight) _characterModelComponent.CharacterModel.EnableFlight();
+                else if (CharacterMovementController.CurrentCharacterState == CharacterState.Default) _characterModelComponent.CharacterModel.DisableFlight();
+                _inputState.flight = false;
+            }
         }
 
         void OnDestroy()
