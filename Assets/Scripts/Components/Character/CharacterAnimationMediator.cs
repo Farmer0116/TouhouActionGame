@@ -85,7 +85,6 @@ namespace Components.Character
 
             // 回避
             _animator.SetBool(AnimationType.IsDodging.ToString(), _isDodge);
-            _animator.SetBool(AnimationType.IsNotDodging.ToString(), !_isDodge);
         }
 
         void OnDestroy()
@@ -105,6 +104,5 @@ namespace Components.Character
         IsFlight,
         IsLockOn,
         IsDodging,
-        IsNotDodging
     }
 }
