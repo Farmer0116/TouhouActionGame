@@ -21,6 +21,7 @@ namespace Components.Character
         [SerializeField] private bool _isFlight;
         [SerializeField] private bool _isLockOn;
         [SerializeField] private bool _isDodge;
+        [SerializeField] private int _jumpCount;
 
         [SerializeField] CharacterState _currentState;
 
@@ -53,6 +54,7 @@ namespace Components.Character
             else _speed = 0;
             _currentState = _characterMovementController.CurrentCharacterState;
             _isDodge = _currentState == CharacterState.DefaultDodge || _currentState == CharacterState.FlightDodge ? true : false;
+            _jumpCount = _characterMovementController.JumpCount;
 
             // 必要な情報の格納(Player限定)
             if (_characterModelComponent.CharacterModel.CharacterModelParam.ControllerType == Types.Character.ControllerType.Player)
@@ -76,6 +78,9 @@ namespace Components.Character
 
             // 地面への接触
             _animator.SetBool(AnimationType.IsOnGround.ToString(), _isOnGround);
+
+            // ジャンプ回数
+            _animator.SetInteger(AnimationType.JumpCount.ToString(), _jumpCount);
 
             // 飛行フラグ
             _animator.SetBool(AnimationType.IsFlight.ToString(), _isFlight);
@@ -104,5 +109,6 @@ namespace Components.Character
         IsFlight,
         IsLockOn,
         IsDodging,
+        JumpCount,
     }
 }

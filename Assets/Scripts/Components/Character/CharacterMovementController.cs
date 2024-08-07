@@ -95,6 +95,8 @@ namespace Components.Character
         public bool OrientTowardsGravity = false;
 
         public CharacterState CurrentCharacterState { get; private set; }
+        public bool JumpedThisFrame { get { return _jumpedThisFrame; } }
+        public int JumpCount { get { return _jumpCount; } }
 
         // ローカル
         private Collider[] _probedColliders = new Collider[8];
@@ -105,6 +107,7 @@ namespace Components.Character
         private bool _jumpRequested = false;
         private bool _jumpConsumed = false;
         private bool _jumpedThisFrame = false;
+        private int _jumpCount = 0;
         private float _timeSinceJumpRequested = Mathf.Infinity;
         private float _timeSinceLastAbleToJump = 0f;
         private Vector3 _internalVelocityAdd = Vector3.zero;
@@ -616,6 +619,7 @@ namespace Components.Character
                                     _jumpRequested = false;
                                     _doubleJumpConsumed = true;
                                     _jumpedThisFrame = true;
+                                    _jumpCount += 1;
                                 }
                             }
 
@@ -639,6 +643,7 @@ namespace Components.Character
                                 _jumpRequested = false;
                                 _jumpConsumed = true;
                                 _jumpedThisFrame = true;
+                                _jumpCount += 1;
                             }
                         }
 
@@ -730,6 +735,7 @@ namespace Components.Character
                                 {
                                     _doubleJumpConsumed = false;
                                     _jumpConsumed = false;
+                                    _jumpCount = 0;
                                 }
                                 _timeSinceLastAbleToJump = 0f;
                             }

@@ -189,7 +189,7 @@ namespace Components.Character
             characterInputs.EnableRun = _inputState.run;
             if (_characterModelComponent.CharacterModel.IsFlight) characterInputs.JumpHeld = _inputState.ascend;
             if (_characterModelComponent.CharacterModel.IsFlight) characterInputs.CrouchHeld = _inputState.descend;
-            if (_inputState.flight) characterInputs.EnableFlight = true; // dodgeは1フレ内の単入力
+            if (_inputState.flight) characterInputs.EnableFlight = true; // flightは1フレ内の単入力
             else _inputState.flight = false;
             if (_inputState.dodge) characterInputs.DodgeDown = true; // dodgeは1フレ内の単入力
 
@@ -211,7 +211,11 @@ namespace Components.Character
             else _characterModelComponent.CharacterModel.DisableRun();
 
             // ジャンプ
-            if (_inputState.jump) _characterModelComponent.CharacterModel.Jump();
+            if (_inputState.jump && CharacterMovementController.JumpedThisFrame)
+            {
+                _characterModelComponent.CharacterModel.Jump();
+                _inputState.jump = false;
+            }
 
             // 上昇
             if (_inputState.ascend) _characterModelComponent.CharacterModel.Ascend();
