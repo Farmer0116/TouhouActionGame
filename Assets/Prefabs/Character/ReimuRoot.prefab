@@ -2021,6 +2021,7 @@ MonoBehaviour:
   FlightDodgeSpeed: 35
   MaxDodgeTime: 0.2
   StoppedTime: 0.2
+  NoInputDeadTime: 0.08
   IgnoredColliders: []
   BonusOrientationMethod: 1
   BonusOrientationSharpness: 20
@@ -2114,7 +2115,6 @@ MonoBehaviour:
   _isLockOn: 0
   _isDodge: 0
   _currentState: 0
-  _currentOrientationMethod: 0
 --- !u!1 &7323633242197531861
 GameObject:
   m_ObjectHideFlags: 0
