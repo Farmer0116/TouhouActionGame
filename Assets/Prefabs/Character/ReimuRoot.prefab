@@ -2006,11 +2006,11 @@ MonoBehaviour:
   OrientationMethod: 1
   MaxAirMoveSpeed: 7
   MaxAirRunMoveSpeed: 14
-  AirAccelerationSpeed: 50
+  AirAccelerationSpeed: 30
   Drag: 0.1
   AllowJumpingWhenSliding: 0
   AllowDoubleJump: 1
-  JumpUpSpeed: 10
+  JumpUpSpeed: 15
   JumpScalableForwardSpeed: 1
   JumpPreGroundingGraceTime: 0
   JumpPostGroundingGraceTime: 0
@@ -2021,11 +2021,11 @@ MonoBehaviour:
   FlightDodgeSpeed: 35
   MaxDodgeTime: 0.2
   StoppedTime: 0.2
-  NoInputDeadTime: 0.08
+  DodgeNoInputLimitTime: 0.08
   IgnoredColliders: []
   BonusOrientationMethod: 1
   BonusOrientationSharpness: 20
-  Gravity: {x: 0, y: -30, z: 0}
+  Gravity: {x: 0, y: -40, z: 0}
   MeshRoot: {fileID: 0}
   CrouchedCapsuleHeight: 1
   OrientTowardsGravity: 0
@@ -2114,6 +2114,7 @@ MonoBehaviour:
   _isFlight: 0
   _isLockOn: 0
   _isDodge: 0
+  _jumpCount: 0
   _currentState: 0
 --- !u!1 &7323633242197531861
 GameObject:
