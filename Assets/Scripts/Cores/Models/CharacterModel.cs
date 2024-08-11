@@ -25,6 +25,7 @@ namespace Cores.Models
         public bool IsLockOn { get; private set; } = false;
         public Transform LockOnTarget { get; private set; } = null;
         public bool IsFlight { get; private set; } = false;
+        public bool IsRun { get; private set; } = false;
 
         // イベント
         public Subject<GameObject> OnSpawn { get; private set; } = new Subject<GameObject>();
@@ -33,6 +34,8 @@ namespace Cores.Models
         public Subject<Unit> OnUnLock { get; private set; } = new Subject<Unit>();
         public Subject<Unit> OnEnableFlight { get; private set; } = new Subject<Unit>();
         public Subject<Unit> OnDisableFlight { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnEnableRun { get; private set; } = new Subject<Unit>();
+        public Subject<Unit> OnDisableRun { get; private set; } = new Subject<Unit>();
         public Subject<Unit> OnNormalAttack { get; } = new Subject<Unit>();
         public Subject<Unit> OnMagicAttack { get; } = new Subject<Unit>();
         public Subject<Unit> OnJump { get; private set; } = new Subject<Unit>();
@@ -99,6 +102,18 @@ namespace Cores.Models
         {
             IsFlight = false;
             OnDisableFlight.OnNext(new Unit());
+        }
+
+        public void EnableRun()
+        {
+            IsRun = true;
+            OnEnableRun.OnNext(new Unit());
+        }
+
+        public void DisableRun()
+        {
+            IsRun = false;
+            OnDisableRun.OnNext(new Unit());
         }
 
         public void NormalAttack()

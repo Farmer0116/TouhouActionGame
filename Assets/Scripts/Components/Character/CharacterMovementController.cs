@@ -81,8 +81,9 @@ namespace Components.Character
         [Header("回避")]
         public float DefaultDodgeSpeed = 25f;
         public float FlightDodgeSpeed = 35f;
-        public float MaxDodgeTime = 0.125f;
-        public float StoppedTime = 0.125f;
+        public float MaxDodgeTime = 0.2f;
+        public float StoppedTime = 0.2f;
+        public float DodgeNoInputLimitTime = 0.08f;
 
         [Header("その他")]
         public List<Collider> IgnoredColliders = new List<Collider>();
@@ -94,6 +95,8 @@ namespace Components.Character
         public bool OrientTowardsGravity = false;
 
         public CharacterState CurrentCharacterState { get; private set; }
+        public bool JumpedThisFrame { get { return _jumpedThisFrame; } }
+        public int JumpCount { get { return _jumpCount; } }
 
         // ローカル
         private Collider[] _probedColliders = new Collider[8];
@@ -104,6 +107,7 @@ namespace Components.Character
         private bool _jumpRequested = false;
         private bool _jumpConsumed = false;
         private bool _jumpedThisFrame = false;
+        private int _jumpCount = 0;
         private float _timeSinceJumpRequested = Mathf.Infinity;
         private float _timeSinceLastAbleToJump = 0f;
         private Vector3 _internalVelocityAdd = Vector3.zero;
@@ -119,6 +123,9 @@ namespace Components.Character
         private bool _mustStopVelocity = false;
         private float _timeSinceStartedCharge = 0;
         private float _timeSinceStopped = 0;
+        private Vector3 _dodgeLastMoveInput;
+        private (bool up, bool down) _dodgeLastVerticalInput;
+        private float _dodgeNoInputDuration;
         private Vector3 lastInnerNormal = Vector3.zero;
         private Vector3 lastOuterNormal = Vector3.zero;
 
@@ -164,6 +171,9 @@ namespace Components.Character
                         _isStopped = false;
                         _timeSinceStartedCharge = 0f;
                         _timeSinceStopped = 0f;
+                        _dodgeNoInputDuration = 0;
+                        _dodgeLastMoveInput = Vector3.zero;
+                        _dodgeLastVerticalInput = (false, false);
                         break;
                     }
                 case CharacterState.FlightDodge:
@@ -171,6 +181,9 @@ namespace Components.Character
                         _isStopped = false;
                         _timeSinceStartedCharge = 0f;
                         _timeSinceStopped = 0f;
+                        _dodgeNoInputDuration = 0;
+                        _dodgeLastMoveInput = Vector3.zero;
+                        _dodgeLastVerticalInput = (false, false);
                         break;
                     }
             }
@@ -199,23 +212,18 @@ namespace Components.Character
         /// </summary>
         public void SetInputs(ref PlayerCharacterInputs inputs)
         {
+            // 同時入力が許されないインプットのキャンセル
+            if (inputs.DodgeDown && inputs.EnableFlight) inputs.EnableFlight = false;
+
+            // 特定のStateの場合はインプットをキャンセル
+            if (CurrentCharacterState == CharacterState.DefaultDodge || CurrentCharacterState == CharacterState.FlightDodge) inputs.EnableFlight = false;
+
+            // flightモード
             if (inputs.EnableFlight)
             {
                 if (CurrentCharacterState == CharacterState.Default) TransitionToState(CharacterState.Flight);
                 else if (CurrentCharacterState == CharacterState.Flight) TransitionToState(CharacterState.Default);
             }
-
-            // 回避モードは以下の条件出なければ切り替わらない
-            // 飛行モード有効の入力と同時に実行できない
-            // 前後左右・上昇下降の入力を同時にしないと実行できない
-            if (inputs.DodgeDown && !inputs.EnableFlight && (inputs.MoveAxisForward != 0 || inputs.MoveAxisRight != 0 || inputs.JumpHeld || inputs.CrouchHeld))
-            {
-                if (CurrentCharacterState == CharacterState.Default) TransitionToState(CharacterState.DefaultDodge);
-                else if (CurrentCharacterState == CharacterState.Flight) TransitionToState(CharacterState.FlightDodge);
-            }
-
-            _jumpInputIsHeld = inputs.JumpHeld;
-            _crouchInputIsHeld = inputs.CrouchHeld;
 
             // Clamp入力
             Vector3 moveInputVector = Vector3.ClampMagnitude(new Vector3(inputs.MoveAxisRight, 0f, inputs.MoveAxisForward), 1f);
@@ -228,6 +236,8 @@ namespace Components.Character
             }
             Quaternion cameraPlanarRotation = Quaternion.LookRotation(cameraPlanarDirection, Motor.CharacterUp);
 
+            _jumpInputIsHeld = inputs.JumpHeld;
+            _crouchInputIsHeld = inputs.CrouchHeld;
             _isRun = inputs.EnableRun;
             _isLockOn = inputs.EnableLockOn;
 
@@ -304,14 +314,64 @@ namespace Components.Character
                         }
                         break;
                     }
-                case CharacterState.DefaultDodge | CharacterState.FlightDodge:
+                case CharacterState.DefaultDodge:
                     {
-                        if (_isLockOn)
+                        if (moveInputVector.x == 0 && moveInputVector.z == 0)
                         {
+                            _dodgeNoInputDuration += Time.deltaTime;
+
+                            // 未入力時間が一定時間を超えると最後に入力したベクトルに回避する(移動方向の切り返しの瞬間、入力が0になることがあるため)
+                            if (_dodgeNoInputDuration > DodgeNoInputLimitTime)
+                            {
+                                // 入力があった最後の情報を入力情報として扱う
+                                _moveInputVector = cameraPlanarRotation * _dodgeLastMoveInput;
+                            }
+                        }
+                        else
+                        {
+                            _dodgeNoInputDuration = 0;
+                            _dodgeLastMoveInput = moveInputVector;
+
+                            // 回避中の入力
                             _moveInputVector = cameraPlanarRotation * moveInputVector;
                         }
                         break;
                     }
+                case CharacterState.FlightDodge:
+                    {
+                        if (moveInputVector.x == 0 && moveInputVector.z == 0 && !_jumpInputIsHeld && !_crouchInputIsHeld)
+                        {
+                            _dodgeNoInputDuration += Time.deltaTime;
+                            _jumpInputIsHeld = _dodgeLastVerticalInput.up;
+                            _crouchInputIsHeld = _dodgeLastVerticalInput.down;
+
+                            // 未入力時間が一定時間を超えると最後に入力したベクトルに回避する(移動方向の切り返しの瞬間、入力が0になることがあるため)
+                            if (_dodgeNoInputDuration > DodgeNoInputLimitTime)
+                            {
+                                // 入力があった最後の情報を入力情報として扱う
+                                _moveInputVector = cameraPlanarRotation * _dodgeLastMoveInput;
+                            }
+                        }
+                        else
+                        {
+                            _dodgeNoInputDuration = 0;
+                            _dodgeLastMoveInput = moveInputVector;
+                            _dodgeLastVerticalInput = (_jumpInputIsHeld, _crouchInputIsHeld);
+
+                            // 回避中の入力
+                            _moveInputVector = cameraPlanarRotation * moveInputVector;
+                        }
+                        break;
+                    }
+            }
+
+            // 回避モードは以下の条件出なければ切り替わらない
+            // 飛行モード有効の入力と同時に実行できない
+            // 前後左右・上昇下降の入力を同時にしないと実行できない
+            if (inputs.DodgeDown && !inputs.EnableFlight && (inputs.MoveAxisForward != 0 || inputs.MoveAxisRight != 0 || inputs.JumpHeld || inputs.CrouchHeld))
+            {
+                if (CurrentCharacterState == CharacterState.Default) TransitionToState(CharacterState.DefaultDodge);
+                else if (CurrentCharacterState == CharacterState.Flight) TransitionToState(CharacterState.FlightDodge);
             }
         }
 
@@ -559,6 +619,7 @@ namespace Components.Character
                                     _jumpRequested = false;
                                     _doubleJumpConsumed = true;
                                     _jumpedThisFrame = true;
+                                    _jumpCount += 1;
                                 }
                             }
 
@@ -582,6 +643,7 @@ namespace Components.Character
                                 _jumpRequested = false;
                                 _jumpConsumed = true;
                                 _jumpedThisFrame = true;
+                                _jumpCount += 1;
                             }
                         }
 
@@ -620,7 +682,6 @@ namespace Components.Character
                         else
                         {
                             // 速度は常に一定
-                            // float verticalInput = 0f + (_jumpInputIsHeld ? 1f : 0f);
                             currentVelocity = _moveInputVector.normalized * DefaultDodgeSpeed;
                             currentVelocity += Gravity * deltaTime;
                         }
@@ -674,6 +735,7 @@ namespace Components.Character
                                 {
                                     _doubleJumpConsumed = false;
                                     _jumpConsumed = false;
+                                    _jumpCount = 0;
                                 }
                                 _timeSinceLastAbleToJump = 0f;
                             }
@@ -733,7 +795,7 @@ namespace Components.Character
                             _isStopped = true;
                         }
 
-                        // 停止フェーズの終了を検出し、デフォルトの動作状態に戻る
+                        // 停止フェーズの終了を検出し、飛行の動作状態に戻る
                         if (_timeSinceStopped > StoppedTime)
                         {
                             TransitionToState(CharacterState.Flight);

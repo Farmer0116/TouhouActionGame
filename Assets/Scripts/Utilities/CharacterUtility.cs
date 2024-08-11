@@ -47,9 +47,9 @@ namespace Utilities
             var characterMovementController = character.GetComponent<CharacterMovementController>();
             var characterModelComponent = character.GetComponent<CharacterModelComponent>();
 
-            var input = character.AddComponent<PlayerCharacterInputRuntime>();
+            var movement = character.AddComponent<PlayerCharacterInputRuntime>();
             var combat = character.AddComponent<PlayerCombatInputRuntime>();
-            input.Init(characterMovementController, characterModelComponent);
+            movement.Init(characterMovementController, characterModelComponent);
             combat.Init(characterModelComponent);
         }
 
