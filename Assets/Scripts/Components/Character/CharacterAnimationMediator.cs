@@ -26,6 +26,7 @@ namespace Components.Character
         [SerializeField] CharacterState _currentState;
 
         private IInputSystemModel _inputSystemModel;
+        private bool _beforeFlight;
 
         private CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -84,6 +85,8 @@ namespace Components.Character
 
             // 飛行フラグ
             _animator.SetBool(AnimationType.IsFlight.ToString(), _isFlight);
+            if (_beforeFlight != _characterModelComponent.CharacterModel.IsFlight) _animator.SetTrigger(AnimationType.OnFlight.ToString());
+            _beforeFlight = _isFlight;
 
             // ロックオンフラグ
             _animator.SetBool(AnimationType.IsLockOn.ToString(), _isLockOn);
@@ -107,6 +110,7 @@ namespace Components.Character
         IsInputHorizontal,
         IsOnGround,
         IsFlight,
+        OnFlight,
         IsLockOn,
         IsDodging,
         JumpCount,
