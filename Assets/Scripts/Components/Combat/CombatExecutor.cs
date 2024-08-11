@@ -23,7 +23,7 @@ namespace Components.Combat
         public Vector3 TargetPoint;
     }
 
-    public class CombatMotor : MonoBehaviour
+    public class CombatExecutor : MonoBehaviour
     {
 
         public AttackCombAsset NormalCombo;

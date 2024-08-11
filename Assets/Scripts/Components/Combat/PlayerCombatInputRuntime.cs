@@ -9,7 +9,7 @@ namespace Components.Combat
 {
     public class PlayerCombatInputRuntime : MonoBehaviour
     {
-        private CombatMotor _combatMotor;
+        private CombatExecutor _combatExecutor;
         private IInputSystemModel _inputSystemModel;
         private CharacterModelComponent _characterModelComponent;
         private (bool normalAttack, bool magicAttack, bool lockOn) _inputState;
@@ -33,14 +33,14 @@ namespace Components.Combat
         private void Awake()
         {
             if (_inputSystemModel == null) _zenAutoInjecter = gameObject.AddComponent<ZenAutoInjecter>();
-            _combatMotor = gameObject.GetComponent<CombatMotor>();
-            if (_combatMotor == null) Debug.LogError("CombatMotorが取得できませんでした");
+            _combatExecutor = gameObject.GetComponent<CombatExecutor>();
+            if (_combatExecutor == null) Debug.LogError("CombatExecutorが取得できませんでした");
         }
 
         private void Update()
         {
             // 魔法攻撃
-            _combatMotor.SetInput(new CombatInput(isMagicAttack: _inputState.magicAttack));
+            _combatExecutor.SetInput(new CombatInput(isMagicAttack: _inputState.magicAttack));
         }
 
         private void Start()
@@ -90,7 +90,7 @@ namespace Components.Combat
                         var enemies = GameObject.FindGameObjectsWithTag("Enemy");
                         if (enemies.Count() > 0)
                         {
-                            var target = enemies[0].GetComponent<CombatMotor>().Target;
+                            var target = enemies[0].GetComponent<CombatExecutor>().Target;
                             _characterModelComponent.CharacterModel.LockOn(target);
                         }
                     }
@@ -106,7 +106,7 @@ namespace Components.Combat
             // 通常攻撃
             _characterModelComponent.CharacterModel.OnNormalAttack.Subscribe(_ =>
             {
-                _combatMotor.SetInput(new CombatInput(isNormalAttack: true));
+                _combatExecutor.SetInput(new CombatInput(isNormalAttack: true));
             }).AddTo(_disposables);
 
             // 魔法攻撃
