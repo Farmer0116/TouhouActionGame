@@ -1456,7 +1456,7 @@ Animator:
   m_GameObject: {fileID: 4820729082510584745}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: b839bcc33118b1a4bbad73b02263c646, type: 3}
-  m_Controller: {fileID: 9100000, guid: ac9118d45bd05394f9e8a1513639232d, type: 2}
+  m_Controller: {fileID: 9100000, guid: bc3fb96192256c54e9a23e27a9dcf967, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1963,7 +1963,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7322933704203835039}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: bceb9c195ef9c2d42830a8780f3fdde2, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.4
@@ -2045,7 +2045,7 @@ MonoBehaviour:
   CapsuleRadius: 0.4
   CapsuleHeight: 1.9
   CapsuleYOffset: 0.95
-  CapsulePhysicsMaterial: {fileID: 0}
+  CapsulePhysicsMaterial: {fileID: 13400000, guid: bceb9c195ef9c2d42830a8780f3fdde2, type: 2}
   GroundDetectionExtraDistance: 0
   MaxStableSlopeAngle: 60
   StableGroundLayers:
